@@ -105,9 +105,9 @@ echo -e "Fifth private key $PRIVKEY5"
 
 CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
 echo -e "CNT is set to $CNT"
-HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${cnt}`
+HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
 echo -e "HASH is set to $HASH"
-TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock $hash | grep '"time"'`
+TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
 echo -e "TIMELINE is set to $TIMELINE"
 LTRIMTIME=${TIMELINE#*time\" : }
 echo -e "LTRIMTIME is set to $LTRIMTIME"
