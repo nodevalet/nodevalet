@@ -43,7 +43,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 echo -e "---------- AKcryptoGUY's Testing Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 printf "${nocolor}"
-sleep 1
+# sleep 1
 }
 
 setup_environment
@@ -53,21 +53,21 @@ begin_log
 apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
 
 echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"  | tee -a "$LOGFILE"
-sleep 1
+
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a "$LOGFILE"
-sleep 2
+
 
 echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey"   | tee -a "$LOGFILE"
-sleep 1
+
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey  | tee -a "$LOGFILE"
-sleep 2
+
 
 echo "Saving genkey to /var/helium/genkey1"  | tee -a "$LOGFILE"
-sleep 1
+
 
 touch /var/helium/genkey1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-sleep 2
+
 
 
 
