@@ -99,5 +99,30 @@ echo -e "Fifth private key $PRIVKEY5"
 
 
 
+
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
+
+
+cnt=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
+hash=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${cnt}`
+timeline=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock $hash | grep '"time"'`
+ltrimtime=${timeline#*time\" : }
+newest=${ltrimtime%%,*}
+Echo "Seconds behind"
+echo $((`date +%s`-$newest))
+
+Echo "Minutes behind"
+echo $(((`date +%s`-$newest)/60))
+
+Echo "Hours behind"
+echo $(((`date +%s`-$newest)/3600))
+
+
+
+
+
+
+
+
 echo -e "Log of events saved to: $LOGFILE \n"
 
