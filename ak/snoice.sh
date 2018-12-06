@@ -63,32 +63,16 @@ echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey  | tee -a "$LOGFILE"
 
 
-echo "Saving genkey to /var/helium/genkey1"  | tee -a "$LOGFILE"
 
-read -p "How many private keys would you like me to generate, boss?" GENKEYS
-
-
-#!/bin/bash
-# Tested using bash version 4.1.5
-for ((i=1;i<=GENKEYS;i++)); 
-do 
-   # your-unix-command-here
-   echo $i
-done
-
-
-
-touch /var/helium/genkey1  | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
+   # Create a file containing all the masternode genkeys you want
+   echo "Saving genkey(s) to /var/helium/genkey1 \n"  | tee -a "$LOGFILE"
+   touch /var/helium/genkey1  | tee -a "$LOGFILE"
+   read -p "How many private keys would you like me to generate, boss?  " GENKEYS
+   for ((i=1;i<=GENKEYS;i++)); 
+   do 
+      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
+   
+   done
 
 
 echo "grep "blocks" /var/helium/getinfo_n1" 
