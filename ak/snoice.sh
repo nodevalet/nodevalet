@@ -108,13 +108,13 @@ hash=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockha
 timeline=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock $hash | grep '"time"'`
 ltrimtime=${timeline#*time\" : }
 newest=${ltrimtime%%,*}
-Echo "Seconds behind"
+echo "Seconds behind"
 echo $((`date +%s`-$newest))
 
-Echo "Minutes behind"
+echo "Minutes behind"
 echo $(((`date +%s`-$newest)/60))
 
-Echo "Hours behind"
+echo "Hours behind"
 echo $(((`date +%s`-$newest)/3600))
 
 
