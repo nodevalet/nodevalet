@@ -114,11 +114,20 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    fi	
 }
 
+function check_blocksync() {
+end=$((SECONDS+3))
+
+while [ $SECONDS -lt $end ]; do
+    echo -e "Time $SECONDS"
+    # Do what you want.
+    :
+done
+echo -e "All done."
+}
 
 
-
-
-sync_check
+check_blocksync
+#sync_check
 
 echo -e "Log of events saved to: $LOGFILE \n"
 
