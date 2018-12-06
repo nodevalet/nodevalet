@@ -144,7 +144,7 @@ while [ $SECONDS -lt $end ]; do
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
     echo -e "$BLOCKS is the current number of blocks"
-    if [ $BLOCKS !> 1 ] ; then echo "Masternode is not syncing" ; break
+    if [ $BLOCKS < 1 ] ; then echo "Masternode is not syncing" ; break
     else sync_check
     fi
     
