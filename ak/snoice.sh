@@ -118,7 +118,8 @@ echo -e "LTRIMTIME is set to $LTRIMTIME"
 NEWEST=${LTRIMTIME%%,*}
 #NEWEST=${LTRIMTIME%%,*}
 echo -e "NEWEST is set to $NEWEST"
-echo "Seconds behind"
+echo -e "Seconds behind $((`date +%s`-$NEWEST))" 
+echo "Seconds behind" 
 echo $((`date +%s`-$NEWEST))
 
 echo "Minutes behind"
