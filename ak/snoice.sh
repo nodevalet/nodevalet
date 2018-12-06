@@ -107,11 +107,14 @@ CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcou
 echo -e "CNT is set to $CNT"
 HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
 echo -e "HASH is set to $HASH"
-TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH}  | tr -dc '0-9'`
+#TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
 echo -e "TIMELINE is set to $TIMELINE"
 LTRIMTIME=${TIMELINE#*time\" : }
+#LTRIMTIME=${TIMELINE#*time\" : }
 echo -e "LTRIMTIME is set to $LTRIMTIME"
 NEWEST=${LTRIMTIME%%,*}
+#NEWEST=${LTRIMTIME%%,*}
 echo -e "NEWEST is set to $NEWEST"
 echo "Seconds behind"
 echo $((`date +%s`-$NEWEST))
