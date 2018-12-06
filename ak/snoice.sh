@@ -107,7 +107,9 @@ CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcou
 echo -e "CNT is set to $CNT"
 HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
 echo -e "HASH is set to $HASH"
-TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH}  | tr -dc '0-9'`
+TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE=$($TIMELINE1 | tr -dc '0-9')
+BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
 #TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
 echo -e "TIMELINE is set to $TIMELINE"
 LTRIMTIME=${TIMELINE#*time\" : }
