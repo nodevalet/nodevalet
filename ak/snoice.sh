@@ -65,7 +65,7 @@ echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode
 
 echo "Saving genkey to /var/helium/genkey1"  | tee -a "$LOGFILE"
 
-Read -p "How many private keys would you like me to generate, boss?" GENKEYS
+read -p "How many private keys would you like me to generate, boss?" GENKEYS
 
 
 #!/bin/bash
