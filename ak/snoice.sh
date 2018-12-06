@@ -139,6 +139,7 @@ while [ $SECONDS -lt $end ]; do
     if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
     else echo "Still not synced; will check again in 5 seconds"
     sleep 5
+    fi
 done
 echo -e "All done."
 }
