@@ -49,3 +49,18 @@ begin_log
 
 # install packages over IP4
 apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
+
+echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"
+sleep 1
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo
+sleep 2
+
+echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey"
+sleep 1
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey
+sleep 2
+
+echo "Saving genkey to /var/helium/genkey1"
+sleep 1
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1
+sleep 2
