@@ -86,8 +86,7 @@ PRIVKEY5=$(sed -n 5p /var/helium/genkey1)
 
  }
 
-echo "grep "blocks" /var/helium/getinfo_n1" 
-
+# echo "grep "blocks" /var/helium/getinfo_n1" 
 BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
 BLOCKS2=$(grep "blocks" /var/helium/getinfo_n1 | sed 's/[^0-9]*//g')
 echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
