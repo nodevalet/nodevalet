@@ -69,3 +69,11 @@ touch /var/helium/genkey1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
 sleep 2
 
+
+
+
+
+
+
+echo -e "Log of events saved to: $LOGFILE /n"
+
