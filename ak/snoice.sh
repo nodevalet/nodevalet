@@ -70,7 +70,8 @@ touch /var/helium/genkey1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
 
 echo "grep "blocks" /var/helium/getinfo_n1" 
-grep "blocks" /var/helium/getinfo_n1  | tr -dc '0-9')
+BLOCKS=grep "blocks" /var/helium/getinfo_n1
+echo "$BLOCKS"
 
 
 
