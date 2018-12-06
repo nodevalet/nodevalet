@@ -90,21 +90,11 @@ echo "grep "blocks" /var/helium/getinfo_n1"
 
 BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
 BLOCKS2=$(grep "blocks" /var/helium/getinfo_n1 | sed 's/[^0-9]*//g')
-echo -e "Masternode 1 is currently synced through block $BLOCKS."
-echo "$BLOCKS2"
-echo "${BLOCKS2//[^0-9]/}"
-echo "${BLOCKS3//[^0-9]/}"
-
-echo -e "\n"
+echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
 
 
 
-
-
-
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-
-
+function sync_check() {
 CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
 # echo -e "CNT is set to $CNT"
 HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
@@ -121,16 +111,16 @@ TIMEDIF=$(echo -e "$((`date +%s`-$NEWEST))")
 echo -e "This masternode is $TIMEDIF seconds behind the latest block." 
    #check if current
    if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
-	then echo -e "The blockchain is synced"
-	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind."
+	then echo -e "The blockchain is almost certainly synced.\n"
+	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind.\n"
    fi	
+}
 
 
 
 
 
-
-
+sync_check
 
 echo -e "Log of events saved to: $LOGFILE \n"
 
