@@ -118,9 +118,9 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 
 
 function simple_timeloop() {
-end=$((SECONDS+5))
+LOOPTIME=$((SECONDS+5))
 
-while [ $SECONDS -lt $end ]; do
+while [ $SECONDS -lt $LOOPTIME ]; do
     echo -e "Time $SECONDS"
     sleep 1
     # Do what you want.
@@ -139,7 +139,6 @@ while [ $SECONDS -lt $end ]; do
     if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
     else echo "Still not synced; will check again in 5 seconds"
     sleep 5
-    
 done
 echo -e "All done."
 }
