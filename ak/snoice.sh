@@ -112,7 +112,7 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
 	then echo -e "The blockchain is almost certainly synced.\n"
 	SYNCED="yes"
-	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind.\n"
+	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/3600)) hours or $(((`date +%s`-$NEWEST)/86400)) days behind.\n"
 	SYNCED="no"
    fi	
 }
@@ -144,12 +144,12 @@ while [ $SECONDS -lt $end ]; do
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
     echo -e "$BLOCKS is the current number of blocks"
-    if [ $BLOCKS !> 1 ]; then echo "Masternode not syncing" ; break
+    if [ $BLOCKS !> 1 ] ; then echo "Masternode is not syncing" ; break
     else sync_check
     fi
     
     if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
-    else echo -e "Still not synced; will check again in 5 seconds\n"
+    else echo -e "Blockchain not synced; will check again in 5 seconds\n"
     sleep 5
     fi
 done
