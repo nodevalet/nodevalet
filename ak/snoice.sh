@@ -58,6 +58,7 @@ touch /var/helium/getinfo_n1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
 
 
+function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to /var/helium/genkey1 \n"  | tee -a "$LOGFILE"
    touch /var/helium/genkey1  | tee -a "$LOGFILE"
@@ -65,9 +66,8 @@ touch /var/helium/getinfo_n1  | tee -a "$LOGFILE"
    for ((i=1;i<=GENKEYS;i++)); 
    do 
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
-   
    done
-
+ }
 
 echo "grep "blocks" /var/helium/getinfo_n1" 
 
@@ -104,31 +104,19 @@ echo -e "Fifth private key $PRIVKEY5"
 
 
 CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
-echo -e "CNT is set to $CNT"
+# echo -e "CNT is set to $CNT"
 HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
 echo -e "HASH is set to $HASH"
 TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
 TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
 BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
-#TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
-echo -e "TIMELINE is set to $TIMELINE"
+# echo -e "TIMELINE is set to $TIMELINE"
 LTRIMTIME=${TIMELINE#*time\" : }
-#LTRIMTIME=${TIMELINE#*time\" : }
-echo -e "LTRIMTIME is set to $LTRIMTIME"
+# echo -e "LTRIMTIME is set to $LTRIMTIME"
 NEWEST=${LTRIMTIME%%,*}
-#NEWEST=${LTRIMTIME%%,*}
-echo -e "NEWEST is set to $NEWEST"
-echo -e "Seconds behind $((`date +%s`-$NEWEST))" 
-echo "Seconds behind" 
-echo $((`date +%s`-$NEWEST))
-
-echo "Minutes behind"
-echo $(((`date +%s`-$NEWEST)/60))
-
-echo "Hours behind"
-echo $(((`date +%s`-$NEWEST)/3600))
-
-
+# echo -e "NEWEST is set to $NEWEST"
+echo -e "This masternode is $((`date +%s`-$NEWEST)) seconds behind the latest block." 
+echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind."
 
 
 
