@@ -116,7 +116,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 printf "${nocolor}"
-sleep 2
+# sleep 2
 }
 
 #########################
@@ -137,7 +137,7 @@ function create_swap() {
 		echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Swap exists- No changes made " | tee -a "$LOGFILE"
 		echo -e "---------------------------------------------------- \n"  | tee -a "$LOGFILE"
-		sleep 2
+		# sleep 2
 		printf "${nocolor}"
 	else
 	    	fallocate -l 1G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
@@ -146,7 +146,7 @@ function create_swap() {
 		echo -e " `date +%m.%d.%Y_%H:%M:%S` : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
 		echo -e "--> Thanks @Cryptotron for supplying swap code <-- "
 		echo -e "-------------------------------------------------- \n" | tee -a "$LOGFILE"
-		sleep 2
+		# sleep 2
 		printf "${nocolor}"
 	fi
 }
@@ -706,7 +706,7 @@ echo -e " and enable automatic installation of security updates."
 echo -e "\n"
 	printf "${cyan}"
 	GETHARD="y"
-	read -p " Would you like to perform these steps now? y/n  " GETHARD
+	# read -p " Would you like to perform these steps now? y/n  " GETHARD
 	printf "${nocolor}"
 	while [ "${GETHARD,,}" != "yes" ] && [ "${GETHARD,,}" != "no" ] && [ "${GETHARD,,}" != "y" ] && [ "${GETHARD,,}" != "n" ]; do
 	echo -e "\n"
