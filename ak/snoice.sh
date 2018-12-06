@@ -54,6 +54,7 @@ apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellc
 
 echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"  | tee -a "$LOGFILE"
 
+rm -rf /var/helium/getinfo_n1
 touch /var/helium/getinfo_n1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
 
@@ -135,7 +136,17 @@ end=$((SECONDS+7200))
 
 while [ $SECONDS -lt $end ]; do
     echo -e "Time $SECONDS"
-    sync_check
+    
+	rm -rf /var/helium/getinfo_n1
+	touch /var/helium/getinfo_n1
+	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
+    
+    # if  masternode not running, echo masternode not running and break
+    BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
+    if [ !$BLOCKS > 1 ]; then echo "Masternode not syncing" ; break
+    else sync_check
+    fi
+    
     if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
     else echo "Still not synced; will check again in 5 seconds"
     sleep 5
