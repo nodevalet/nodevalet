@@ -58,14 +58,8 @@ touch /var/helium/getinfo_n1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
 
 
-echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey"   | tee -a "$LOGFILE"
-
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey  | tee -a "$LOGFILE"
-
-
-
    # Create a file containing all the masternode genkeys you want
-   echo "Saving genkey(s) to /var/helium/genkey1 \n"  | tee -a "$LOGFILE"
+   echo -e "Saving genkey(s) to /var/helium/genkey1 \n"  | tee -a "$LOGFILE"
    touch /var/helium/genkey1  | tee -a "$LOGFILE"
    read -p "How many private keys would you like me to generate, boss?  " GENKEYS
    for ((i=1;i<=GENKEYS;i++)); 
@@ -86,6 +80,7 @@ echo "${BLOCKS3//[^0-9]/}"
 
 echo -e "\n"
 
+echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
 cat /var/helium/genkey1
 
