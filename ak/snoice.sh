@@ -157,7 +157,7 @@ while [ $SECONDS -lt $end ]; do
 done
 
     if [ "$SYNCED" = "no" ]; then printf "${lightred}" ; echo "Masternode did not sync in allowed time" ; printf "${nocolor}"
-    else : fi
+    else : ; fi
 
 echo -e "All done."
 }
