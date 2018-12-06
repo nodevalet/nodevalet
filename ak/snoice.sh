@@ -67,6 +67,23 @@ function get_genkeys() {
    do 
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
    done
+   echo -e "This is the contents of your file /var/helium/genkey1:"
+# cat will display the entire contents of a file
+cat /var/helium/genkey1
+
+PRIVKEY1=$(sed -n 1p /var/helium/genkey1)
+PRIVKEY2=$(sed -n 2p /var/helium/genkey1)
+PRIVKEY3=$(sed -n 3p /var/helium/genkey1)
+PRIVKEY4=$(sed -n 4p /var/helium/genkey1)
+PRIVKEY5=$(sed -n 5p /var/helium/genkey1)
+
+	echo -e "\n"
+	echo -e "First private key $PRIVKEY1"
+	echo -e "Second private key $PRIVKEY2"
+	echo -e "Third private key $PRIVKEY3"
+	echo -e "Fourth private key $PRIVKEY4"
+	echo -e "Fifth private key $PRIVKEY5"
+
  }
 
 echo "grep "blocks" /var/helium/getinfo_n1" 
@@ -80,22 +97,7 @@ echo "${BLOCKS3//[^0-9]/}"
 
 echo -e "\n"
 
-echo -e "This is the contents of your file /var/helium/genkey1:"
-# cat will display the entire contents of a file
-cat /var/helium/genkey1
 
-PRIVKEY1=$(sed -n 1p /var/helium/genkey1)
-PRIVKEY2=$(sed -n 2p /var/helium/genkey1)
-PRIVKEY3=$(sed -n 3p /var/helium/genkey1)
-PRIVKEY4=$(sed -n 4p /var/helium/genkey1)
-PRIVKEY5=$(sed -n 5p /var/helium/genkey1)
-
-echo -e "\n"
-echo -e "First private key $PRIVKEY1"
-echo -e "Second private key $PRIVKEY2"
-echo -e "Third private key $PRIVKEY3"
-echo -e "Fourth private key $PRIVKEY4"
-echo -e "Fifth private key $PRIVKEY5"
 
 
 
