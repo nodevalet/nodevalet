@@ -89,7 +89,7 @@ echo "${BLOCKS2//[^0-9]/}"
 echo "${BLOCKS3//[^0-9]/}"
 
 echo -e "\n"
-echo -e /var/helium/genkey1
+cat /var/helium/genkey1
 
 PRIVKEY1=$(sed -n 1p /var/helium/genkey1)
 PRIVKEY2=$(sed -n 2p /var/helium/genkey1)
