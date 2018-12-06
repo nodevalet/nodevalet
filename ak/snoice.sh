@@ -115,11 +115,11 @@ LTRIMTIME=${TIMELINE#*time\" : }
 # echo -e "LTRIMTIME is set to $LTRIMTIME"
 NEWEST=${LTRIMTIME%%,*}
 # echo -e "NEWEST is set to $NEWEST"
-echo -e "This masternode is $((`date +%s`-$NEWEST)) seconds behind the latest block." 
+TIMEDIF=$(echo -e "$((`date +%s`-$NEWEST))")
+echo -e "This masternode is $TIMEDIF seconds behind the latest block." 
    #check if current
-   TIMEDIF=$(echo -e "$((`date +%s`-$NEWEST))")
    echo -e "TIMEDIF is set to $TIMEDIF"
-   if [ $TIMEDIF lt "60" ] 
+   if [ "$TIMEDIF" lt "60" ] 
 			then echo -e "The blockchain is synced"
 			else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind."
    fi	
