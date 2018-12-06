@@ -75,6 +75,17 @@ echo "$BLOCKS"
 
 
 
+NUMBER=$(echo "I am 999 years old." | tr -dc '0-9')
+echo $NUMBER
+
+
+NUMBER=$(echo "I am 999 years old." | sed 's/[^0-9]*//g')
+echo $NUMBER
+
+STRING="I am 999 years old."
+echo "${STRING//[!0-9]/}"
+echo "${STRING//[^0-9]/}"
+
 
 
 
