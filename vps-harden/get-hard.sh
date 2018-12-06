@@ -400,7 +400,8 @@ printf "${nocolor}"
 	echo -e " use a different port, you gain some security through obscurity.\n"
 	while :; do
 		printf "${cyan}"
-		read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
+		SSHPORT="58008"
+		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
 		elif [ $SSHPORT = 22 ]; then break
@@ -470,7 +471,8 @@ then
 	echo -e " Your root login settings are: " $ROOTLOGINP  | tee -a "$LOGFILE"
 	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 	printf "${cyan}"
-        read -p " Would you like to disable root login? y/n  " ROOTLOGIN
+	ROOTLOGIN="n"
+        # read -p " Would you like to disable root login? y/n  " ROOTLOGIN
 	printf "${nocolor}"
 	while [ "${ROOTLOGIN,,}" != "yes" ] && [ "${ROOTLOGIN,,}" != "no" ] && [ "${ROOTLOGIN,,}" != "y" ] && [ "${ROOTLOGIN,,}" != "n" ]; do
 	echo -e "\n"
@@ -641,7 +643,8 @@ echo -e "---------------------------------------------- \n"
         echo -e
         echo -e " * If you already configured UFW, choose NO to keep your existing rules\n"
 	printf "${cyan}"
-	read -p " Would you like to enable UFW firewall and assign basic rules? y/n  " FIREWALLP
+	FIREWALLP="y"
+	# read -p " Would you like to enable UFW firewall and assign basic rules? y/n  " FIREWALLP
         while [ "${FIREWALLP,,}" != "yes" ] && [ "${FIREWALLP,,}" != "no" ] && [ "${FIREWALLP,,}" != "y" ] && [ "${FIREWALLP,,}" != "n" ]; do
         echo -e "\n"
 	printf "${lightred}"
@@ -666,14 +669,14 @@ echo -e "---------------------------------------------- \n"
                 ufw allow $SSHPORT | tee -a "$LOGFILE"
                 echo -e "------------------------- \n" | tee -a "$LOGFILE"
 		printf "${nocolor}"
-		sleep 1
+		# sleep 1
                 # wait until after SSHD is restarted to enable firewall to not break SSH
         else	printf "${yellow}"
 		echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
                 echo -e " ** User chose not to setup firewall at this time **"  | tee -a "$LOGFILE"
                 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 		printf "${nocolor}"
-		sleep 1
+		# sleep 1
         fi
 
 clear
@@ -702,6 +705,7 @@ echo -e " IP spoofing, enable DDOS protection, harden the networking layer, "
 echo -e " and enable automatic installation of security updates."
 echo -e "\n"
 	printf "${cyan}"
+	GETHARD="y"
 	read -p " Would you like to perform these steps now? y/n  " GETHARD
 	printf "${nocolor}"
 	while [ "${GETHARD,,}" != "yes" ] && [ "${GETHARD,,}" != "no" ] && [ "${GETHARD,,}" != "y" ] && [ "${GETHARD,,}" != "n" ]; do
@@ -724,7 +728,7 @@ printf "${white}"
 echo -e ' --> Adding line to bottom of file /etc/fstab'  | tee -a "$LOGFILE"
 echo -e ' tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0' | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
-sleep 2	; #  dramatic pause
+# sleep 2	; #  dramatic pause
 # only add line if line does not already exist in /etc/fstab
 if grep -q "tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0" /etc/fstab; then :
 else echo 'tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0' >> /etc/fstab
@@ -738,7 +742,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 printf "${white}"
 echo -e " --> Updating /etc/host.conf to include 'nospoof' " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n " | tee -a "$LOGFILE"
-sleep 2	; #  dramatic pause
+# sleep 2	; #  dramatic pause
 cat etc/host.conf > /etc/host.conf
 
 # enable DDOS protection
@@ -749,7 +753,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 printf "${white}"
 echo -e " Replace /etc/ufw/before.rules with hardened rules " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n " | tee -a "$LOGFILE"
-sleep 2	; #  dramatic pause
+# sleep 2	; #  dramatic pause
 cat etc/ufw/before.rules > /etc/ufw/before.rules
 
 # harden the networking layer
@@ -760,7 +764,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 printf "${white}"
 echo -e " --> Secure /etc/sysctl.conf with hardening rules " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n " | tee -a "$LOGFILE"
-sleep 2	; #  dramatic pause
+# sleep 2	; #  dramatic pause
 cat etc/sysctl.conf > /etc/sysctl.conf
 
 # enable automatic security updates
@@ -771,7 +775,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 printf "${white}"
 echo -e " Configure system to auto install security updates " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n " | tee -a "$LOGFILE"
-sleep 2	; #  dramatic pause
+# sleep 2	; #  dramatic pause
 cat etc/apt/apt.conf.d/10periodic > /etc/apt/apt.conf.d/10periodic
 cat etc/apt/apt.conf.d/50unattended-upgrades > /etc/apt/apt.conf.d/50unattended-upgrades
 # consider editing the above 50-unattended-upgrades to automatically reboot when necessary
@@ -1008,7 +1012,8 @@ echo " copied down the information incorrectly. This will prevent you"
 echo " from getting locked out of your server."
 echo -e "\n"
 	printf "${cyan}"
-	read -p " Would you like to restart SSHD and enable UFW now? y/n  " SSHDRESTART
+	SSHDRESTART="y"
+	# read -p " Would you like to restart SSHD and enable UFW now? y/n  " SSHDRESTART
 	printf "${nocolor}"
 	while [ "${SSHDRESTART,,}" != "yes" ] && [ "${SSHDRESTART,,}" != "no" ] && [ "${SSHDRESTART,,}" != "y" ] && [ "${SSHDRESTART,,}" != "n" ]; do
 	echo -e "\n"
@@ -1137,14 +1142,14 @@ create_swap
 update_upgrade
 favored_packages
 crypto_packages
-add_user
+# add_user
 collect_sshd
 prompt_rootlogin
-disable_passauth
+# disable_passauth
 ufw_config
 server_hardening
-ksplice_install
-motd_install
+# ksplice_install
+# motd_install
 restart_sshd
 install_complete
 
