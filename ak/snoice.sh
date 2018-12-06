@@ -23,9 +23,9 @@ darkgray='\033[1;30m'  # dark gray
 black='\033[0;30m'  # black
 nocolor='\033[0m'    # no color
 
-printf "..%s.." "${lightred}"
-printf "..%s.." "${lightgreen}"
-printf "..%s.." "${nocolor}"
+printf -e "..%s.." "${lightred}"
+printf -e "..%s.." "${lightgreen}"
+printf -e "..%s.." "${nocolor}"
 
 # Set Vars
 LOGFILE='/var/log/logjammin.log'
@@ -33,14 +33,14 @@ LOGFILE='/var/log/logjammin.log'
 
 function begin_log() {
 # Create Log File and Begin
-printf "..%s.." "${lightcyan}"
+printf -e "..%s.." "${lightcyan}"
 rm -rf $LOGFILE
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e "---------- AKcryptoGUY's Testing Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
-printf "..%s.." "${nocolor}"
+printf -e "..%s.." "${nocolor}"
 sleep 1
 }
 
