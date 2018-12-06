@@ -120,6 +120,7 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    #check if current
    echo -e "TIMEDIF is set to $TIMEDIF"
    if [ $TIMEDIF < 60 ] 
+   if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
 			then echo -e "The blockchain is synced"
 			else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind."
    fi	
