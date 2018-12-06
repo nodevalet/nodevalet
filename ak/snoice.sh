@@ -110,20 +110,40 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    #check if current
    if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
 	then echo -e "The blockchain is almost certainly synced.\n"
+	SYNCED="yes"
 	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/60)) minutes or $(((`date +%s`-$NEWEST)/3600)) hours behind.\n"
+	SYNCED="no"
    fi	
 }
 
-function check_blocksync() {
-end=$((SECONDS+3))
+
+function simple_timeloop() {
+end=$((SECONDS+5))
 
 while [ $SECONDS -lt $end ]; do
     echo -e "Time $SECONDS"
+    sleep 1
     # Do what you want.
     :
 done
 echo -e "All done."
 }
+
+
+function check_blocksync() {
+end=$((SECONDS+7200))
+
+while [ $SECONDS -lt $end ]; do
+    echo -e "Time $SECONDS"
+    sync_check
+    if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
+    else echo "still not synced; will check again in 5 seconds"
+    sleep 5
+    :
+done
+echo -e "All done."
+}
+
 
 
 check_blocksync
