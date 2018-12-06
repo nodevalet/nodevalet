@@ -103,19 +103,24 @@ echo -e "Fifth private key $PRIVKEY5"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
 
 
-cnt=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
-hash=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${cnt}`
-timeline=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock $hash | grep '"time"'`
-ltrimtime=${timeline#*time\" : }
-newest=${ltrimtime%%,*}
+CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
+echo -e "CNT is set to $CNT"
+HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${cnt}`
+echo -e "HASH is set to $HASH"
+TIMELINE=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock $hash | grep '"time"'`
+echo -e "TIMELINE is set to $TIMELINE"
+LTRIMTIME=${TIMELINE#*time\" : }
+echo -e "LTRIMTIME is set to $LTRIMTIME"
+NEWEST=${LTRIMTIME%%,*}
+echo -e "NEWEST is set to $NEWEST"
 echo "Seconds behind"
-echo $((`date +%s`-$newest))
+echo $((`date +%s`-$NEWEST))
 
 echo "Minutes behind"
-echo $(((`date +%s`-$newest)/60))
+echo $(((`date +%s`-$NEWEST)/60))
 
 echo "Hours behind"
-echo $(((`date +%s`-$newest)/3600))
+echo $(((`date +%s`-$NEWEST)/3600))
 
 
 
