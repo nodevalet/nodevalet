@@ -117,7 +117,7 @@ NEWEST=${LTRIMTIME%%,*}
 # echo -e "NEWEST is set to $NEWEST"
 echo -e "This masternode is $((`date +%s`-$NEWEST)) seconds behind the latest block." 
    #check if current
-   TIMEDIF=`echo -e "This masternode is $((`date +%s`-$NEWEST)) seconds behind the latest block."`
+   TIMEDIF=$(echo -e "This masternode is $((`date +%s`-$NEWEST)) seconds behind the latest block.")
    echo -e "TIMEDIF is set to $TIMEDIF"
    if [ $TIMEDIF lt "60" ] 
 			then echo -e "The blockchain is synced"
