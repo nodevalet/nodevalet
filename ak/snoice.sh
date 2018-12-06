@@ -75,5 +75,5 @@ sleep 2
 
 
 
-echo -e "Log of events saved to: $LOGFILE /n"
+echo -e "Log of events saved to: $LOGFILE \n"
 
