@@ -140,6 +140,7 @@ while [ $SECONDS -lt $end ]; do
 	rm -rf /var/helium/getinfo_n1
 	touch /var/helium/getinfo_n1
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
+	clear
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
@@ -149,11 +150,15 @@ while [ $SECONDS -lt $end ]; do
     else sync_check
     fi
     
-    if [ "$SYNCED" = "yes" ]; then echo "Masternode synced" ; break
+    if [ "$SYNCED" = "yes" ]; then printf "${lightcyan}" ; echo "Masternode synced" ; printf "${nocolor}" ; break
     else echo -e "Blockchain not synced; will check again in 5 seconds\n"
     sleep 5
     fi
 done
+
+    if [ "$SYNCED" = "no" ]; then printf "${lightred}" ; echo "Masternode did not sync in allowed time" ; printf "${nocolor}"
+    else : fi
+
 echo -e "All done."
 }
 
