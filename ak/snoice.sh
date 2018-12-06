@@ -70,27 +70,14 @@ touch /var/helium/genkey1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
 
 echo "grep "blocks" /var/helium/getinfo_n1" 
-BLOCKS=$(grep "blocks" /var/helium/getinfo_n1)
-BLOCKS2=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
-BLOCKS3=$(grep "blocks" /var/helium/getinfo_n1 | sed 's/[^0-9]*//g')
-echo "$BLOCKS"
+
+BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
+BLOCKS2=$(grep "blocks" /var/helium/getinfo_n1 | sed 's/[^0-9]*//g')
+echo -e "Masternode 1 is currently synced through block $BLOCKS."
 echo "$BLOCKS2"
-echo "$BLOCKS3"
-echo "${BLOCKS//[!0-9]/}"
 echo "${BLOCKS2//[^0-9]/}"
 echo "${BLOCKS3//[^0-9]/}"
 
-
-NUMBER=$(echo "I am 999 years old." | tr -dc '0-9')
-echo $NUMBER
-
-
-NUMBER=$(echo "I am 999 years old." | sed 's/[^0-9]*//g')
-echo $NUMBER
-
-STRING="I am 999 years old."
-echo "${STRING//[!0-9]/}"
-echo "${STRING//[^0-9]/}"
 
 
 
