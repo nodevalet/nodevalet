@@ -29,6 +29,8 @@ printf "${nocolor}"
 
 # Set Vars
 LOGFILE='/var/log/logjammin.log'
+rm -rf /var/helium
+mkdir /var/helium
 }
 
 function begin_log() {
@@ -50,24 +52,20 @@ begin_log
 # install packages over IP4
 apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
 
-echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"
+echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"  | tee -a "$LOGFILE"
 sleep 1
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a "$LOGFILE"
 sleep 2
 
-
-
-echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey"
+echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey"   | tee -a "$LOGFILE"
 sleep 1
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey  | tee -a "$LOGFILE"
 sleep 2
 
-echo "Saving genkey to /var/helium/genkey1"
+echo "Saving genkey to /var/helium/genkey1"  | tee -a "$LOGFILE"
 sleep 1
 
-rm -rf /var/helium
-mkdir /var/helium
-touch /var/helium/genkey1
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1
+touch /var/helium/genkey1  | tee -a "$LOGFILE"
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
 sleep 2
 
