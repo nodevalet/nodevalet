@@ -65,6 +65,18 @@ echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode
 
 echo "Saving genkey to /var/helium/genkey1"  | tee -a "$LOGFILE"
 
+Read -p "How many private keys would you like me to generate, boss?" GENKEYS
+
+
+#!/bin/bash
+# Tested using bash version 4.1.5
+for ((i=1;i<=100;i++)); 
+do 
+   # your-unix-command-here
+   echo $i
+done
+
+
 
 touch /var/helium/genkey1  | tee -a "$LOGFILE"
 /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
@@ -89,6 +101,8 @@ echo "${BLOCKS2//[^0-9]/}"
 echo "${BLOCKS3//[^0-9]/}"
 
 echo -e "\n"
+
+# cat will display the entire contents of a file
 cat /var/helium/genkey1
 
 PRIVKEY1=$(sed -n 1p /var/helium/genkey1)
