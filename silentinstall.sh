@@ -40,15 +40,15 @@ function get_genkeys() {
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
    for ((i=1;i<=$MNS;i++)); 
    do 
-      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
+	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
- 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
 	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
-        echo -e "MNPRIVKEY$i is set to:"
-        cat $INSTALLDIR/MNPRIVKEY$i
-
+	echo -e "MNPRIVKEY$i is set to:"
+	cat $INSTALLDIR/MNPRIVKEY$i
+# sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
 done
 
