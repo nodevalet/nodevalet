@@ -46,8 +46,17 @@ function get_genkeys() {
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
 	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
-	echo -e "MNPRIVKEY$i is set to:"
-	cat $INSTALLDIR/MNPRIVKEY$i
+
+#        echo -e "MNPRIVKEY$i is set to:"
+#        cat $INSTALLDIR/MNPRIVKEY$i
+
+	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
+	# this is an alternative that also works  GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
+	# echo -e "GENKEYVAR = $GENKEYVAR"
+
+
+	
+
 # sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
 done
