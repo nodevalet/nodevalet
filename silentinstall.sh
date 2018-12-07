@@ -11,6 +11,7 @@ mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
 read -p "How many masternodes will you install?" MNS
 echo $MNS >> /root/installtemp/vpsnumber.info
+MNS=`cat /root/installtemp/vpsnumber.info`
 echo -e "Going to create $MNS masternodes\n"
 sleep 5
 
@@ -21,14 +22,12 @@ INSTALLDIR='/root/installtemp'
 
 function begin_log() {
 # Create Log File and Begin
-printf "${lightcyan}"
 rm -rf $LOGFILE
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e "---------- AKcryptoGUY's Dubious Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
-printf "${nocolor}"
 # sleep 1
 }
 
@@ -37,6 +36,7 @@ printf "${nocolor}"
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
+   rm $INSTALLDIR/genkeys 
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 #  read -p "How many private keys would you like me to generate, boss?  " GENKEYS
    for ((i=1;i<=$MNS;i++)); 
@@ -47,26 +47,37 @@ function get_genkeys() {
 # cat will display the entire contents of a file
 cat $INSTALLDIR/genkeys
 
-PRIVKEY1=$(sed -n 1p $INSTALLDIR/genkeys)
-PRIVKEY2=$(sed -n 2p $INSTALLDIR/genkeys)
-PRIVKEY3=$(sed -n 3p $INSTALLDIR/genkeys)
-PRIVKEY4=$(sed -n 4p $INSTALLDIR/genkeys)
-PRIVKEY5=$(sed -n 5p $INSTALLDIR/genkeys)
+for (( C=1; c<=$MNS; C++))
+do echo -e "$(sed -n $Cp $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$C
+# echo "$c" >> Hello$c
+done
+
+echo -e "Print a few of those new genkeys"
+cat $INSTALLDIR/GENKEY1
+cat $INSTALLDIR/GENKEY2
+cat $INSTALLDIR/GENKEY3
+cat $INSTALLDIR/GENKEY4
+cat $INSTALLDIR/GENKEY5
+
+# PRIVKEY1=$(sed -n 1p $INSTALLDIR/genkeys)
+# PRIVKEY2=$(sed -n 2p $INSTALLDIR/genkeys)
 
 	echo -e "\n"
-	echo -e "First private key $PRIVKEY1"
-	echo -e "Second private key $PRIVKEY2"
-	echo -e "Third private key $PRIVKEY3"
-	echo -e "Fourth private key $PRIVKEY4"
-	echo -e "Fifth private key $PRIVKEY5"
+	echo -e "First private key $INSTALLDIR/GENKEY1"
+	echo -e "Second private key $INSTALLDIR/GENKEY2"
+	echo -e "Third private key $INSTALLDIR/GENKEY3"
+	echo -e "Fourth private key $INSTALLDIR/GENKEY4"
+	echo -e "Fifth private key $INSTALLDIR/GENKEY5"
+	
 read -p "Does this look the way you expected?" LOOKP
  }
 
 
+function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
-
+}
 
 function sync_check() {
 CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
@@ -105,7 +116,6 @@ activate_masternodes_helium
 sleep 5
 read -p "It looks like masternodes installed correctly, can I continue? " CONTINUEP
 }
-
 
 function check_blocksync() {
 end=$((SECONDS+7200))
