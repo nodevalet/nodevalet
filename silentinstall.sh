@@ -32,7 +32,6 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 }
 
 
-
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
@@ -54,7 +53,8 @@ function get_genkeys() {
 	# this is an alternative that also works  GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 	# echo -e "GENKEYVAR = $GENKEYVAR"
 
-# sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
+sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
+
 
 done
 
@@ -118,8 +118,9 @@ sudo git clone https://github.com/heliumchain/vps.git && cd vps
 # this next may not be true
 # masternodes will not start syncing the blockchain without a privatekey
 # install the masternodes with the dummykey and replace it later on
-DUMMYKEY="masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z"
-# sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' config/helium/helium.conf >> $LOGFILE 2>&1
+DUMMYKEY='masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z'
+sed -i "s/^masternodeprivkey=.*/$DUMMYKEY/" config/helium/helium.conf >> $LOGFILE 2>&1
+
 sudo ./install.sh -p helium -c $MNS
 activate_masternodes_helium
 sleep 5
