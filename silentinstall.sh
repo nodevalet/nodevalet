@@ -35,18 +35,18 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
-   echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
-   rm $INSTALLDIR/genkeys
-   touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
+   echo -e "Saving genkey(s) to $INSTALLDIR/GENKEYS \n"  | tee -a "$LOGFILE"
+   rm $INSTALLDIR/GENKEYS
+   touch $INSTALLDIR/GENKEYS  | tee -a "$LOGFILE"
 #  read -p "How many private keys would you like me to generate, boss?  " GENKEYS
    for ((i=1;i<=$MNS;i++));
    do
-      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
-      echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
+      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/GENKEYS   | tee -a "$LOGFILE"
+      echo -e "$(sed -n ${i}p $INSTALLDIR/GENKEYS)" >> $INSTALLDIR/GENKEY$i
    done
    echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
-cat $INSTALLDIR/genkeys
+cat $INSTALLDIR/GENKEYS
 
 echo -e "Print a few of those new genkeys"
 cat $INSTALLDIR/GENKEY1
@@ -148,7 +148,7 @@ echo -e "All done."
 setup_environment
 begin_log
 
-install_mns
+#install_mns
 get_genkeys
 
 # check_blocksync
