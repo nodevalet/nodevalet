@@ -114,10 +114,11 @@ function install_mns() {
 cd ~/
 sudo git clone https://github.com/heliumchain/vps.git && cd vps
 
+# this next may not be true
 # masternodes will not start syncing the blockchain without a privatekey
 # install the masternodes with the dummykey and replace it later on
 DUMMYKEY="masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z"
-sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' config/helium/helium.conf >> $LOGFILE 2>&1
+# sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' config/helium/helium.conf >> $LOGFILE 2>&1
 sudo ./install.sh -p helium -c $MNS
 activate_masternodes_helium
 sleep 5
@@ -159,8 +160,8 @@ echo -e "All done."
 setup_environment
 begin_log
 
-install_mns
-# get_genkeys
+# install_mns
+get_genkeys
 
 # check_blocksync
 # sync_check
