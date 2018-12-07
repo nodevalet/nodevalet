@@ -10,7 +10,7 @@ rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
 # read -p "How many masternodes will you install?" MNS
-echo "10" >> /root/installtemp/vpsnumber.info
+echo "20" >> /root/installtemp/vpsnumber.info
 MNS=`cat /root/installtemp/vpsnumber.info`
 echo -e "Going to create $MNS masternodes\n"
 sleep 2
@@ -173,12 +173,23 @@ bash get-hard.sh
 fi
 }
 
+function restart_masternodes() {
+
+
+}
+
+
+
+
+
+
 setup_environment
 begin_log
 
 silent_harden
 install_mns
 get_genkeys
+restart_masternodes
 
 # check_blocksync
 # sync_check
