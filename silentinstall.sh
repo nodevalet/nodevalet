@@ -4,7 +4,8 @@
 clear
 
 # signal start of script
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$hname"'","message": "Beginning Install Script..."}'
+HNAME=`hostname`
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
 
 function setup_environment() {
 
