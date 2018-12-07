@@ -3,6 +3,9 @@
 #
 clear
 
+# signal start of script
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$hname"'","message": "Beginning Install Script..."}'
+
 function setup_environment() {
 
 # create a dummy file which will be created by CT's API
@@ -10,9 +13,11 @@ rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
 # read -p "How many masternodes will you install?" MNS
-echo "20" >> /root/installtemp/vpsnumber.info
-MNS=`cat /root/installtemp/vpsnumber.info`
-echo -e "Going to create $MNS masternodes\n"
+
+# REMOVE THESE LINES ONCE CT HAS CREATED THE FILES SUCCESSFULLY WITH THE API
+			echo "5" >> /root/installtemp/vpsnumber.info
+			MNS=`cat /root/installtemp/vpsnumber.info`
+			echo -e "Going to create $MNS masternodes\n"
 sleep 2
 
 # Set Vars
