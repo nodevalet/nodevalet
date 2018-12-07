@@ -58,16 +58,15 @@ function get_genkeys() {
 
 done
 
-   echo -e "This is the contents of your file /var/helium/genkey1:"
-# cat will display the entire contents of a file
-cat $INSTALLDIR/genkeys
-echo -e "\n"
+	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
+	# cat will display the entire contents of a file
+	cat $INSTALLDIR/genkeys
+	echo -e "\n"
+
 echo -e "Print a few of those new genkeys"
 cat $INSTALLDIR/MNPRIVKEY1
 cat $INSTALLDIR/MNPRIVKEY2
 cat $INSTALLDIR/MNPRIVKEY3
-
-
 
 ls $INSTALLDIR
 
