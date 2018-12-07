@@ -167,9 +167,16 @@ echo -e "All done."
 }
 
 function silent_harden() {
+
+if [ -e /var/log/server_hardening.log ]
+then
+echo -e "Masternodes seem to already be installed, skipping this part"
+else
+
 cd ~/code-red/vps-harden
 bash get-hard.sh
-# read -p "Looks like your server is hard, type any input to continue"
+
+fi
 }
 
 setup_environment
