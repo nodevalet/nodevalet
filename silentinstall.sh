@@ -38,12 +38,10 @@ function get_genkeys() {
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
    rm $INSTALLDIR/genkeys 
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
-#  read -p "How many private keys would you like me to generate, boss?  " GENKEYS
    for ((i=1;i<=$MNS;i++)); 
    do 
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
-
 
   #    /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/GENKEYS   | t$
  #     echo -e "$(sed -n ${i}p $INSTALLDIR/GENKEYS)" >> $INSTALLDIR/GENKEY$i
@@ -63,13 +61,11 @@ done
    echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
 cat $INSTALLDIR/genkeys
-
+echo -e "\"
 echo -e "Print a few of those new genkeys"
 cat $INSTALLDIR/GENKEY1
 cat $INSTALLDIR/GENKEY2
-cat $INSTALLDIR/GENKEY3
-cat $INSTALLDIR/GENKEY4
-cat $INSTALLDIR/GENKEY5
+cat $INSTALLDIR/GENKEY20
 
 # PRIVKEY1=$(sed -n 1p $INSTALLDIR/genkeys)
 # PRIVKEY2=$(sed -n 2p $INSTALLDIR/genkeys)
@@ -78,10 +74,8 @@ cat $INSTALLDIR/GENKEY5
 	echo -e "First private key $INSTALLDIR/GENKEY1"
 	echo -e "Second private key $INSTALLDIR/GENKEY2"
 	echo -e "Third private key $INSTALLDIR/GENKEY3"
-	echo -e "Fourth private key $INSTALLDIR/GENKEY4"
-	echo -e "Fifth private key $INSTALLDIR/GENKEY5"
 	
-read -p "Does this look the way you expected?" LOOKP
+# read -p "Does this look the way you expected?" LOOKP
  }
 
 
