@@ -43,8 +43,18 @@ function get_genkeys() {
    do
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/GENKEYS   | tee -a "$LOGFILE"
       echo -e "$(sed -n ${i}p $INSTALLDIR/GENKEYS)" >> $INSTALLDIR/GENKEY$i
-   done
-   echo -e "This is the contents of your file /var/helium/genkey1:"
+
+                echo -e "GENKEY$i is set to:"
+                cat $INSTALLDIR/GENKEY$i
+        # echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+        # paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
+        # tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
+
+
+
+
+	done
+echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
 cat $INSTALLDIR/GENKEYS
 
