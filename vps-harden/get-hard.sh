@@ -1135,6 +1135,18 @@ EOF
 echo -e "${nocolor}"
 }
 
+
+function gather_genkeys() {
+echo -e "${lightcyan}"
+
+
+echo -e "${nocolor}"
+}
+
+
+
+
+
 setup_environment
 display_banner
 begin_log
@@ -1152,5 +1164,7 @@ server_hardening
 # motd_install
 restart_sshd
 install_complete
+
+gather_genkeys
 
 exit
