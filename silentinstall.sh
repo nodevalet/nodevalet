@@ -13,7 +13,7 @@ read -p "How many masternodes will you install?" MNS
 echo $MNS >> /root/installtemp/vpsnumber.info
 MNS=`cat /root/installtemp/vpsnumber.info`
 echo -e "Going to create $MNS masternodes\n"
-sleep 5
+sleep 2
 
 # Set Vars
 LOGFILE='/root/installtemp/silentinstall.log'
@@ -42,26 +42,20 @@ function get_genkeys() {
    do 
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
-
-  #    /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/GENKEYS   | t$
- #     echo -e "$(sed -n ${i}p $INSTALLDIR/GENKEYS)" >> $INSTALLDIR/GENKEY$i
-
-#                echo -e "GENKEY$i is set to:"
-#                cat $INSTALLDIR/GENKEY$i
-        # echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
-        # paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
-        # tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-
+ 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
+	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
+	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
+        echo -e "MNPRIVKEY$i is set to:"
+        cat $INSTALLDIR/MNPRIVKEY$i
 
 
 done
 
-
-
    echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
 cat $INSTALLDIR/genkeys
-echo -e "\"
+echo -e "\n"
 echo -e "Print a few of those new genkeys"
 cat $INSTALLDIR/GENKEY1
 cat $INSTALLDIR/GENKEY2
