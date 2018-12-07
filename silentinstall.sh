@@ -54,7 +54,7 @@ function get_genkeys() {
 	# echo -e "GENKEYVAR = $GENKEYVAR"
 
 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
-
+systemctl stop helium_n$i ; systemctl start helium_n$i
 
 done
 
