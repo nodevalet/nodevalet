@@ -36,21 +36,17 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
-   rm $INSTALLDIR/genkeys 
+   rm $INSTALLDIR/genkeys
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 #  read -p "How many private keys would you like me to generate, boss?  " GENKEYS
-   for ((i=1;i<=$MNS;i++)); 
-   do 
+   for ((i=1;i<=$MNS;i++));
+   do
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
+      echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
    done
    echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
 cat $INSTALLDIR/genkeys
-
-for (( C=1; c<=$MNS; C++))
-do echo -e "$(sed -n $Cp $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$C
-# echo "$c" >> Hello$c
-done
 
 echo -e "Print a few of those new genkeys"
 cat $INSTALLDIR/GENKEY1
