@@ -163,7 +163,7 @@ function silent_harden() {
 
 if [ -e /var/log/server_hardening.log ]
 then
-echo -e "Masternodes seem to already be installed, skipping this part"
+echo -e "System seems to already be hard, skipping this part"
 else
 
 cd ~/code-red/vps-harden
