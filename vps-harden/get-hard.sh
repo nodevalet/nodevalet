@@ -577,8 +577,8 @@ then
         # check if PASSLOGIN is valid
         if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]
         then 	sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/# PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/# PasswordAuthentication no/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication no/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
                 # Error Handling
                 if [ $? -eq 0 ]
                 then
@@ -596,8 +596,8 @@ then
                 fi
         else 
 		sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/# PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/# PasswordAuthentication yes/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
+                sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
+                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
         fi
 else	
 	printf "${yellow}"
