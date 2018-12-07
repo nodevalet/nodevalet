@@ -169,7 +169,7 @@ echo -e "All done."
 function silent_harden() {
 cd ~/code-red/vps-harden
 bash get-hard.sh
-read -p "Looks like your server is hard, type any input to continue"
+# read -p "Looks like your server is hard, type any input to continue"
 }
 
 setup_environment
