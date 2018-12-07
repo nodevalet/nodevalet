@@ -54,9 +54,6 @@ function get_genkeys() {
 	# this is an alternative that also works  GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 	# echo -e "GENKEYVAR = $GENKEYVAR"
 
-
-	
-
 # sed -i 's/^masternodeprivkey=.*/$DUMMYKEY/' /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
 done
@@ -66,18 +63,15 @@ done
 cat $INSTALLDIR/genkeys
 echo -e "\n"
 echo -e "Print a few of those new genkeys"
-cat $INSTALLDIR/GENKEY1
-cat $INSTALLDIR/GENKEY2
-cat $INSTALLDIR/GENKEY20
+cat $INSTALLDIR/MNPRIVKEY1
+cat $INSTALLDIR/MNPRIVKEY2
+cat $INSTALLDIR/MNPRIVKEY3
 
-# PRIVKEY1=$(sed -n 1p $INSTALLDIR/genkeys)
-# PRIVKEY2=$(sed -n 2p $INSTALLDIR/genkeys)
 
-	echo -e "\n"
-	echo -e "First private key $INSTALLDIR/GENKEY1"
-	echo -e "Second private key $INSTALLDIR/GENKEY2"
-	echo -e "Third private key $INSTALLDIR/GENKEY3"
-	
+
+ls $INSTALLDIR
+
+
 # read -p "Does this look the way you expected?" LOOKP
  }
 
@@ -130,7 +124,7 @@ DUMMYKEY="masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z"
 sudo ./install.sh -p helium -c $MNS
 activate_masternodes_helium
 sleep 5
-read -p "It looks like masternodes installed correctly, can I continue? " CONTINUEP
+# read -p "It looks like masternodes installed correctly, can I continue? " CONTINUEP
 
 fi
 }
