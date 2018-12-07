@@ -117,6 +117,7 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 
 
 function install_mns() {
+cd ~/
 sudo git clone https://github.com/heliumchain/vps.git && cd vps
 
 # masternodes will not start syncing the blockchain without a privatekey
@@ -165,7 +166,7 @@ setup_environment
 begin_log
 
 install_mns
-get_genkeys
+# get_genkeys
 
 # check_blocksync
 # sync_check
