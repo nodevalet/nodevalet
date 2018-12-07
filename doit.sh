@@ -1,9 +1,10 @@
 #!/bin/bash
-# For testing things and figuring out how they work
+# Attempt at bash merge
 #
 clear
 
 function setup_environment() {
+
 ### add colors ###
 lightred='\033[1;31m'  # light red
 red='\033[0;31m'  # red
@@ -27,10 +28,15 @@ printf "${lightred}"
 printf "${lightgreen}"
 printf "${nocolor}"
 
+# create a dummy file which will be created by CT's API
+rm -rf /root/installtemp
+mkdir /root/installtemp
+touch /root/installtemp/vpsnumber.info
+echo "5" >> /root/installtemp/vpsnumber.info
+
 # Set Vars
-LOGFILE='/var/log/logjammin.log'
-rm -rf /var/helium
-mkdir /var/helium
+LOGFILE='/root/installtemp/logjammin.log'
+INSTALLDIR='/root/installtemp'
 }
 
 function begin_log() {
@@ -40,7 +46,7 @@ rm -rf $LOGFILE
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e "---------- AKcryptoGUY's Testing Script ------------ " | tee -a "$LOGFILE"
+echo -e "---------- AKcryptoGUY's Dubious Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 printf "${nocolor}"
 # sleep 1
@@ -50,33 +56,33 @@ setup_environment
 begin_log
 
 # install packages over IP4
-apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
+# apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
 
 echo "/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo"  | tee -a "$LOGFILE"
 
-rm -rf /var/helium/getinfo_n1
-touch /var/helium/getinfo_n1  | tee -a "$LOGFILE"
-/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
+rm -rf /root/installtemp/getinfo_n1
+touch /root/installtemp/getinfo_n1  | tee -a "$LOGFILE"
+/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
 
 
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
-   echo -e "Saving genkey(s) to /var/helium/genkey1 \n"  | tee -a "$LOGFILE"
-   touch /var/helium/genkey1  | tee -a "$LOGFILE"
+   echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
+   touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
    read -p "How many private keys would you like me to generate, boss?  " GENKEYS
    for ((i=1;i<=GENKEYS;i++)); 
    do 
-      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> /var/helium/genkey1   | tee -a "$LOGFILE"
+      /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
    done
    echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
-cat /var/helium/genkey1
+cat $INSTALLDIR/genkeys
 
-PRIVKEY1=$(sed -n 1p /var/helium/genkey1)
-PRIVKEY2=$(sed -n 2p /var/helium/genkey1)
-PRIVKEY3=$(sed -n 3p /var/helium/genkey1)
-PRIVKEY4=$(sed -n 4p /var/helium/genkey1)
-PRIVKEY5=$(sed -n 5p /var/helium/genkey1)
+PRIVKEY1=$(sed -n 1p $INSTALLDIR/genkeys)
+PRIVKEY2=$(sed -n 2p $INSTALLDIR/genkeys)
+PRIVKEY3=$(sed -n 3p $INSTALLDIR/genkeys)
+PRIVKEY4=$(sed -n 4p $INSTALLDIR/genkeys)
+PRIVKEY5=$(sed -n 5p $INSTALLDIR/genkeys)
 
 	echo -e "\n"
 	echo -e "First private key $PRIVKEY1"
@@ -87,9 +93,9 @@ PRIVKEY5=$(sed -n 5p /var/helium/genkey1)
 
  }
 
-# echo "grep "blocks" /var/helium/getinfo_n1" 
-BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
-BLOCKS2=$(grep "blocks" /var/helium/getinfo_n1 | sed 's/[^0-9]*//g')
+# echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
+BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+BLOCKS2=$(grep "blocks" $INSTALLDIR/getinfo_n1 | sed 's/[^0-9]*//g')
 echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
 
 
@@ -137,13 +143,13 @@ end=$((SECONDS+7200))
 while [ $SECONDS -lt $end ]; do
     echo -e "Time $SECONDS"
     
-	rm -rf /var/helium/getinfo_n1
-	touch /var/helium/getinfo_n1
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a /var/helium/getinfo_n1
+	rm -rf $INSTALLDIR/getinfo_n1
+	touch $INSTALLDIR/getinfo_n1
+	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
 	clear
     
     # if  masternode not running, echo masternode not running and break
-    BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
+    BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
     echo -e "$BLOCKS is the current number of blocks"
     
     if (($BLOCKS <= 1 )) ; then echo "Masternode is not syncing" ; break
