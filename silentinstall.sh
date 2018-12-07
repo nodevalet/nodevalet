@@ -39,29 +39,31 @@ function get_genkeys() {
    rm $INSTALLDIR/genkeys
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 #  read -p "How many private keys would you like me to generate, boss?  " GENKEYS
-
    for ((i=1;i<=$MNS;i++));
    do
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/GENKEYS   | tee -a "$LOGFILE"
       echo -e "$(sed -n ${i}p $INSTALLDIR/GENKEYS)" >> $INSTALLDIR/GENKEY$i
+   
                 echo -e "GENKEY$i is set to:"
                 cat $INSTALLDIR/GENKEY$i
         echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
-        paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
-        tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-        rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/GENKEY${i}FIN
+        # paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
+        # tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
 
-#       sed -i 's/^masternodeprivkey=.*/masternodeprivkey=$INSTALLDIR/GENKEY${i}/' /etc/masternodes/helium_n${i}.conf >> $LOGFILE 2>&1
+    done
 
-   done
 
-  echo -e "\n"
-   echo -e "This is the contents of your file /var/helium/genkey1:"
+
+
+echo -e "This is the contents of your file /var/helium/genkey1:"
 # cat will display the entire contents of a file
-cat $INSTALLDIR/GENKEYS
+cat $INSTALLDIR/genkeys
 
-	
-read -p "Does this look the way you expected?" LOOKP
+
+
+
+
+# read -p "Does this look the way you expected?" LOOKP
  }
 
 
