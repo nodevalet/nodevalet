@@ -32,7 +32,10 @@ printf "${nocolor}"
 rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
-echo "5" >> /root/installtemp/vpsnumber.info
+read -p "How many masternodes will you install?" MNS
+echo $MNS >> /root/installtemp/vpsnumber.info
+echo -e "Going to create $MNS masternodes\n"
+sleep 5
 
 # Set Vars
 LOGFILE='/root/installtemp/logjammin.log'
@@ -52,8 +55,6 @@ printf "${nocolor}"
 # sleep 1
 }
 
-setup_environment
-begin_log
 
 # install packages over IP4
 # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet shellcheck
@@ -69,8 +70,8 @@ function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
-   read -p "How many private keys would you like me to generate, boss?  " GENKEYS
-   for ((i=1;i<=GENKEYS;i++)); 
+#    read -p "How many private keys would you like me to generate, boss?  " GENKEYS
+   for ((i=1;i<=MNS;i++)); 
    do 
       /usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
    done
@@ -136,6 +137,14 @@ done
 echo -e "All done."
 }
 
+function install_mns() {
+
+sudo git clone https://github.com/heliumchain/vps.git && cd vps
+
+sudo ./install.sh -p helium -c 5
+
+}
+
 
 function check_blocksync() {
 end=$((SECONDS+7200))
@@ -169,6 +178,11 @@ echo -e "All done."
 }
 
 
+setup_environment
+begin_log
+
+install_mns
+get_genkeys
 
 check_blocksync
 #sync_check
