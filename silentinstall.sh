@@ -174,8 +174,8 @@ fi
 }
 
 function restart_masternodes() {
-
-
+:
+# shutdown -r now
 }
 
 
