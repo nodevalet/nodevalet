@@ -114,6 +114,11 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 
 
 function install_mns() {
+if [ -e /etc/masternodes/helium_n1.conf ]
+then
+echo -e "Masternodes seem to already be installed, skipping this part"
+else
+
 cd ~/
 sudo git clone https://github.com/heliumchain/vps.git && cd vps
 
@@ -126,6 +131,8 @@ sudo ./install.sh -p helium -c $MNS
 activate_masternodes_helium
 sleep 5
 read -p "It looks like masternodes installed correctly, can I continue? " CONTINUEP
+
+fi
 }
 
 function check_blocksync() {
@@ -163,7 +170,7 @@ echo -e "All done."
 setup_environment
 begin_log
 
-# install_mns
+install_mns
 get_genkeys
 
 # check_blocksync
