@@ -62,18 +62,22 @@ function get_genkeys() {
 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 # systemctl stop helium_n$i ; systemctl start helium_n$i
 
+# create file with IP addresses
+sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
+# IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+
+
 done
 
 	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
-	# cat will display the entire contents of a file
 	cat $INSTALLDIR/genkeys
 	echo -e "\n"
+	
+	echo -e "This is the contents of your file $INSTALLDIR/mnipaddresses:"
+	cat $INSTALLDIR/mnipaddresses
+	echo -e "\n"
 
-echo -e "Print a few of those new genkeys"
-cat $INSTALLDIR/MNPRIVKEY1
-cat $INSTALLDIR/MNPRIVKEY2
-cat $INSTALLDIR/MNPRIVKEY3
-
+#lists the garbage I leftover after installation
 ls $INSTALLDIR
 
 
