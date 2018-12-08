@@ -74,7 +74,8 @@ function install_mns() {
 function get_genkeys() {
 
    # I can use the command ' listmasternodes "address" ' to get txid
-
+   # the API gives info too: https://www.heliumchain.info/api/address/SfTpzW5rWw8HZXBa6k23SiL9YrNNGcD7wG
+   
    # Create a file containing all the masternode genkeys you want
    echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
    rm $INSTALLDIR/genkeys 
