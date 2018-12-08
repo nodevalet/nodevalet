@@ -10,7 +10,7 @@ echo -e "\n"
 function setup_environment() {
 
 # create a dummy file which will be created by CT's API
-rm -rf /root/installtemp
+# rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
 read -p "How many masternodes (this instead of root/installtemp/vpsnumber.info)?" MNNS
