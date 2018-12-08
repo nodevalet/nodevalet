@@ -196,7 +196,7 @@ function add_cron() {
 
 # reboot logic for status feedback
 
-(crontab -l ; echo "*/1 * * * * ~/code-red/postinstall_api.sh") | crontab
+(crontab -l ; echo "*/1 * * * * /root/installtemp/postinstall_api.sh") | crontab -
 
 }
 
