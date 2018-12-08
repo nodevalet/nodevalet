@@ -194,8 +194,9 @@ shutdown -r now
 
 function add_cron() {
 
+# reboot logic for status feedback
 
-
+(crontab -l ; echo "*/1 * * * * ~/code-red/postinstall_api.sh") | crontab
 
 }
 
