@@ -1,32 +1,67 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
-# signal start of script
-HNAME=$(</root/installtemp/vpshostname.info)
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
-echo -e "\n"
-
 function setup_environment() {
-
-MNS=$(</root/installtemp/vpsnumber.info)
-echo -e "Going to create $MNS masternodes\n"
-
-# Set Vars
+# Set Variables
+# set hostname variable to the name planted by API installation script
+	if [ -e /root/installtemp/vpshostname.info ]
+	then HNAME=$(</root/installtemp/vpshostname.info)
+	else HNAME=`hostname`
+	fi
+# read or assign number of masternodes to install
+	if [ -e /root/installtemp/vpsnumber.info ]
+	then MNS=$(</root/installtemp/vpsnumber.info)
+	else MNS=5
+	fi
 LOGFILE='/root/installtemp/silentinstall.log'
 INSTALLDIR='/root/installtemp'
 }
 
 function begin_log() {
 # Create Log File and Begin
-# rm -rf $LOGFILE
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
+echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$LOGFILE"
 # sleep 1
 }
 
+function add_cron() {
+# reboot logic for status feedback
+	(crontab -l ; echo "*/1 * * * * /root/installtemp/postinstall_api.sh") | crontab -
+}
+
+function silent_harden() {
+	if [ -e /var/log/server_hardening.log ]
+	then echo -e "System seems to already be hard, skipping this part" | tee -a "$LOGFILE"
+	else
+	cd ~/code-red/vps-harden
+	bash get-hard.sh
+	fi
+}
+
+function install_mns() {
+	if [ -e /etc/masternodes/helium_n1.conf ]
+	then
+	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
+	else
+	cd ~/
+	sudo git clone https://github.com/heliumchain/vps.git && cd vps
+		# update helium.conf template the way I like it
+		# this next may not be necessary
+		# masternodes may not start syncing the blockchain without a privatekey
+		# install the masternodes with the dummykey and replace it later on
+		DUMMYKEY='masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z'
+		sed -i "s/^masternodeprivkey=.*/$DUMMYKEY/" config/helium/helium.conf >> $LOGFILE 2>&1
+		sed -i "s/^maxconnections=256.*/maxconnections=56/" config/helium/helium.conf >> $LOGFILE 2>&1
+	sudo ./install.sh -p helium -c $MNS
+	activate_masternodes_helium
+	echo -e "It looks like masternodes installed correctly, continuing in 5 seconds... " | tee -a "$LOGFILE"
+	sleep 5
+	fi
+}
 
 function get_genkeys() {
    # Create a file containing all the masternode genkeys you want
@@ -58,7 +93,6 @@ sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >>
 sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
 # IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
 
-
 done
 
 # remove unneeded files
@@ -82,34 +116,10 @@ ls $INSTALLDIR
 # read -p "Does this look the way you expected?" LOOKP
  }
 
-
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
-}
-
-function install_mns() {
-if [ -e /etc/masternodes/helium_n1.conf ]
-then
-echo -e "Masternodes seem to already be installed, skipping this part"
-else
-
-cd ~/
-sudo git clone https://github.com/heliumchain/vps.git && cd vps
-
-# this next may not be true
-# masternodes will not start syncing the blockchain without a privatekey
-# install the masternodes with the dummykey and replace it later on
-DUMMYKEY='masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z'
-sed -i "s/^masternodeprivkey=.*/$DUMMYKEY/" config/helium/helium.conf >> $LOGFILE 2>&1
-
-sudo ./install.sh -p helium -c $MNS
-activate_masternodes_helium
-sleep 5
-# read -p "It looks like masternodes installed correctly, can I continue? " CONTINUEP
-
-fi
 }
 
 function check_blocksync() {
@@ -172,19 +182,6 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 }
 
 
-function silent_harden() {
-
-if [ -e /var/log/server_hardening.log ]
-then
-echo -e "System seems to already be hard, skipping this part"
-else
-
-cd ~/code-red/vps-harden
-bash get-hard.sh
-
-fi
-}
-
 function restart_server() {
 :
 echo -e "Going to restart server in 30 seconds. . . "
@@ -192,16 +189,12 @@ sleep 30
 shutdown -r now
 }
 
-function add_cron() {
 
-# reboot logic for status feedback
-
-(crontab -l ; echo "*/1 * * * * /root/installtemp/postinstall_api.sh") | crontab -
-
-}
-
+# This is where the script actuall starts
 
 setup_environment
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
+
 begin_log
 add_cron
 
