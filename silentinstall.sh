@@ -2,7 +2,7 @@
 # Silently install masternodes and insert privkeys
 
 # signal start of script
-HNAME=`hostname`
+HNAME=$(</root/installtemp/vpshostname.info)
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
 echo -e "\n"
 
