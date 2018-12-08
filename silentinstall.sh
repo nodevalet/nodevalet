@@ -14,7 +14,8 @@ function setup_environment() {
 # rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
-read -p "How many masternodes (this instead of root/installtemp/vpsnumber.info)?" MNNS
+MNNS=5
+# read -p "How many masternodes (this instead of root/installtemp/vpsnumber.info)?" MNNS
 
 # REMOVE THESE LINES ONCE CT HAS CREATED THE FILES SUCCESSFULLY WITH THE API
 			echo $MNNS >> /root/installtemp/vpsnumber.info
@@ -46,9 +47,11 @@ function get_genkeys() {
    touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
    for ((i=1;i<=$MNS;i++)); 
    do 
+	# create genkey
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	# append "masternodeprivkey="
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
 	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
