@@ -41,6 +41,7 @@ function add_cron() {
 }
 
 function silent_harden() {
+	# modify get-hard.sh to add a file when complete, and check for that instead of server-hardening.log
 	if [ -e /var/log/server_hardening.log ]
 	then echo -e "System seems to already be hard, skipping this part" | tee -a "$LOGFILE"
 	else
