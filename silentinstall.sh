@@ -67,7 +67,11 @@ sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >>
 sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
 # IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
 
+
 done
+
+# remove unneeded files
+rm $INSTALLDIR/MNPR*
 
 #remove "bind=" from mnipaddresses
 sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
