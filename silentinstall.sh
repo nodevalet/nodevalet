@@ -13,10 +13,10 @@ function setup_environment() {
 rm -rf /root/installtemp
 mkdir /root/installtemp
 touch /root/installtemp/vpsnumber.info
-# read -p "How many masternodes will you install?" MNS
+read -p "How many masternodes (this instead of root/installtemp/vpsnumber.info)?" MNNS
 
 # REMOVE THESE LINES ONCE CT HAS CREATED THE FILES SUCCESSFULLY WITH THE API
-			echo "5" >> /root/installtemp/vpsnumber.info
+			echo $MNNS >> /root/installtemp/vpsnumber.info
 			MNS=`cat /root/installtemp/vpsnumber.info`
 			echo -e "Going to create $MNS masternodes\n"
 sleep 2
@@ -179,9 +179,11 @@ bash get-hard.sh
 fi
 }
 
-function restart_masternodes() {
+function restart_server() {
 :
-# shutdown -r now
+echo -e "Going to restart server in 30 seconds. . . "
+sleep 30
+shutdown -r now
 }
 
 
@@ -195,7 +197,7 @@ begin_log
 silent_harden
 install_mns
 get_genkeys
-restart_masternodes
+restart_server
 
 # check_blocksync
 # sync_check
