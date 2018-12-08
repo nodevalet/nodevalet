@@ -91,31 +91,6 @@ BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
 }
 
-function sync_check() {
-CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
-# echo -e "CNT is set to $CNT"
-HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
-#echo -e "HASH is set to $HASH"
-TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
-TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
-BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-# echo -e "TIMELINE is set to $TIMELINE"
-LTRIMTIME=${TIMELINE#*time\" : }
-# echo -e "LTRIMTIME is set to $LTRIMTIME"
-NEWEST=${LTRIMTIME%%,*}
-# echo -e "NEWEST is set to $NEWEST"
-TIMEDIF=$(echo -e "$((`date +%s`-$NEWEST))")
-echo -e "This masternode is $TIMEDIF seconds behind the latest block." 
-   #check if current
-   if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
-	then echo -e "The blockchain is almost certainly synced.\n"
-	SYNCED="yes"
-	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/3600)) hours or $(((`date +%s`-$NEWEST)/86400)) days behind.\n"
-	SYNCED="no"
-   fi	
-}
-
-
 function install_mns() {
 if [ -e /etc/masternodes/helium_n1.conf ]
 then
@@ -140,6 +115,8 @@ fi
 }
 
 function check_blocksync() {
+# set SECONDS+XXXXX to however long is reasonable to let the initial
+# chain sync continue before reporting an error back to the user
 end=$((SECONDS+7200))
 
 while [ $SECONDS -lt $end ]; do
@@ -165,10 +142,37 @@ while [ $SECONDS -lt $end ]; do
 done
 
     if [ "$SYNCED" = "no" ]; then printf "${lightred}" ; echo "Masternode did not sync in allowed time" ; printf "${nocolor}"
+    # radio home that blockchain sync was unsuccessful
+    # add curl here
     else : ; fi
 
 echo -e "All done."
 }
+
+function sync_check() {
+CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
+# echo -e "CNT is set to $CNT"
+HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
+#echo -e "HASH is set to $HASH"
+TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
+BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+# echo -e "TIMELINE is set to $TIMELINE"
+LTRIMTIME=${TIMELINE#*time\" : }
+# echo -e "LTRIMTIME is set to $LTRIMTIME"
+NEWEST=${LTRIMTIME%%,*}
+# echo -e "NEWEST is set to $NEWEST"
+TIMEDIF=$(echo -e "$((`date +%s`-$NEWEST))")
+echo -e "This masternode is $TIMEDIF seconds behind the latest block." 
+   #check if current
+   if (($TIMEDIF <= 60 && $TIMEDIF >= -60))
+	then echo -e "The blockchain is almost certainly synced.\n"
+	SYNCED="yes"
+	else echo -e "That's the same as $(((`date +%s`-$NEWEST)/3600)) hours or $(((`date +%s`-$NEWEST)/86400)) days behind.\n"
+	SYNCED="no"
+   fi	
+}
+
 
 function silent_harden() {
 
