@@ -3,6 +3,13 @@
 
 function setup_environment() {
 # Set Variables
+
+#create root/installtemp if it doesn't exist
+	if [ ! -d /root/installtemp ]
+	then mkdir /root/installtemp
+	else :
+	fi
+
 # set hostname variable to the name planted by API installation script
 	if [ -e /root/installtemp/vpshostname.info ]
 	then HNAME=$(</root/installtemp/vpshostname.info)
@@ -196,7 +203,7 @@ setup_environment
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
 
 begin_log
-# add_cron
+add_cron
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Hardening Script..."}'
 silent_harden
@@ -205,7 +212,7 @@ install_mns
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Genkey Insertion..."}'
 get_genkeys
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
-# restart_server
+restart_server
 
 # check_blocksync
 # sync_check
