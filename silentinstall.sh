@@ -192,8 +192,17 @@ sleep 30
 shutdown -r now
 }
 
+function add_cron() {
+
+
+
+
+}
+
+
 setup_environment
 begin_log
+add_cron
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Hardening Script..."}'
 silent_harden
