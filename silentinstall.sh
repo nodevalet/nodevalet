@@ -1,8 +1,6 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
-clear
-
 # signal start of script
 HNAME=`hostname`
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
@@ -10,18 +8,8 @@ echo -e "\n"
 
 function setup_environment() {
 
-# create a dummy file which will be created by CT's API
-# rm -rf /root/installtemp
-mkdir /root/installtemp
-touch /root/installtemp/vpsnumber.info
-MNNS=5
-# read -p "How many masternodes (this instead of root/installtemp/vpsnumber.info)?" MNNS
-
-# REMOVE THESE LINES ONCE CT HAS CREATED THE FILES SUCCESSFULLY WITH THE API
-			echo $MNNS >> /root/installtemp/vpsnumber.info
-			MNS=`cat /root/installtemp/vpsnumber.info`
-			echo -e "Going to create $MNS masternodes\n"
-sleep 2
+MNS=$(</root/installtemp/vpsnumber.info)
+echo -e "Going to create $MNS masternodes\n"
 
 # Set Vars
 LOGFILE='/root/installtemp/silentinstall.log'
