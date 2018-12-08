@@ -1,12 +1,13 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
-#
+
 clear
 
 # signal start of script
 HNAME=`hostname`
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
 echo -e "\n"
+
 function setup_environment() {
 
 # create a dummy file which will be created by CT's API
@@ -28,11 +29,11 @@ INSTALLDIR='/root/installtemp'
 
 function begin_log() {
 # Create Log File and Begin
-rm -rf $LOGFILE
+# rm -rf $LOGFILE
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e "---------- AKcryptoGUY's Dubious Script ------------ " | tee -a "$LOGFILE"
+echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 # sleep 1
 }
@@ -194,17 +195,16 @@ sleep 30
 shutdown -r now
 }
 
-
-
-
-
-
 setup_environment
 begin_log
 
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Hardening Script..."}'
 silent_harden
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Masternode Install Script..."}'
 install_mns
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Genkey Insertion..."}'
 get_genkeys
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
 restart_server
 
 # check_blocksync
