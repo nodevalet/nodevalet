@@ -98,7 +98,7 @@ HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockha
 #echo -e "HASH is set to $HASH"
 TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
 TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
-BLOCKS=$(grep "blocks" /var/helium/getinfo_n1 | tr -dc '0-9')
+BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 # echo -e "TIMELINE is set to $TIMELINE"
 LTRIMTIME=${TIMELINE#*time\" : }
 # echo -e "LTRIMTIME is set to $LTRIMTIME"
