@@ -6,7 +6,7 @@ clear
 # signal start of script
 HNAME=`hostname`
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
-
+echo -e "\n"
 function setup_environment() {
 
 # create a dummy file which will be created by CT's API
