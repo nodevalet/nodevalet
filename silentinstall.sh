@@ -44,7 +44,6 @@ INSTALLDIR='/root/installtemp'
 		# add error checking logic and repeat if necessary
 		done
 	fi
-	
 }
 
 function begin_log() {
@@ -55,7 +54,6 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$LOGFILE"
-
 
 # sleep 1
 }
@@ -111,6 +109,16 @@ else
    		rm $INSTALLDIR/genkeys --force
    		touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 
+# create initial masternode.conf file and populate with notes
+touch $INSTALLDIR/masternode.conf
+
+cat <<EOT >> greetings.txt
+####################################
+# Masternode.conf for Local Wallet #
+####################################
+EOT
+
+
 for ((i=1;i<=$MNS;i++)); 
 do 
 	# create masternode genkeys
@@ -157,11 +165,10 @@ do
 	echo -e "$(sed -n ${i}p mnaddresses.info)" > $INSTALLDIR/MNADD$i
 	
 	# merge all vars into masternode.conf
-	echo -e "Going to stop here so you can sort out the masternode.conf file merge"
-	sleep 30
-	# paste $INSTALLDIR/IPADDR$i  > $INSTALLDIR/masternode.conf
-	
-	
+	# this should do it
+	#      $INSTALLDIR/MNADDRESS$i
+	# this is the output to return to MNO
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDRESS$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 
 # declutter ; take out trash
