@@ -40,7 +40,7 @@ INSTALLDIR='/root/installtemp'
 		for ((i=1;i<=$MNS;i++)); 
 		do 
 		read -p "Please enter the masternode address for masternode #$i : \n  --> " MNADDP
-		echo "$MNADDP" >> $INSTALLDIR/mnaddress.info
+		echo "$MNADDP" >> $INSTALLDIR/mnaddresses.info
 		# add error checking logic and repeat if necessary
 		done
 	fi
