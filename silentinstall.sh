@@ -39,7 +39,7 @@ INSTALLDIR='/root/installtemp'
 	echo -e "In your local wallet, generate the addresses and then paste them below. \n"
 		for ((i=1;i<=$MNS;i++)); 
 		do 
-		read -p "Please enter the masternode address for masternode #$i : " MNADDP
+		read -p "Please enter the masternode address for masternode #$i : \n  --> " MNADDP
 		echo "$MNADDP" >> $INSTALLDIR/mnaddress.info
 		# add error checking logic and repeat if necessary
 		done
