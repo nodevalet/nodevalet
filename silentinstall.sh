@@ -34,6 +34,8 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$LOGFILE"
+
+
 # sleep 1
 }
 
@@ -51,6 +53,7 @@ function silent_harden() {
 	bash get-hard.sh
 	fi
 	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq | tee -a "$LOGFILE"
+	curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
 function install_mns() {
@@ -106,6 +109,14 @@ sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >>
 # create file with IP addresses
 sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
 # IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+
+# obtain txid
+MNUTXO=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]'`
+MNTXID$i=`echo $MNUTXO | jq .`
+echo MNTXID$i
+
+
+
 
 done
 
