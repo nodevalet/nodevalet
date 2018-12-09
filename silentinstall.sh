@@ -112,10 +112,10 @@ else
 # create initial masternode.conf file and populate with notes
 touch $INSTALLDIR/masternode.conf
 
-cat <<EOT >> greetings.txt
-####################################
-# Masternode.conf for Local Wallet #
-####################################
+cat <<EOT >> $INSTALLDIR/masternode.conf
+#######################################################
+# Masternode.conf settings to paste into Local Wallet #
+#######################################################
 EOT
 
 
