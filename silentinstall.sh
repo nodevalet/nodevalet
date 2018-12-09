@@ -4,7 +4,11 @@
 function setup_environment() {
 # Set Variables
 
-#create root/installtemp if it doesn't exist
+# create or assign mnprefix
+
+
+
+# create root/installtemp if it doesn't exist
 	if [ ! -d /root/installtemp ]
 	then mkdir /root/installtemp
 	else :
