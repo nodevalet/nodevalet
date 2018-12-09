@@ -142,54 +142,44 @@ for ((i=1;i<=$MNS;i++));
 do 
 	# create masternode address files
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaddresses.info)" > $INSTALLDIR/MNADD$i
-	# MNADDRESS$i=$(<$INSTALLDIR/MNADD$i)
-	# MNADDRESS$i=`cat $INSTALLDIR/MNADD$i`
 
 	# create masternode genkeys
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	
 	# append "masternodeprivkey="
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-	#        echo -e "MNPRIVKEY$i is set to:"
-	#        cat $INSTALLDIR/MNPRIVKEY$i
+	
 	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
 	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
-	# echo -e "GENKEYVAR = $GENKEYVAR"
 
 	# insert new genkey into project_n$i.conf files
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
-	# IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+	
 	# remove "bind=" from mnipaddresses
 	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
+	
 	# the next line produces the IP addresses for this masternode
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
 	
 	# obtain txid
-	# MNTXID=`curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+	# curl -s "https://www.heliumchain.info/api/address/ACTUALHELIUMADDRESS" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
 	curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
 	TX=`echo $(cat $INSTALLDIR/TXID$i)`
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
 	
-# MNUTXO=`curl -s "https://www.heliumchain.info/api/address/ACTUALHELIUMADDRESS" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
-# MNTXID$i=`echo $MNUTXO | jq .`
-# echo MNTXID$i
-# echo $MNUTXO |tr -d '["]' >> filename
-# MNTXID1=`echo $MNUTXO | tr -d '["]'`
-
 	# create masternode prefix files
 	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
 	echo -e "${MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
 
 	# merge all vars into masternode.conf
-	# this should do it
-	#      $INSTALLDIR/MNADDRESS$i
 	# this is the output to return to MNO
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.return
 	# when finished with this file; I still need to convert it to one delineated line separated using | and ;
@@ -198,25 +188,21 @@ do
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
+ rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+ rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i 
+
 # slow it down to not upset the blockchain API
 sleep 2
 echo -e "Completed masternode $i loop, moving on...\n"
 done
 
-# remove unneeded files
-# rm $INSTALLDIR/MNPR*
-
-#remove "bind=" from mnipaddresses
-sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
+#	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
+#	cat $INSTALLDIR/genkeys
+#	echo -e "\n"
 	
-	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
-	cat $INSTALLDIR/genkeys
-	echo -e "\n"
-	
-	echo -e "This is the contents of your file $INSTALLDIR/mnipaddresses:"
-	cat $INSTALLDIR/mnipaddresses
-	echo -e "\n"
+#	echo -e "This is the contents of your file $INSTALLDIR/mnipaddresses:"
+#	cat $INSTALLDIR/mnipaddresses
+#	echo -e "\n"
 
 	# lists the garbage leftover after installation
 	ls $INSTALLDIR
