@@ -205,7 +205,7 @@ shutdown -r now
 }
 
 
-# This is where the script actuall starts
+# This is where the script actually starts
 
 setup_environment
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
@@ -221,7 +221,8 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 get_genkeys
 
 ### for testing
-echo -e "Exiting now for testing porpoise...\n"
+echo -e "Exiting now for testing porpoises...\n"
+check_blocksync
 exit
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
