@@ -193,7 +193,11 @@ do
 	# this should do it
 	#      $INSTALLDIR/MNADDRESS$i
 	# this is the output to return to MNO
-	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.return
+	# when finished with this file; I still need to convert it to one delineated line separated using | and ;
+	
+	# this is the output to return to consumer
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 
 # declutter ; take out trash
@@ -311,6 +315,8 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 install_mns
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
 get_genkeys
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
+# need to add a line to broadcast the masternode.conf file back to MNO
 
 ### for testing
 echo -e "Exiting now for testing porpoises...\n"
