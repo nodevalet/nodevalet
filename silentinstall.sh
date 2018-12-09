@@ -6,8 +6,6 @@ function setup_environment() {
 
 # create or assign mnprefix
 
-
-
 # create root/installtemp if it doesn't exist
 	if [ ! -d /root/installtemp ]
 	then mkdir /root/installtemp
@@ -52,6 +50,7 @@ function silent_harden() {
 	cd ~/code-red/vps-harden
 	bash get-hard.sh
 	fi
+	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq | tee -a "$LOGFILE"
 }
 
 function install_mns() {
