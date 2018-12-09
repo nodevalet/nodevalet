@@ -20,8 +20,8 @@ INSTALLDIR='/root/installtemp'
 
 # create or assign customssh
 	if [ -s $INSTALLDIR/sshport.info ]
-	then MNPREFIX=$(<$INSTALLDIR/sshport.info)
-	else MNPREFIX=`hostname`
+	then SSHPORT=$(<$INSTALLDIR/sshport.info)
+	else SSHPORT='22'
 	fi
 
 # create or assign mnprefix
