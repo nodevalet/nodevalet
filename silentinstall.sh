@@ -98,8 +98,17 @@ function install_mns() {
 		sed -i "s/^maxconnections=256.*/maxconnections=56/" config/helium/helium.conf >> $LOGFILE 2>&1
 	sudo ./install.sh -p helium -c $MNS
 	activate_masternodes_helium
-	echo -e "It looks like masternodes installed correctly, continuing in 5 seconds... " | tee -a "$LOGFILE"
-	sleep 5
+	sleep 3
+		# check if heliumd was built correctly and started
+		ps -A |  grep helium >> $INSTALLDIR/HELIUMDs
+		if [ -s $INSTALLDIR/HELIUMDs ]
+		then echo -e "It looks like VPS install script completed and heliumd is running... " | tee -a "$LOGFILE"
+		# report back to mothership
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd has started..."}'
+		else echo -e "It looks like VPS install script failed, heliumd is not running... " | tee -a "$LOGFILE"
+		# report error, exit script maybe or see if it can self-correct
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd failed to build or start..."}'
+		fi
 	fi
 }
 
