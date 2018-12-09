@@ -6,6 +6,17 @@ function setup_environment() {
 LOGFILE='/root/installtemp/silentinstall.log'
 INSTALLDIR='/root/installtemp'
 
+# create root/installtemp if it doesn't exist
+	if [ ! -d $INSTALLDIR ]
+	then mkdir $INSTALLDIR
+	else :
+	fi
+
+# set hostname variable to the name planted by install script
+	if [ -e $INSTALLDIR/vpshostname.info ]
+	then HNAME=$(<$INSTALLDIR/vpshostname.info)
+	else HNAME=`hostname`
+	fi
 
 # create or assign customssh
 	if [ -s $INSTALLDIR/sshport.info ]
@@ -19,17 +30,6 @@ INSTALLDIR='/root/installtemp'
 	else MNPREFIX=`hostname`
 	fi
 
-# create root/installtemp if it doesn't exist
-	if [ ! -d $INSTALLDIR ]
-	then mkdir $INSTALLDIR
-	else :
-	fi
-
-# set hostname variable to the name planted by API installation script
-	if [ -e $INSTALLDIR/vpshostname.info ]
-	then HNAME=$(<$INSTALLDIR/vpshostname.info)
-	else HNAME=`hostname`
-	fi
 # read or assign number of masternodes to install
 	if [ -e $INSTALLDIR/vpsnumber.info ]
 	then MNS=$(<$INSTALLDIR/vpsnumber.info)
@@ -54,8 +54,7 @@ INSTALLDIR='/root/installtemp'
 	fi
 	
 	# enable softwrap so masternode.conf file can be easily copied
-	sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
-	
+	sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 }
 
 function begin_log() {
@@ -139,7 +138,6 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 #######################################################
 EOT
 
-
 for ((i=1;i<=$MNS;i++)); 
 do 
 	# create masternode address files
@@ -199,7 +197,6 @@ do
 	# this is the output to return to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
-
 # declutter ; take out trash
 # rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
 # slow it down to not upset the blockchain API
@@ -223,7 +220,6 @@ sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
 
 	# lists the garbage leftover after installation
 	ls $INSTALLDIR
-	
 fi
  }
 
@@ -292,14 +288,12 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    fi	
 }
 
-
 function restart_server() {
 :
 echo -e "Going to restart server in 30 seconds. . . "
 sleep 30
 shutdown -r now
 }
-
 
 # This is where the script actually starts
 
