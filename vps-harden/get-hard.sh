@@ -399,8 +399,13 @@ printf "${nocolor}"
 	echo -e " scanning port 22 for vulnerabilities. If you change your server to"
 	echo -e " use a different port, you gain some security through obscurity.\n"
 	while :; do
-		printf "${cyan}"
-		SSHPORT="22"
+	
+	printf "${cyan}"
+	# check for SSHPORT and set variable or use 22 as default		
+	if [ -s /root/installtemp/sshport.info ]
+	then SSHPORT=$(<$/root/installtemp/sshport.info)
+	else SSHPORT="22"
+	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
