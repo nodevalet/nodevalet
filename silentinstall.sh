@@ -121,6 +121,11 @@ EOT
 
 for ((i=1;i<=$MNS;i++)); 
 do 
+	# create masternode address files
+	echo -e "$(sed -n ${i}p mnaddresses.info)" > $INSTALLDIR/MNADD$i
+	MNADDRESS$i=$(<$INSTALLDIR/MNADD$i)
+	# MNADDRESS$i=`cat $INSTALLDIR/MNADD$i`
+
 	# create masternode genkeys
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
@@ -144,10 +149,10 @@ do
 	# remove "bind=" from mnipaddresses
 	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
 	# the next line produces the IP addresses for this masternode
-	echo -e "$(sed -n ${i}p mnipaddresses)" > $INSTALLDIR/IPADDR$i
+	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
 	
 	# obtain txid
-	MNTXID=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+	MNTXID=`curl -s "https://www.heliumchain.info/api/address/$MNADDRESS$i" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
 	echo -e $MNTXID >> $INSTALLDIR/txid
 	echo -e $MNTXID > $INSTALLDIR/TXID$i
 	
@@ -161,9 +166,6 @@ do
 	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
 	echo -e "{$MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
 
-	# create masternode address files
-	echo -e "$(sed -n ${i}p mnaddresses.info)" > $INSTALLDIR/MNADD$i
-	
 	# merge all vars into masternode.conf
 	# this should do it
 	#      $INSTALLDIR/MNADDRESS$i
@@ -173,6 +175,9 @@ do
 
 # declutter ; take out trash
 # rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
+# slow it down to not upset the blockchain API
+sleep 2
+echo -e "Completed masternode $i loop, moving on...\n"
 done
 
 # remove unneeded files
