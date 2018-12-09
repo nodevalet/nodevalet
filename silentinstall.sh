@@ -114,7 +114,8 @@ sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddress
 MNUTXO=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]'`
 MNTXID$i=`echo $MNUTXO | jq .`
 echo MNTXID$i
-
+echo $MNUTXO |tr -d '["]' >> filename
+MNTXID1=`echo $MNUTXO |tr -d '["]'`
 
 
 
