@@ -34,12 +34,13 @@ INSTALLDIR='/root/installtemp'
 	if [ -e $INSTALLDIR/mnaddresses.info ]
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
-	else echo -e "Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e "This logic does not presently allow for any mistakes; be careful."
-	echo -e "In your local wallet, generate the addresses and then paste them below. \n"
+	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
+	echo -e " This logic does not presently allow for any mistakes; be careful."
+	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
 		for ((i=1;i<=$MNS;i++)); 
 		do 
-		read -p "Please enter the masternode address for masternode #$i : \n  --> " MNADDP
+		echo -e " Please enter the masternode address for masternode #$i :"
+		read -p "  --> " MNADDP
 		echo "$MNADDP" >> $INSTALLDIR/mnaddresses.info
 		# add error checking logic and repeat if necessary
 		done
