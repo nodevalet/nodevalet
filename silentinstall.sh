@@ -291,7 +291,7 @@ get_genkeys
 
 ### for testing
 echo -e "Exiting now for testing porpoises...\n"
-check_blocksync
+echo -e "To see sync status, please execute check_blocksync.sh \n"
 exit
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
