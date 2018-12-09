@@ -179,7 +179,7 @@ do
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
 	
-# MNUTXO=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+# MNUTXO=`curl -s "https://www.heliumchain.info/api/address/ACTUALHELIUMADDRESS" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
 # MNTXID$i=`echo $MNUTXO | jq .`
 # echo MNTXID$i
 # echo $MNUTXO |tr -d '["]' >> filename
