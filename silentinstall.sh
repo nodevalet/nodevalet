@@ -298,11 +298,6 @@ get_genkeys
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
 # need to add a line to broadcast the masternode.conf file back to MNO
 
-### for testing
-echo -e "Exiting now for testing porpoises...\n"
-echo -e "To see sync status, please execute checksync.sh \n"
-exit
-
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
 restart_server
 
