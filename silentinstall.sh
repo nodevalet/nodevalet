@@ -3,27 +3,48 @@
 
 function setup_environment() {
 # Set Variables
+LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/root/installtemp'
 
 # create or assign mnprefix
+	if [ -e $INSTALLDIR/mnprefix.info ]
+	then MNPREFIX=$(<$INSTALLDIR/mnprefix.info)
+	else MNPREFIX=`hostname`
+	fi
 
 # create root/installtemp if it doesn't exist
-	if [ ! -d /root/installtemp ]
-	then mkdir /root/installtemp
+	if [ ! -d $INSTALLDIR ]
+	then mkdir $INSTALLDIR
 	else :
 	fi
 
 # set hostname variable to the name planted by API installation script
-	if [ -e /root/installtemp/vpshostname.info ]
-	then HNAME=$(</root/installtemp/vpshostname.info)
+	if [ -e $INSTALLDIR/vpshostname.info ]
+	then HNAME=$(<$INSTALLDIR/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 # read or assign number of masternodes to install
-	if [ -e /root/installtemp/vpsnumber.info ]
-	then MNS=$(</root/installtemp/vpsnumber.info)
+	if [ -e $INSTALLDIR/vpsnumber.info ]
+	then MNS=$(<$INSTALLDIR/vpsnumber.info)
+	# create a subroutine here to check memory and size MNS appropriately
 	else MNS=5
 	fi
-LOGFILE='/root/installtemp/silentinstall.log'
-INSTALLDIR='/root/installtemp'
+	
+# read or collect masternode addresses
+	if [ -e $INSTALLDIR/mnaddresses.info ]
+	then :
+	# create a subroutine here to check memory and size MNS appropriately
+	else echo -e "Before we can begin, we need to collect $MNS masternode addresses."
+	echo -e "This logic does not presently allow for any mistakes; be careful."
+	echo -e "In your local wallet, generate the addresses and then paste them below. \n"
+		for ((i=1;i<=$MNS;i++)); 
+		do 
+		read -p "Please enter the masternode address for masternode #$i : " MNADDP
+		echo "$MNADDP" >> $INSTALLDIR/mnaddress.info
+		# add error checking logic and repeat if necessary
+		done
+	fi
+	
 }
 
 function begin_log() {
@@ -59,6 +80,8 @@ function silent_harden() {
 function install_mns() {
 	if [ -e /etc/masternodes/helium_n1.conf ]
 	then
+	touch $INSTALLDIR/mnsexist
+	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
 	else
 	cd ~/
@@ -78,51 +101,75 @@ function install_mns() {
 }
 
 function get_genkeys() {
+# Iteratively create all masternode variables for masternode.conf
+# Do not break any pre-existing masternodes
+if [ -s $INSTALLDIR/mnsexist ]
+then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
+else
+   		# Create a file containing all masternode genkeys
+   		echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
+   		rm $INSTALLDIR/genkeys --force
+   		touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 
-   # the API gives info too: https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or
-   
-   # Create a file containing all the masternode genkeys you want
-   echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
-   rm $INSTALLDIR/genkeys 
-   touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
-   for ((i=1;i<=$MNS;i++)); 
-   do 
-	# create genkey
+for ((i=1;i<=$MNS;i++)); 
+do 
+	# create masternode genkeys
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
 	# append "masternodeprivkey="
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
-
-#        echo -e "MNPRIVKEY$i is set to:"
-#        cat $INSTALLDIR/MNPRIVKEY$i
-
+	#        echo -e "MNPRIVKEY$i is set to:"
+	#        cat $INSTALLDIR/MNPRIVKEY$i
+	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
-	# this is an alternative that also works  GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
+	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 	# echo -e "GENKEYVAR = $GENKEYVAR"
 
-sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
-# systemctl stop helium_n$i ; systemctl start helium_n$i
+	# insert new genkey into project_n$i.conf files
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
-# create file with IP addresses
-sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
-# IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+	# create file with IP addresses
+	sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
+	# IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+	# remove "bind=" from mnipaddresses
+	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
+	# the next line produces the IP addresses for this masternode
+	echo -e "$(sed -n ${i}p mnipaddresses)" > $INSTALLDIR/IPADDR$i
+	
+	# obtain txid
+	MNTXID=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+	echo -e $MNTXID >> $INSTALLDIR/txid
+	echo -e $MNTXID > $INSTALLDIR/TXID$i
+	
+# MNUTXO=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+# MNTXID$i=`echo $MNUTXO | jq .`
+# echo MNTXID$i
+# echo $MNUTXO |tr -d '["]' >> filename
+# MNTXID1=`echo $MNUTXO | tr -d '["]'`
 
-# obtain txid
-MNUTXO=`curl -s "https://www.heliumchain.info/api/address/Sh5k5vub4QnTWGec1XUUuX9AUjCF4eL6or" | jq '.["utxo"][0]["txId","n"]'`
-MNTXID$i=`echo $MNUTXO | jq .`
-echo MNTXID$i
-echo $MNUTXO |tr -d '["]' >> filename
-MNTXID1=`echo $MNUTXO |tr -d '["]'`
+	# create masternode prefix files
+	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
+	echo -e "{$MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
+
+	# create masternode address files
+	echo -e "$(sed -n ${i}p mnaddresses.info)" > $INSTALLDIR/MNADD$i
+	
+	# merge all vars into masternode.conf
+	echo -e "Going to stop here so you can sort out the masternode.conf file merge"
+	sleep 30
+	# paste $INSTALLDIR/IPADDR$i  > $INSTALLDIR/masternode.conf
+	
+	
 
 
-
+# declutter ; take out trash
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
 done
 
 # remove unneeded files
-rm $INSTALLDIR/MNPR*
+# rm $INSTALLDIR/MNPR*
 
 #remove "bind=" from mnipaddresses
 sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
@@ -135,11 +182,10 @@ sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
 	cat $INSTALLDIR/mnipaddresses
 	echo -e "\n"
 
-#lists the garbage I leftover after installation
-ls $INSTALLDIR
-
-
-# read -p "Does this look the way you expected?" LOOKP
+	# lists the garbage leftover after installation
+	ls $INSTALLDIR
+	
+fi
  }
 
 function get_blocks() {
