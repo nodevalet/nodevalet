@@ -181,9 +181,9 @@ do
 
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
-	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.return
-	# when finished with this file; I still need to convert it to one delineated line separated using | and ;
-	
+	echo "|" > $INSTALLDIR/DELIMETER
+	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
+		
 	# this is the output to return to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
@@ -195,6 +195,10 @@ do
 sleep 2
 echo -e "Completed masternode $i loop, moving on...\n"
 done
+	
+	# convert it to one delineated line separated using | and ||
+	echo "complete" > masternode.return
+	paste -s -d:"|" masternode.all >> masternode.return
 
 #	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
 #	cat $INSTALLDIR/genkeys
