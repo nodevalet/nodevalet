@@ -44,6 +44,10 @@ INSTALLDIR='/root/installtemp'
 		# add error checking logic and repeat if necessary
 		done
 	fi
+	
+	# enable softwrap so masternode.conf file can be easily copied
+	sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
+	
 }
 
 function begin_log() {
