@@ -83,25 +83,10 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    fi	
 }
 
-function restart_server() {
-:
-echo -e "Going to restart server in 30 seconds. . . "
-sleep 30
-shutdown -r now
-}
 
-
-# This is where the script actuall starts
+# This is where the script actually starts
 
 setup_environment
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
-
-### for testing
-echo -e "Exiting now for testing porpoise...\n"
-exit
-
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
-restart_server
 
 check_blocksync
 # sync_check
