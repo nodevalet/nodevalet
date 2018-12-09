@@ -122,7 +122,7 @@ EOT
 for ((i=1;i<=$MNS;i++)); 
 do 
 	# create masternode address files
-	echo -e "$(sed -n ${i}p mnaddresses.info)" > $INSTALLDIR/MNADD$i
+	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaddresses.info)" > $INSTALLDIR/MNADD$i
 	MNADDRESS$i=$(<$INSTALLDIR/MNADD$i)
 	# MNADDRESS$i=`cat $INSTALLDIR/MNADD$i`
 
