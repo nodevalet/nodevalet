@@ -189,7 +189,7 @@ do
 
 # declutter ; take out trash
  rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
- rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i 
+ rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -300,7 +300,7 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 
 ### for testing
 echo -e "Exiting now for testing porpoises...\n"
-echo -e "To see sync status, please execute check_blocksync.sh \n"
+echo -e "To see sync status, please execute checksync.sh \n"
 exit
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
