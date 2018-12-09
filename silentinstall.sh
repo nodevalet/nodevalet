@@ -3,25 +3,58 @@
 
 function setup_environment() {
 # Set Variables
+LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/root/installtemp'
 
-#create root/installtemp if it doesn't exist
-	if [ ! -d /root/installtemp ]
-	then mkdir /root/installtemp
+# create root/installtemp if it doesn't exist
+	if [ ! -d $INSTALLDIR ]
+	then mkdir $INSTALLDIR
 	else :
 	fi
 
-# set hostname variable to the name planted by API installation script
-	if [ -e /root/installtemp/vpshostname.info ]
-	then HNAME=$(</root/installtemp/vpshostname.info)
+# set hostname variable to the name planted by install script
+	if [ -e $INSTALLDIR/vpshostname.info ]
+	then HNAME=$(<$INSTALLDIR/vpshostname.info)
 	else HNAME=`hostname`
 	fi
+
+# create or assign customssh
+	if [ -s $INSTALLDIR/sshport.info ]
+	then MNPREFIX=$(<$INSTALLDIR/sshport.info)
+	else MNPREFIX=`hostname`
+	fi
+
+# create or assign mnprefix
+	if [ -e $INSTALLDIR/mnprefix.info ]
+	then MNPREFIX=$(<$INSTALLDIR/mnprefix.info)
+	else MNPREFIX=`hostname`
+	fi
+
 # read or assign number of masternodes to install
-	if [ -e /root/installtemp/vpsnumber.info ]
-	then MNS=$(</root/installtemp/vpsnumber.info)
+	if [ -e $INSTALLDIR/vpsnumber.info ]
+	then MNS=$(<$INSTALLDIR/vpsnumber.info)
+	# create a subroutine here to check memory and size MNS appropriately
 	else MNS=5
 	fi
-LOGFILE='/root/installtemp/silentinstall.log'
-INSTALLDIR='/root/installtemp'
+	
+# read or collect masternode addresses
+	if [ -e $INSTALLDIR/mnaddresses.info ]
+	then :
+	# create a subroutine here to check memory and size MNS appropriately
+	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
+	echo -e " This logic does not presently allow for any mistakes; be careful."
+	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
+		for ((i=1;i<=$MNS;i++)); 
+		do 
+		echo -e " Please enter the masternode address for masternode #$i :"
+		read -p "  --> " MNADDP
+		echo "$MNADDP" >> $INSTALLDIR/mnaddresses.info
+		# add error checking logic and repeat if necessary
+		done
+	fi
+	
+	# enable softwrap so masternode.conf file can be easily copied
+	sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 }
 
 function begin_log() {
@@ -32,6 +65,7 @@ echo -e "---------------------------------------------------- " | tee -a "$LOGFI
 echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$LOGFILE"
+
 # sleep 1
 }
 
@@ -48,11 +82,15 @@ function silent_harden() {
 	cd ~/code-red/vps-harden
 	bash get-hard.sh
 	fi
+	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq | tee -a "$LOGFILE"
+	curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
 function install_mns() {
 	if [ -e /etc/masternodes/helium_n1.conf ]
 	then
+	touch $INSTALLDIR/mnsexist
+	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
 	else
 	cd ~/
@@ -66,66 +104,109 @@ function install_mns() {
 		sed -i "s/^maxconnections=256.*/maxconnections=56/" config/helium/helium.conf >> $LOGFILE 2>&1
 	sudo ./install.sh -p helium -c $MNS
 	activate_masternodes_helium
-	echo -e "It looks like masternodes installed correctly, continuing in 5 seconds... " | tee -a "$LOGFILE"
-	sleep 5
+	sleep 3
+		# check if heliumd was built correctly and started
+		ps -A |  grep helium >> $INSTALLDIR/HELIUMDs
+		if [ -s $INSTALLDIR/HELIUMDs ]
+		then echo -e "It looks like VPS install script completed and heliumd is running... " | tee -a "$LOGFILE"
+		# report back to mothership
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd has started..."}'
+		else echo -e "It looks like VPS install script failed, heliumd is not running... " | tee -a "$LOGFILE"
+		# report error, exit script maybe or see if it can self-correct
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd failed to build or start..."}'
+		fi
 	fi
 }
 
 function get_genkeys() {
+# Iteratively create all masternode variables for masternode.conf
+# Do not break any pre-existing masternodes
+if [ -s $INSTALLDIR/mnsexist ]
+then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
+else
+   		# Create a file containing all masternode genkeys
+   		echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
+   		rm $INSTALLDIR/genkeys --force
+   		touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
 
-   # I can use the command ' listmasternodes "address" ' to get txid
-   # the API gives info too: https://www.heliumchain.info/api/address/SfTpzW5rWw8HZXBa6k23SiL9YrNNGcD7wG
-   
-   # Create a file containing all the masternode genkeys you want
-   echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
-   rm $INSTALLDIR/genkeys 
-   touch $INSTALLDIR/genkeys  | tee -a "$LOGFILE"
-   for ((i=1;i<=$MNS;i++)); 
-   do 
-	# create genkey
+# create initial masternode.conf file and populate with notes
+touch $INSTALLDIR/masternode.conf
+
+cat <<EOT >> $INSTALLDIR/masternode.conf
+#######################################################
+# Masternode.conf settings to paste into Local Wallet #
+#######################################################
+EOT
+
+for ((i=1;i<=$MNS;i++)); 
+do 
+	# create masternode address files
+	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaddresses.info)" > $INSTALLDIR/MNADD$i
+
+	# create masternode genkeys
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	
 	# append "masternodeprivkey="
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-	rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i
-
-#        echo -e "MNPRIVKEY$i is set to:"
-#        cat $INSTALLDIR/MNPRIVKEY$i
-
+	
+	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
-	# this is an alternative that also works  GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
-	# echo -e "GENKEYVAR = $GENKEYVAR"
+	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
-sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
-# systemctl stop helium_n$i ; systemctl start helium_n$i
+	# insert new genkey into project_n$i.conf files
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
-# create file with IP addresses
-sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
-# IPADDR=$(sed -n -e '/^bind/p' /etc/masternodes/helium_n1.conf)
+	# create file with IP addresses
+	sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
+	
+	# remove "bind=" from mnipaddresses
+	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
+	
+	# the next line produces the IP addresses for this masternode
+	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
+	
+	# obtain txid
+	# curl -s "https://www.heliumchain.info/api/address/ACTUALHELIUMADDRESS" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
+	curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
+	TX=`echo $(cat $INSTALLDIR/TXID$i)`
+	echo -e $TX >> $INSTALLDIR/txid
+	echo -e $TX > $INSTALLDIR/TXID$i
+	
+	# create masternode prefix files
+	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
+	echo -e "${MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
 
+	# merge all vars into masternode.conf
+	# this is the output to return to MNO
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.return
+	# when finished with this file; I still need to convert it to one delineated line separated using | and ;
+	
+	# this is the output to return to consumer
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+
+# declutter ; take out trash
+ rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+ rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
+
+# slow it down to not upset the blockchain API
+sleep 2
+echo -e "Completed masternode $i loop, moving on...\n"
 done
 
-# remove unneeded files
-rm $INSTALLDIR/MNPR*
-
-#remove "bind=" from mnipaddresses
-sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
+#	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
+#	cat $INSTALLDIR/genkeys
+#	echo -e "\n"
 	
-	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
-	cat $INSTALLDIR/genkeys
-	echo -e "\n"
-	
-	echo -e "This is the contents of your file $INSTALLDIR/mnipaddresses:"
-	cat $INSTALLDIR/mnipaddresses
-	echo -e "\n"
+#	echo -e "This is the contents of your file $INSTALLDIR/mnipaddresses:"
+#	cat $INSTALLDIR/mnipaddresses
+#	echo -e "\n"
 
-#lists the garbage I leftover after installation
-ls $INSTALLDIR
-
-
-# read -p "Does this look the way you expected?" LOOKP
+	# lists the garbage leftover after installation
+	ls $INSTALLDIR
+fi
  }
 
 function get_blocks() {
@@ -193,7 +274,6 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    fi	
 }
 
-
 function restart_server() {
 :
 echo -e "Going to restart server in 30 seconds. . . "
@@ -201,8 +281,7 @@ sleep 30
 shutdown -r now
 }
 
-
-# This is where the script actuall starts
+# This is where the script actually starts
 
 setup_environment
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
@@ -210,12 +289,20 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 begin_log
 add_cron
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Hardening Script..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}'
 silent_harden
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Begin Masternode Install Script..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building Helium Wallet..."}'
 install_mns
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Genkey Insertion..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
 get_genkeys
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
+# need to add a line to broadcast the masternode.conf file back to MNO
+
+### for testing
+echo -e "Exiting now for testing porpoises...\n"
+echo -e "To see sync status, please execute checksync.sh \n"
+exit
+
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
 restart_server
 
