@@ -6,6 +6,13 @@ function setup_environment() {
 LOGFILE='/root/installtemp/silentinstall.log'
 INSTALLDIR='/root/installtemp'
 
+
+# create or assign customssh
+	if [ -s $INSTALLDIR/sshport.info ]
+	then MNPREFIX=$(<$INSTALLDIR/sshport.info)
+	else MNPREFIX=`hostname`
+	fi
+
 # create or assign mnprefix
 	if [ -e $INSTALLDIR/mnprefix.info ]
 	then MNPREFIX=$(<$INSTALLDIR/mnprefix.info)
