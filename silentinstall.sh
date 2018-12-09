@@ -169,13 +169,13 @@ do
 
 	# create masternode prefix files
 	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
-	echo -e "{$MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
+	echo -e "${MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
 
 	# merge all vars into masternode.conf
 	# this should do it
 	#      $INSTALLDIR/MNADDRESS$i
 	# this is the output to return to MNO
-	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDRESS$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 
 # declutter ; take out trash
