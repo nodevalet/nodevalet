@@ -205,6 +205,7 @@ done
 	# convert it to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/complete
 	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
+	tr -d '[:blank:]' < $INSTALLDIR/masternode.return > $INSTALLDIR/masternode.return2
 	rm $INSTALLDIR/complete --force
 
 #	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
