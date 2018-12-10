@@ -25,8 +25,8 @@ INSTALLDIR='/root/installtemp'
 	fi
 
 # create or assign mnprefix
-	if [ -e $INSTALLDIR/mnprefix.info ]
-	then MNPREFIX=$(<$INSTALLDIR/mnprefix.info)
+	if [ -s $INSTALLDIR/mnprefix.info ]
+	then :
 	else MNPREFIX=`hostname`
 	fi
 
@@ -139,7 +139,17 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 
 for ((i=1;i<=$MNS;i++)); 
-do 
+do
+
+	# get or iterate mnprefixes
+	if [ -s $INSTALLDIR/mnprefix.info ] ; then
+		echo -e "$(sed -n ${i}p $INSTALLDIR/mnprefix.info)" >> $INSTALLDIR/mnaliases
+	else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
+	fi
+	
+	# create masternode prefix files
+	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaliases)" >> $INSTALLDIR/MNALIAS$i
+
 	# create masternode address files
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaddresses.info)" > $INSTALLDIR/MNADD$i
 
@@ -175,10 +185,6 @@ do
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
 	
-	# create masternode prefix files
-	echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
-	echo -e "${MNPREFIX}-MN$i" > $INSTALLDIR/MNALIAS$i
-
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
 	echo "|" > $INSTALLDIR/DELIMETER
