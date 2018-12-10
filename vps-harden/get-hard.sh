@@ -402,8 +402,8 @@ printf "${nocolor}"
 	
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
-	if [ -s /root/installtemp/sshport.info ]
-	then SSHPORT=$(<$/root/installtemp/sshport.info)
+	if [ -s /root/installtemp/vpssshport.info ]
+	then SSHPORT=$(<$/root/installtemp/vpssshport.info)
 	else SSHPORT='22'
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
