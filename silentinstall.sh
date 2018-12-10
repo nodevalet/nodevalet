@@ -108,9 +108,10 @@ function install_mns() {
 	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
 	else
-	cd ~/code-red/nodemaster
+cd ~/code-red/
+	# cd ~/code-red/nodemaster
 	echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
-	#sudo git clone https://github.com/heliumchain/vps.git && cd vps
+sudo git clone https://github.com/heliumchain/vps.git && cd vps
 	echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
 	sudo bash install.sh -n 6 -p helium -c $MNS
 	
