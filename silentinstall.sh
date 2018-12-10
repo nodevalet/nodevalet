@@ -197,8 +197,8 @@ echo -e "Completed masternode $i loop, moving on...\n"
 done
 	
 	# convert it to one delineated line separated using | and ||
-	echo "complete" > masternode.return
-	paste -s -d:"|" masternode.all >> masternode.return
+	echo "complete" > $INSTALLDIR/masternode.return
+	paste -s -d:"|" $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
 
 #	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
 #	cat $INSTALLDIR/genkeys
