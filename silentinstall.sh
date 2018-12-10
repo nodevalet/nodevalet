@@ -113,7 +113,7 @@ function install_mns() {
 	#sudo git clone https://github.com/heliumchain/vps.git && cd vps
 	cd nodemaster
 	echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
-	sudo ./install.sh -p helium -c $MNS
+	sudo bash install.sh -n 6 -p helium -c $MNS
 	
 	echo -e "activating_masternodes_helium" | tee -a "$LOGFILE"
 	activate_masternodes_helium echo -e | tee -a "$LOGFILE"
