@@ -399,11 +399,11 @@ printf "${nocolor}"
 	echo -e " scanning port 22 for vulnerabilities. If you change your server to"
 	echo -e " use a different port, you gain some security through obscurity.\n"
 	while :; do
-	
+	echo -e "Started while:;do loop" | tee -a "$LOGFILE"
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
 	if [ -s /root/installtemp/vpssshport.info ]
-	then SSHPORT=$(<$/root/installtemp/vpssshport.info)
+	then SSHPORT=$(</root/installtemp/vpssshport.info)
 	echo -e "Detected /root/installtemp/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	else SSHPORT=22
 	echo -e "/root/installtemp/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
