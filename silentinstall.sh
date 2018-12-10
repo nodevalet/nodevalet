@@ -19,13 +19,13 @@ INSTALLDIR='/root/installtemp'
 	fi
 
 # create or assign customssh
-	if [ -s $INSTALLDIR/sshport.info ]
-	then SSHPORT=$(<$INSTALLDIR/sshport.info)
+	if [ -s $INSTALLDIR/vpssshport.info ]
+	then SSHPORT=$(<$INSTALLDIR/vpssshport.info)
 	else SSHPORT='22'
 	fi
 
 # create or assign mnprefix
-	if [ -s $INSTALLDIR/mnprefix.info ]
+	if [ -s $INSTALLDIR/vpsmnprefix.info ]
 	then :
 	else MNPREFIX=`hostname`
 	fi
@@ -38,7 +38,7 @@ INSTALLDIR='/root/installtemp'
 	fi
 	
 # read or collect masternode addresses
-	if [ -e $INSTALLDIR/mnaddresses.info ]
+	if [ -e $INSTALLDIR/vpsmnaddress.info ]
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
 	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
@@ -48,7 +48,7 @@ INSTALLDIR='/root/installtemp'
 		do 
 		echo -e " Please enter the masternode address for masternode #$i :"
 		read -p "  --> " MNADDP
-		echo "$MNADDP" >> $INSTALLDIR/mnaddresses.info
+		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
 		# add error checking logic and repeat if necessary
 		done
 	fi
@@ -143,7 +143,7 @@ do
 
 	# get or iterate mnprefixes
 	if [ -s $INSTALLDIR/mnprefix.info ] ; then
-		echo -e "$(sed -n ${i}p $INSTALLDIR/mnprefix.info)" >> $INSTALLDIR/mnaliases
+		echo -e "$(sed -n ${i}p $INSTALLDIR/vpsmnprefix.info)" >> $INSTALLDIR/mnaliases
 	else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
 	fi
 	
@@ -151,7 +151,7 @@ do
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaliases)" >> $INSTALLDIR/MNALIAS$i
 
 	# create masternode address files
-	echo -e "$(sed -n ${i}p $INSTALLDIR/mnaddresses.info)" > $INSTALLDIR/MNADD$i
+	echo -e "$(sed -n ${i}p $INSTALLDIR/vpsmnaddress.info)" > $INSTALLDIR/MNADD$i
 
 	# create masternode genkeys
 	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
@@ -189,13 +189,13 @@ do
 	# this is the output to return to MNO
 	echo "|" > $INSTALLDIR/DELIMETER
 	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
-		
+			
 	# this is the output to return to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
+rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -204,9 +204,31 @@ done
 	
 	# convert it to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/complete
-	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
-	tr -d '[:blank:]' < $INSTALLDIR/masternode.return > $INSTALLDIR/masternode.return2
-	rm $INSTALLDIR/complete --force
+	
+# replace spaces with + temporarily	
+sed -i 's/ /+/g' $INSTALLDIR/masternode.all
+
+# merge "complete" line with masternode.all file and remove \n
+paste -s complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
+tr -d '[:blank:]' < $INSTALLDIR/masternode.1 > $INSTALLDIR/masternode.return
+sed -i 's/+/ /g' $INSTALLDIR/masternode.return
+# read masternode data into string for curl
+MASTERNODERETURN=$(<$INSTALLDIR/masternode.return)
+	
+# paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
+# tr -d '[:blank:]' < $INSTALLDIR/masternode.return > $INSTALLDIR/masternode.return2
+
+# round 2: cleanup and declutter
+rm $INSTALLDIR/complete --force
+rm $INSTALLDIR/masternode.all --force
+rm $INSTALLDIR/masternode.1 --force
+
+
+# report back all critial masternode.conf information
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$MASTERNODERETURN"'"}'
+
+
+
 
 #	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
 #	cat $INSTALLDIR/genkeys
