@@ -39,6 +39,7 @@ while [ $SECONDS -lt $end ]; do
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+    echo -e "\n"
     echo -e "$BLOCKS is the current number of blocks"
     
     if (($BLOCKS <= 1 )) ; then echo "Masternode is not syncing" ; break
@@ -46,8 +47,10 @@ while [ $SECONDS -lt $end ]; do
     fi
     
     if [ "$SYNCED" = "yes" ]; then printf "${lightcyan}" ; echo "Masternode synced" ; printf "${nocolor}" ; break
-    else echo -e "Blockchain not synced; will check again in 5 seconds\n"
-    sleep 5
+    else echo -e "Blockchain not synced; will check again in 10 seconds\n"
+    curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
+    echo -e "\n"
+    sleep 10
     fi
 done
 
