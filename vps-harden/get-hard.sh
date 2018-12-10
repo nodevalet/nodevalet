@@ -400,7 +400,6 @@ printf "${nocolor}"
 	echo -e " scanning port 22 for vulnerabilities. If you change your server to"
 	echo -e " use a different port, you gain some security through obscurity.\n"
 	while :; do
-	echo -e "Started while:;do loop" | tee -a "$LOGFILE"
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
 	if [ -s /root/installtemp/vpssshport.info ]
@@ -412,10 +411,8 @@ printf "${nocolor}"
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then
-		echo -e "SSH loop broken, $SSHPORT is a valid number" | tee -a "$LOGFILE"
 		break
 		elif [ $SSHPORT = 22 ]; then 
-		echo -e "SSH loop broke, $SSHPORT is a valid number" | tee -a "$LOGFILE"
 		break
 		else printf "${lightred}"
 			echo -e " --> That number is out of range, try again. \n"
@@ -435,8 +432,8 @@ printf "${nocolor}"
 		echo -e " $SSHDFILE.$BTIME.bak" | tee -a "$LOGFILE"
         	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 		printf "${nocolor}"
-		sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
 		clear
+		sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
 			# Error Handling
 			if [ $? -eq 0 ]
 	        	then
