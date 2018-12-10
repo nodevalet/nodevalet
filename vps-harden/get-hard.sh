@@ -612,7 +612,7 @@ else
 	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 	printf "${nocolor}"
 fi
-	PASSWDAUTH=$(sed -n -e '/^PasswordAuthentication /p' $SSHDFILE)
+	PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 	printf "${lightgreen}"
 	echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : PASSWORD AUTHENTICATION COMPLETE " | tee -a "$LOGFILE"
