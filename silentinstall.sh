@@ -135,7 +135,7 @@ function install_mns() {
 		echo -e "Aborting installation, can't install masternodes without heliumd" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
 		echo -e "Reporting heliumd build failure to the mothership" | tee -a "$LOGFILE"
-		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd failed to build or start..."}'
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Heliumd failed to build or start"}'
 		exit
 		fi
 	fi
