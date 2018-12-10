@@ -34,7 +34,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then :
 	echo -e "vpsmnprefix.info found, will pull masternode aliases from that"  | tee -a "$LOGFILE"
 	else MNPREFIX=`hostname`
-	echo -e "vpsmnprefix.info not found, will generate masternode aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
+	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
 	fi
 
 # read or assign number of masternodes to install
@@ -42,6 +42,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then MNS=$(<$INSTALLDIR/vpsnumber.info)
 	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
+	# or prompt user how many they would like to build
 	else MNS=5
 	echo -e "vpsnumber.info not found, will build $MNS for now"  | tee -a "$LOGFILE"
 	fi
@@ -59,7 +60,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e " Please enter the masternode address for masternode #$i :"
 		read -p "  --> " MNADDP
 		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
-		echo -e "User entered $MNADDP as masternode address number $i."  | tee -a "$LOGFILE"
+		echo -e "Masternode $i address set to: $MNADDP."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 		done
 	fi
