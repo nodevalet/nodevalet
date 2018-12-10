@@ -404,12 +404,18 @@ printf "${nocolor}"
 	# check for SSHPORT and set variable or use 22 as default		
 	if [ -s /root/installtemp/vpssshport.info ]
 	then SSHPORT=$(<$/root/installtemp/vpssshport.info)
-	else SSHPORT='22'
+	echo -e "Detected /root/installtemp/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	else SSHPORT=22
+	echo -e "/root/installtemp/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
-		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
-		elif [ $SSHPORT = 22 ]; then break
+		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then
+		echo -e "SSH loop broken, $SSHPORT is a valid number" | tee -a "$LOGFILE"
+		break
+		elif [ $SSHPORT = 22 ]; then 
+		echo -e "SSH loop broke, $SSHPORT is a valid number" | tee -a "$LOGFILE"
+		break
 		else printf "${lightred}"
 			echo -e " --> That number is out of range, try again. \n"
 			echo "---------------------------------------------------- " >> $LOGFILE 2>&1
