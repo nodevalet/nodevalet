@@ -187,7 +187,7 @@ do
 	
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
-	echo "||" > $INSTALLDIR/DELIMETER
+	echo "|" > $INSTALLDIR/DELIMETER
 	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
 		
 	# this is the output to return to consumer
