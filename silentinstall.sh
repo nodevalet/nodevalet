@@ -4,7 +4,7 @@
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/root/installtemp'
-LOGFILE='$INSTALLDIR/silentinstall.log'
+LOGFILE='root/installtemp/silentinstall.log'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
