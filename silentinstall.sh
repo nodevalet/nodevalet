@@ -133,10 +133,10 @@ function install_mns() {
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd has started..."}'
 		else echo -e "It looks like VPS install script failed, heliumd is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without heliumd" | tee -a "$LOGFILE"
-		exit
 		# report error, exit script maybe or see if it can self-correct
 		echo -e "Reporting heliumd build failure to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd failed to build or start..."}'
+		exit
 		fi
 	fi
 }
@@ -208,6 +208,9 @@ do
 	TX=`echo $(cat $INSTALLDIR/TXID$i)`
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
+	# replace null with txid info
+	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
+	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
 	
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
@@ -230,8 +233,13 @@ done
 	echo -e "Converting masternode.conf to one delineated line for mothership" | tee -a "$LOGFILE"
 	# convert masternode.conf to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/complete
+
+	# comment out lines that contain no txid or index
+	sed -i "s/.*collateral_output_txid tx/#.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
+
 	# replace spaces with + temporarily	
 	sed -i 's/ /+/g' $INSTALLDIR/masternode.all
+	
 	# merge "complete" line with masternode.all file and remove \n
 	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
 	tr -d '[:blank:]' < $INSTALLDIR/masternode.1 > $INSTALLDIR/masternode.return
