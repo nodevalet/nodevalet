@@ -110,7 +110,8 @@ function install_mns() {
 	else
 	cd ~/
 	echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
-	sudo git clone https://github.com/heliumchain/vps.git && cd vps
+	#sudo git clone https://github.com/heliumchain/vps.git && cd vps
+	cd vps
 	echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
 	sudo ./install.sh -p helium -c $MNS
 	
