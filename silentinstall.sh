@@ -209,7 +209,7 @@ done
 sed -i 's/ /+/g' $INSTALLDIR/masternode.all
 
 # merge "complete" line with masternode.all file and remove \n
-paste -s complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
+paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
 tr -d '[:blank:]' < $INSTALLDIR/masternode.1 > $INSTALLDIR/masternode.return
 sed -i 's/+/ /g' $INSTALLDIR/masternode.return
 # read masternode data into string for curl
