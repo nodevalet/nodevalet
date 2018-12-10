@@ -575,7 +575,10 @@ then
 	echo -e "      ** $PASSWDAUTH ** " >> $LOGFILE 2>&1
 	echo -e "--------------------------------------------------- \n" >> $LOGFILE 2>&1
 	printf "${cyan}"
-        read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
+        
+	# read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
+	PASSLOGIN="n"
+		
 	printf "${nocolor}"
 	while [ "${PASSLOGIN,,}" != "yes" ] && [ "${PASSLOGIN,,}" != "no" ] && [ "${PASSLOGIN,,}" != "y" ] && [ "${PASSLOGIN,,}" != "n" ]; do
 	echo -e "\n"
