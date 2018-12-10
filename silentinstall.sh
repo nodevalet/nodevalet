@@ -187,15 +187,15 @@ do
 	
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
-	echo "|" > $INSTALLDIR/DELIMETER
+	echo "||" > $INSTALLDIR/DELIMETER
 	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
 		
 	# this is the output to return to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 
 # declutter ; take out trash
- rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
- rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV*$i ; rm $INSTALLDIR/TXID$i ; rm $INSTALLDIR/MNPRIV1
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -203,8 +203,9 @@ echo -e "Completed masternode $i loop, moving on...\n"
 done
 	
 	# convert it to one delineated line separated using | and ||
-	echo "complete" > $INSTALLDIR/masternode.return
-	paste -s -d:"|" $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
+	echo "complete" > $INSTALLDIR/complete
+	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.return
+	rm $INSTALLDIR/complete --force
 
 #	echo -e "This is the contents of your file $INSTALLDIR/genkeys:"
 #	cat $INSTALLDIR/genkeys
