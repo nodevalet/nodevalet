@@ -111,16 +111,9 @@ function install_mns() {
 	cd ~/
 	echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
 	sudo git clone https://github.com/heliumchain/vps.git && cd vps
-		# update helium.conf template the way I like it
-		# this next may not be necessary
-		# masternodes may not start syncing the blockchain without a privatekey
-		# install the masternodes with the dummykey and replace it later on
-	echo -e "Inserting dummy privkey into helium.conf template" | tee -a "$LOGFILE"
-		DUMMYKEY='masternodeprivkey=7Qwk3FNnujGCf8SjovuTNTbLhyi8rs8TMT9ou1gKNonUeQmi91Z'
-		sed -i "s/^masternodeprivkey=.*/$DUMMYKEY/" config/helium/helium.conf >> $LOGFILE 2>&1
-		sed -i "s/^maxconnections=256.*/maxconnections=56/" config/helium/helium.conf >> $LOGFILE 2>&1
 	echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
 	sudo ./install.sh -p helium -c $MNS
+	
 	echo -e "activating_masternodes_helium" | tee -a "$LOGFILE"
 	activate_masternodes_helium echo -e | tee -a "$LOGFILE"
 	sleep 3
@@ -235,7 +228,7 @@ done
 	echo "complete" > $INSTALLDIR/complete
 
 	# comment out lines that contain no txid or index
-	sed -i "s/.*collateral_output_txid tx/#.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
+	# sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
 
 	# replace spaces with + temporarily	
 	sed -i 's/ /+/g' $INSTALLDIR/masternode.all
