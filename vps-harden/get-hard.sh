@@ -404,7 +404,7 @@ printf "${nocolor}"
 	# check for SSHPORT and set variable or use 22 as default		
 	if [ -s /root/installtemp/sshport.info ]
 	then SSHPORT=$(<$/root/installtemp/sshport.info)
-	else SSHPORT="22"
+	else SSHPORT='22'
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
