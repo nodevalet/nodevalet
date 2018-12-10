@@ -99,7 +99,6 @@ function silent_harden() {
 	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq | tee -a "$LOGFILE"
 	echo -e "Inserting random joke because Chuck Norris told me to\n" | tee -a "$LOGFILE"
 	curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
-	echo -e "\n"
 }
 
 function install_mns() {
@@ -326,8 +325,9 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 }
 
 function install_binaries() {
-#check for binaries and install if found    
-echo -e "Installing binaries"  | tee -a "$LOGFILE"
+#check for binaries and install if found   
+
+echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
 cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 curl -s $GITAPI_URL \
