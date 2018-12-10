@@ -105,6 +105,7 @@ clear
 # Set Vars
 LOGFILE='/var/log/server_hardening.log'
 SSHDFILE='/etc/ssh/sshd_config'
+PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 }
 
 function begin_log() {
@@ -399,17 +400,20 @@ printf "${nocolor}"
 	echo -e " scanning port 22 for vulnerabilities. If you change your server to"
 	echo -e " use a different port, you gain some security through obscurity.\n"
 	while :; do
-	
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
 	if [ -s /root/installtemp/vpssshport.info ]
-	then SSHPORT=$(<$/root/installtemp/vpssshport.info)
-	else SSHPORT='22'
+	then SSHPORT=$(</root/installtemp/vpssshport.info)
+	echo -e "Detected /root/installtemp/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	else SSHPORT=22
+	echo -e "/root/installtemp/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
-		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
-		elif [ $SSHPORT = 22 ]; then break
+		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then
+		break
+		elif [ $SSHPORT = 22 ]; then 
+		break
 		else printf "${lightred}"
 			echo -e " --> That number is out of range, try again. \n"
 			echo "---------------------------------------------------- " >> $LOGFILE 2>&1
@@ -428,8 +432,8 @@ printf "${nocolor}"
 		echo -e " $SSHDFILE.$BTIME.bak" | tee -a "$LOGFILE"
         	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 		printf "${nocolor}"
-		sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
 		clear
+		sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
 			# Error Handling
 			if [ $? -eq 0 ]
 	        	then
@@ -1163,7 +1167,7 @@ crypto_packages
 # add_user
 collect_sshd
 prompt_rootlogin
-# disable_passauth
+disable_passauth
 ufw_config
 server_hardening
 # ksplice_install
