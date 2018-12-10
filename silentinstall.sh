@@ -324,6 +324,28 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
    fi	
 }
 
+function install_binaries() {
+#check for binaries and install if found    
+cd /root/installtemp
+GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+curl -s $GITAPI_URL \
+      | grep browser_download_url \
+      | grep x86_64-linux-gnu.tar.gz \
+      | cut -d '"' -f 4 \
+      | wget -qi -
+TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
+tar -xzf $TARBALL
+EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
+curl -s $GITAPI_URL \
+             | grep tag_name > currentversion
+cp -r $EXTRACTDIR/bin/. /usr/local/bin/
+rm -r $EXTRACTDIR
+rm -f $TARBALL
+}
+
+
+
+
 function restart_server() {
 :
 echo -e "Going to restart server in 10 seconds. . . " | tee -a "$LOGFILE"
@@ -340,6 +362,8 @@ add_cron
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}'
 silent_harden
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Installing wallet binaries..."}'
+install_binaries
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building Helium Wallet..."}'
 install_mns
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
