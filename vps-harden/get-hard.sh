@@ -105,6 +105,7 @@ clear
 # Set Vars
 LOGFILE='/var/log/server_hardening.log'
 SSHDFILE='/etc/ssh/sshd_config'
+PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 }
 
 function begin_log() {
@@ -1169,7 +1170,7 @@ crypto_packages
 # add_user
 collect_sshd
 prompt_rootlogin
-# disable_passauth
+disable_passauth
 ufw_config
 server_hardening
 # ksplice_install
