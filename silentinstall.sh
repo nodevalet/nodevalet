@@ -166,7 +166,7 @@ for ((i=1;i<=$MNS;i++));
 do
 
 	# get or iterate mnprefixes
-	if [ -s $INSTALLDIR/mnprefix.info ] ; then
+	if [ -s $INSTALLDIR/vpsmnprefix.info ] ; then
 		echo -e "$(sed -n ${i}p $INSTALLDIR/vpsmnprefix.info)" >> $INSTALLDIR/mnaliases
 	else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/mnaliases
 	fi
