@@ -13,7 +13,7 @@ then systemctl stop 'helium*'
 	make && make install
         cd /usr/local/bin && rm -f !"("activate_masternodes_helium")"
 	cp /root/installtemp/helium/src/{helium-cli,heliumd,helium-tx} /usr/local/bin/
-        rm -rf ~/helium
+        rm -rf root/installtemp/helium
         cd /root/installtemp
         curl -s $GITAPI_URL \
              | grep tag_name > currentversion
