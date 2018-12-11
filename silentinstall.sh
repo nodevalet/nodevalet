@@ -202,8 +202,8 @@ do
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
 	# replace null with txid info
-	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
-	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
+	# sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
+	# sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
 	
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
