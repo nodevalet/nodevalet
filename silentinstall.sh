@@ -107,22 +107,23 @@ function install_mns() {
 	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
 	else
-cd ~/code-red/
-	# cd ~/code-red/nodemaster
-	echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
-sudo git clone https://github.com/heliumchain/vps.git && cd vps
-	echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
-	sudo bash install.sh -n 6 -p helium -c $MNS
-	
-	echo -e "activating_masternodes_helium" | tee -a "$LOGFILE"
-	activate_masternodes_helium echo -e | tee -a "$LOGFILE"
-	sleep 3
+		cd ~/code-red/nodemaster
+		echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
+		# echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
+		# sudo git clone https://github.com/heliumchain/vps.git && cd vps
+		echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
+		sudo bash install.sh -n 6 -p helium -c $MNS
+		echo -e "activating_masternodes_helium" | tee -a "$LOGFILE"
+		activate_masternodes_helium echo -e | tee -a "$LOGFILE"
+		sleep 3
+		
 		# check if heliumd was built correctly and started
 		ps -A |  grep helium >> $INSTALLDIR/HELIUMDs
+		cat $INSTALLDIR/HELIUMDs >> $INSTALLDIR/$LOGFILE
 		if [ -s $INSTALLDIR/HELIUMDs ]
 		then echo -e "It looks like VPS install script completed and heliumd is running... " | tee -a "$LOGFILE"
 		# report back to mothership
-		echo -e "Reporting heliumd build initiation to the mothership" | tee -a "$LOGFILE"
+		echo -e "Reporting heliumd build success to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd has started..."}'
 		else echo -e "It looks like VPS install script failed, heliumd is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without heliumd" | tee -a "$LOGFILE"
