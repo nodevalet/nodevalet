@@ -16,7 +16,7 @@ fi
 
 if [ -e /root/vpsvaletreboot.txt ]; then
 	echo -e "Reporting Reboot complete to mothership"  | tee -a "$LOGFILE"
-	curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message":"Masternode deployment complete"}'
+	curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message":"VPS Restart Complete; installation success"}'
 	rm /root/vpsvaletreboot.txt
 	#rm -rf /root/installtemp
 fi
