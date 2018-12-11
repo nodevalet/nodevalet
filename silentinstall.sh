@@ -206,11 +206,6 @@ do
 	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
 	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
 	
-	# this should comment out a line that contains "collateral_output_txid tx"
-	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
-	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
-	
-	
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
 	echo "|" > $INSTALLDIR/DELIMETER
@@ -218,6 +213,11 @@ do
 			
 	# this is the output to return to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+
+	# this should comment out a line that contains "collateral_output_txid tx"
+	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.all 2>&1
+	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
+
 
 # declutter ; take out trash
 rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
