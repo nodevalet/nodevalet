@@ -346,9 +346,17 @@ rm -f $TARBALL
 echo -e "Probably finished installing binaries"  | tee -a "$LOGFILE"
 }
 
+function radio_home() {
+TRANSMITMN=`cat /root/installtemp/masternode.return`
+echo -e "Sending masternode.conf data to mothership"  | tee -a "$LOGFILE"
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}'
+# Add a sequence to interpret the reply as success or fail $?
+# sleeping for 10 seconds to add suspense
+sleep 10
+
 function restart_server() {
 :
-echo -e "Going to restart server in 10 seconds. . . " | tee -a "$LOGFILE"
+echo -e "Going to restart server immediately. . . " | tee -a "$LOGFILE"
 shutdown -r now
 }
 
@@ -369,8 +377,12 @@ install_mns
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
 get_genkeys
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
-# need to add a line to broadcast the masternode.conf file back to MNO
 
+# need to add a line to broadcast the masternode.conf file back to MNO
+radio_home
+
+# create file to signal cron that reboot has occurred
+touch /root/vpsvaletreboot.txt
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
 restart_server
 
