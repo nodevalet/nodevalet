@@ -348,7 +348,7 @@ function restart_server() {
 # This is where the script actually starts
 
 setup_environment
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Install Script..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}'
 
 begin_log
 add_cron
@@ -366,7 +366,7 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to finalize installation..."}'
 restart_server
 
 # check_blocksync
