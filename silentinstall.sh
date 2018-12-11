@@ -353,6 +353,7 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 # Add a sequence to interpret the reply as success or fail $?
 # sleeping for 10 seconds to add suspense
 sleep 10
+}
 
 function restart_server() {
 :
