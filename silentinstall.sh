@@ -84,7 +84,7 @@ echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$L
 function add_cron() {
 # reboot logic for status feedback
 	echo -e "Adding crontab"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/1 * * * * /root/installtemp/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 }
 
 function silent_harden() {
