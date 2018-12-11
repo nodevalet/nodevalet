@@ -260,6 +260,8 @@ echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
 cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 curl -s $GITAPI_URL \
+      | grep tag_name > currentversion   | tee -a "$LOGFILE"
+curl -s $GITAPI_URL \
       | grep browser_download_url \
       | grep x86_64-linux-gnu.tar.gz \
       | cut -d '"' -f 4 \
@@ -267,8 +269,6 @@ curl -s $GITAPI_URL \
 TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
 tar -xzf $TARBALL
 EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
-curl -s $GITAPI_URL \
-             | grep tag_name > currentversion   | tee -a "$LOGFILE"
 cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 rm -r $EXTRACTDIR
 rm -f $TARBALL
