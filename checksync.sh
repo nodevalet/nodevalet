@@ -48,7 +48,7 @@ while [ $SECONDS -lt $end ]; do
     
     if [ "$SYNCED" = "yes" ]; then printf "${lightcyan}" ; echo "Masternode synced" ; printf "${nocolor}" ; break
     else echo -e "Blockchain not synced; will check again in 10 seconds\n"
-    curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
+    curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
     echo -e "\n"
     sleep 10
     fi
