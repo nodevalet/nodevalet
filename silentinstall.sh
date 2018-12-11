@@ -237,18 +237,12 @@ done
 	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
 	tr -d '[:blank:]' < $INSTALLDIR/masternode.1 > $INSTALLDIR/masternode.return
 	sed -i 's/+/ /g' $INSTALLDIR/masternode.return
-	# read masternode data into string for curl
-	MASTERNODERETURN=$(<$INSTALLDIR/masternode.return)
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
 	rm $INSTALLDIR/complete --force
 	rm $INSTALLDIR/masternode.all --force
 	rm $INSTALLDIR/masternode.1 --force
-
-# report back all critial masternode.conf information
-echo -e "Beaming masternode.return back to mothership" | tee -a "$LOGFILE"
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$MASTERNODERETURN"'"}' echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
@@ -346,19 +340,9 @@ rm -f $TARBALL
 echo -e "Probably finished installing binaries"  | tee -a "$LOGFILE"
 }
 
-function radio_home() {
-TRANSMITMN=`cat /root/installtemp/masternode.return`
-echo -e "Sending masternode.conf data to mothership"  | tee -a "$LOGFILE"
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}'
-# Add a sequence to interpret the reply as success or fail $?
-# sleeping for 10 seconds to add suspense
-sleep 10
-}
-
 function restart_server() {
-:
-echo -e "Going to restart server immediately. . . " | tee -a "$LOGFILE"
-shutdown -r now
+	echo -e "Going to restart server immediately. . . " | tee -a "$LOGFILE"
+	shutdown -r now
 }
 
 # This is where the script actually starts
@@ -379,11 +363,9 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 get_genkeys
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
 
-# need to add a line to broadcast the masternode.conf file back to MNO
-radio_home
-
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
+chmod 0700 /root/code-red/postinstall_api.sh
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server..."}'
 restart_server
 
