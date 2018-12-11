@@ -296,12 +296,12 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 install_mns
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
 get_genkeys
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternodes Configured..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}'
 
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to finalize installation..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}'
 restart_server
 
 echo -e "Log of events saved to: $LOGFILE \n"
