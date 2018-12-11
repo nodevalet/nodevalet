@@ -1,6 +1,6 @@
 #!/bin/bash
 #check for updates and install binaries if necessary
-
+cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
