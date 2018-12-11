@@ -6,6 +6,7 @@ CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then curl -s $GITAPI_URL \
+	# add a line here to log the difference between current version and new version, date and time
  		| grep browser_download_url \
   		| grep x86_64-linux-gnu.tar.gz \
   		| cut -d '"' -f 4 \
@@ -18,5 +19,6 @@ then curl -s $GITAPI_URL \
 	cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 	rm -r $EXTRACTDIR
 	rm -f $TARBALL
+# add a line here to log the update and signal impending reboot
 	reboot
 fi
