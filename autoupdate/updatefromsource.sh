@@ -1,3 +1,4 @@
+#!/bin/bash
 #check for updates and build from source if installing binaries failed. 
  
 cd /root/installtemp
