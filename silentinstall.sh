@@ -30,15 +30,18 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	fi
 	
 # set donation address
-# set a donation address for now
-	DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
 # need to build in logic to lookup donation address, assign here
+# set a donation address to use for now
+echo -e "SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX" > $INSTALLDIR/DONATEADDRESS
+	DONATEADDR=$(<$INSTALLDIR/DONATEADDRESS)
+	paste -d ':' $INSTALLDIR/$DONATEADDRESS $INSTALLDIR/vpsdonation.info >> $INSTALLDIR/DONATION
 #	if [ -e $INSTALLDIR/vpsdonation.info ]
 #	then DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
 #	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	else DONATE='0'
 #	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	fi
+
 
 
 # set donation percentage and address
@@ -237,10 +240,15 @@ do
 	# merge all vars into masternode.conf
 	echo "|" > $INSTALLDIR/DELIMETER
 	
-	# comment out lines that contain collateral_output_txid tx
-	
-	# this line still needs to be edited to correct masternode.return	
+	# merge data fields to prepare masternode.return file
+	# add in donation if requested to do so
+	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
+	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.line$i
+	else 
+	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
+	fi
 	
 	# if line contains collateral_tx then start the line with #
 	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/masternode.line$i >> $INSTALLDIR/masternode.line$i 2>&1
@@ -248,14 +256,22 @@ do
 	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/masternode.line$i >> $INSTALLDIR/masternode.all
 
 	# create the masternode.conf output that is returned to consumer
-	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+	# add in donation if requested to do so
+	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
+	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.line$i
+	else 
+	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
+	fi
+
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
-	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
+	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1	
 	
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-# rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
+rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -278,9 +294,9 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-# rm $INSTALLDIR/complete --force
-# rm $INSTALLDIR/masternode.all --force
-# rm $INSTALLDIR/masternode.1 --force
+rm $INSTALLDIR/complete --force
+rm $INSTALLDIR/masternode.all --force
+rm $INSTALLDIR/masternode.1 --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
