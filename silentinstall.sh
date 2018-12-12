@@ -30,9 +30,11 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	fi
 	
 # set donation address
+# set a donation address for now
+	DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
 # need to build in logic to lookup donation address, assign here
 #	if [ -e $INSTALLDIR/vpsdonation.info ]
-#	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
+#	then DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
 #	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	else DONATE='0'
 #	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
@@ -223,39 +225,31 @@ do
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
 	
 	# obtain txid
-	# curl -s "https://www.heliumchain.info/api/address/ACTUALHELIUMADDRESS" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]'`
 	curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
 	TX=`echo $(cat $INSTALLDIR/TXID$i)`
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
+	
 	# replace null with txid info
 	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
 	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/TXID$i >> $INSTALLDIR/TXID$i 2>&1
 	
 	# merge all vars into masternode.conf
-	# this is the output to return to MNO
 	echo "|" > $INSTALLDIR/DELIMETER
 	
-	
 	# comment out lines that contain collateral_output_txid tx
-	# paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
-
 	
-	# this line still needs to be edited to correct masternode.return
-	# this should comment out a line that contains "collateral_output_txid tx"
-	# original line before I assed it up paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
-	
+	# this line still needs to be edited to correct masternode.return	
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
 	
 	# if line contains collateral_tx then start the line with #
 	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/masternode.line$i >> $INSTALLDIR/masternode.line$i 2>&1
+	# prepend line with delimeter
 	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/masternode.line$i >> $INSTALLDIR/masternode.all
 
-# i believe this is working correctly
 	# create the masternode.conf output that is returned to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
-	# comment out lines that contain "collateral_output_txid tx" in masternode.conf
-	
+	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 	
 # declutter ; take out trash
@@ -275,10 +269,9 @@ done
 	# comment out lines that contain no txid or index
 	# sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
 
-	# replace spaces with + temporarily	
+	# replace necessary spaces with + temporarily	
 	sed -i 's/ /+/g' $INSTALLDIR/masternode.all
-	
-	# merge "complete" line with masternode.all file and remove \n
+	# merge "complete" line with masternode.all file and remove line breaks (\n)
 	paste -s $INSTALLDIR/complete $INSTALLDIR/masternode.all |  tr -d '[\n]' > $INSTALLDIR/masternode.1
 	tr -d '[:blank:]' < $INSTALLDIR/masternode.1 > $INSTALLDIR/masternode.return
 	sed -i 's/+/ /g' $INSTALLDIR/masternode.return
@@ -300,7 +293,6 @@ fi
 
 function install_binaries() {
 #check for binaries and install if found   
-
 echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
 cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
