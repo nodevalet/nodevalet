@@ -176,6 +176,15 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 
 echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
+
+	for ((i=1;i<=$MNS;i++)); 
+	do
+	# create masternode genkeys
+	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys
+	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
+	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+	done
+
 for ((i=1;i<=$MNS;i++)); 
 do
 
@@ -191,11 +200,6 @@ do
 	# create masternode address files
 	echo -e "$(sed -n ${i}p $INSTALLDIR/vpsmnaddress.info)" > $INSTALLDIR/MNADD$i
 
-	# create masternode genkeys
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
-	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
-	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
-	
 	# append "masternodeprivkey="
 	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
 	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
