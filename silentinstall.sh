@@ -216,7 +216,7 @@ do
 	# comment out lines that contain collateral_output_txid tx
 	# paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
 	if [ $INSTALLDIR/TXID$i = "collateral_output_txid tx" ] 
-	then sed -i 's/^#*/#/' -i $INSTALLDIR/MNALIAS$i >> $INSTALLDIR/MNALIAS$i 2>&1
+	then sed -i "s/^#*/#/" -i $INSTALLDIR/MNALIAS$i >> $INSTALLDIR/MNALIAS$i 2>&1
 	else :
 	fi
 	
