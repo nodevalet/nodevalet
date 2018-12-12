@@ -21,6 +21,32 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
 
+# set donation percentage
+	if [ -e $INSTALLDIR/vpsdonation.info ]
+	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
+	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	else DONATE='0'
+	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	fi
+	
+# set donation address
+# need to build in logic to lookup donation address, assign here
+#	if [ -e $INSTALLDIR/vpsdonation.info ]
+#	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
+#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+#	else DONATE='0'
+#	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+#	fi
+
+
+# set donation percentage and address
+	if [ -e $INSTALLDIR/vpsdonation.info ]
+	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
+	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	else DONATE='0'
+	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	fi
+
 # create or assign customssh
 	if [ -s $INSTALLDIR/vpssshport.info ]
 	then SSHPORT=$(<$INSTALLDIR/vpssshport.info)
