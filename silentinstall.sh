@@ -223,9 +223,9 @@ do
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
 # declutter ; take out trash
-rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+# rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -249,9 +249,9 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-	rm $INSTALLDIR/complete --force
-	rm $INSTALLDIR/masternode.all --force
-	rm $INSTALLDIR/masternode.1 --force
+# rm $INSTALLDIR/complete --force
+# rm $INSTALLDIR/masternode.all --force
+# rm $INSTALLDIR/masternode.1 --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
