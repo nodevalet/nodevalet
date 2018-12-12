@@ -33,24 +33,14 @@ LOGFILE='/root/installtemp/silentinstall.log'
 # need to build in logic to lookup donation address, assign here
 # set a donation address to use for now
 echo -e "SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX" > $INSTALLDIR/DONATEADDRESS
-	DONATEADDR=$(<$INSTALLDIR/DONATEADDRESS)
-	paste -d ':' $INSTALLDIR/$DONATEADDRESS $INSTALLDIR/vpsdonation.info >> $INSTALLDIR/DONATION
+DONATEADDR=$(<$INSTALLDIR/DONATEADDRESS)
+paste -d ':' $INSTALLDIR/DONATEADDRESS $INSTALLDIR/vpsdonation.info > $INSTALLDIR/DONATION
 #	if [ -e $INSTALLDIR/vpsdonation.info ]
 #	then DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
 #	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	else DONATE='0'
 #	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	fi
-
-
-
-# set donation percentage and address
-	if [ -e $INSTALLDIR/vpsdonation.info ]
-	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
-	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATE='0'
-	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	fi
 
 # create or assign customssh
 	if [ -s $INSTALLDIR/vpssshport.info ]
@@ -259,10 +249,10 @@ do
 	# add in donation if requested to do so
 	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
-	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.line$i
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.conf
 	else 
 	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
-	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 	fi
 
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
