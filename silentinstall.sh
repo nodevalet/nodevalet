@@ -29,18 +29,17 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 	fi
 	
-# set donation address
-# need to build in logic to lookup donation address, assign here
-# set a donation address to use for now
-echo -e "SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX" > $INSTALLDIR/DONATEADDRESS
-DONATEADDR=$(<$INSTALLDIR/DONATEADDRESS)
-paste -d ':' $INSTALLDIR/DONATEADDRESS $INSTALLDIR/vpsdonation.info > $INSTALLDIR/DONATION
-#	if [ -e $INSTALLDIR/vpsdonation.info ]
-#	then DONATEADDR='SbxLCA4j9WYbgRYLBtEtynDTo6aghcCGvX'
-#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-#	else DONATE='0'
-#	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-#	fi
+# set donation address front project.env
+	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/helium/helium.env`
+	if [ -n $DONATION_ADDRESS ] ; then 
+	echo "$DONATION_ADDRESS" > $INSTALLDIR/DONATEADDR
+	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/DONATEADDR
+	DONATEADDR=$(<$INSTALLDIR/DONATEADDR)
+	echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
+	paste -d ':' $INSTALLDIR/DONATEADDR $INSTALLDIR/vpsdonation.info > $INSTALLDIR/DONATION
+	else
+	echo -e "No donation address was detected." | tee -a "$LOGFILE"
+	fi
 
 # create or assign customssh
 	if [ -s $INSTALLDIR/vpssshport.info ]
