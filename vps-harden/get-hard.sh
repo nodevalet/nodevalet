@@ -1166,7 +1166,7 @@ begin_log
 create_swap
 update_upgrade
 favored_packages
-crypto_packages
+# crypto_packages
 # add_user
 collect_sshd
 prompt_rootlogin
