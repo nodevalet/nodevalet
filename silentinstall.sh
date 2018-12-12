@@ -234,7 +234,7 @@ do
 	# add in donation if requested to do so
 	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
-	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.line$i
+	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.line$i
 	else 
 	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
@@ -249,7 +249,7 @@ do
 	# add in donation if requested to do so
 	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
-	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/$DONATION >> $INSTALLDIR/masternode.conf
+	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.conf
 	else 
 	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
