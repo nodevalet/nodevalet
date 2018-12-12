@@ -23,9 +23,9 @@ LOGFILE='/root/installtemp/silentinstall.log'
 
 # set donation percentage
 	if [ -e $INSTALLDIR/vpsdonation.info ]
-	then DONATE=$(<$INSTALLDIR/vpsdonation.info)
+	then DONATE=`cat $INSTALLDIR/vpsdonation.info`
 	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATE='0'
+	else DONATE=0
 	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 	fi
 	
@@ -232,7 +232,7 @@ do
 	
 	# merge data fields to prepare masternode.return file
 	# add in donation if requested to do so
-	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
+	if [ $DONATE = 0 ] && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.line$i
 	else 
@@ -247,7 +247,7 @@ do
 
 	# create the masternode.conf output that is returned to consumer
 	# add in donation if requested to do so
-	if [ $DONATE != 0 ] && [ -n "$DONATEADDR" ]; then
+	if [ $DONATE = 0 ] && [ -n "$DONATEADDR" ]; then
 	
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.conf
