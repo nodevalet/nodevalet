@@ -232,12 +232,12 @@ do
 	
 	# merge data fields to prepare masternode.return file
 	# add in donation if requested to do so
-	if [ $(DONATE) > 0 ] && [ -n "$DONATEADDR" ]; then
+	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.line$i
 	else 
 	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
-	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"
+	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
 	fi
 	
@@ -248,7 +248,7 @@ do
 
 	# create the masternode.conf output that is returned to consumer
 	# add in donation if requested to do so
-	if [ $(DONATE) > 0 ] && [ -n "$DONATEADDR" ]; then
+	if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	
 	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.conf
