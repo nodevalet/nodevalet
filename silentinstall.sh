@@ -209,18 +209,30 @@ do
 	# merge all vars into masternode.conf
 	# this is the output to return to MNO
 	echo "|" > $INSTALLDIR/DELIMETER
-	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
-			
+	
+	
+	
+
+	# comment out lines that contain collateral_output_txid tx
+	# paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
+	if [ $INSTALLDIR/TXID$i = "collateral_output_txid tx" ] 
+	then sed -i 's/^#*/#/' -i $INSTALLDIR/MNALIAS$i >> $INSTALLDIR/MNALIAS$i 2>&1
+	else :
+	fi
+	
 	# this line still needs to be edited to correct masternode.return
 	# this should comment out a line that contains "collateral_output_txid tx"
-	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/masternode.all >> $INSTALLDIR/masternode.all 2>&1
-	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
+	paste -d '|' $INSTALLDIR/DELIMETER $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.all
+	
+	
 
-	# i believe this is working correctly
+# i believe this is working correctly
 	# create the masternode.conf output that is returned to consumer
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf
-	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
+	
+	
+	# sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
 # declutter ; take out trash
 # rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
