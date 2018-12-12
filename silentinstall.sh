@@ -176,6 +176,35 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 
 echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
+
+# get masternode genkeys first
+echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
+
+for ((g=1;g<=$MNS;g++));
+do
+# create masternode genkeys
+        while [ -z "${VALIDKEY}" ] ; do
+        sudo systemctl start helium_n1
+	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
+        echo -e "$(sed -n ${g}p $INSTALLDIR/genkeys)" > $INSTALLDIR/GENKEY$g
+        VALIDKEY=$(<$INSTALLDIR/GENKEY$g)
+	if [ -z "${VALIDKEY}" ] ; then sudo systemctl stop helium_n1 ; fi
+        done
+	VALIDKEY=""
+	
+	# prepend "masternodeprivkey="
+	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$g > $INSTALLDIR/GENKEY${g}FIN
+	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${g}FIN > $INSTALLDIR/MNPRIVKEY$g
+	
+	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
+	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$g`
+	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
+
+	# insert new genkey into project_n$i.conf files
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$g.conf >> $LOGFILE 2>&1
+
+done
+
 for ((i=1;i<=$MNS;i++)); 
 do
 
@@ -191,21 +220,7 @@ do
 	# create masternode address files
 	echo -e "$(sed -n ${i}p $INSTALLDIR/vpsmnaddress.info)" > $INSTALLDIR/MNADD$i
 
-	# create masternode genkeys
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys   | tee -a "$LOGFILE"
-	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
-	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
-	
-	# append "masternodeprivkey="
-	paste $INSTALLDIR/MNPRIV1 $INSTALLDIR/GENKEY$i > $INSTALLDIR/GENKEY${i}FIN
-	tr -d '[:blank:]' < $INSTALLDIR/GENKEY${i}FIN > $INSTALLDIR/MNPRIVKEY$i
-	
-	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
-	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
-	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
-	# insert new genkey into project_n$i.conf files
-	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
 
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
