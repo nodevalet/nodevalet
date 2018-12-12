@@ -529,7 +529,7 @@ function source_config() {
         # main routine
         if [ "$update" -eq 0 ]; then
             prepare_mn_interfaces
-            swaphack
+	    # swaphack
         fi
         install_packages
         print_logo
