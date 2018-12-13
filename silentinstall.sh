@@ -160,6 +160,9 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
+echo -e "Reporting heliumd build failure to the mothership" | tee -a "$LOGFILE"
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
+		exit
 else
    		# Create a file containing all masternode genkeys
    		echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
