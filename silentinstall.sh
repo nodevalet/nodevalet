@@ -172,7 +172,8 @@ function install_mns() {
 		ps -A |  grep $PROJECT >> $INSTALLDIR/$PROJECTDs
 		cat $INSTALLDIR/$PROJECTDs >> $INSTALLDIR/$LOGFILE
 		if [ -s $INSTALLDIR/$PROJECTDs ]
-		then echo -e "It looks like VPS install script completed and $PROJECTd is running... " | tee -a "$LOGFILE"
+		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
+		then echo -e "It looks like VPS install script completed and $(PROJECT)d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
 		echo -e "Reporting $PROJECTd build success to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}'
@@ -291,9 +292,9 @@ do
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1	
 	
 # declutter ; take out trash
-rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+# rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -323,14 +324,14 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-rm $INSTALLDIR/complete --force
-rm $INSTALLDIR/masternode.all --force
-rm $INSTALLDIR/masternode.1 --force
-rm $INSTALLDIR/masternode.l* --force
-rm $INSTALLDIR/DONATION --force
-rm $INSTALLDIR/DONATEADDR --force
-rm $INSTALLDIR/txid --force
-rm $INSTALLDIR/mnaliases --force
+# rm $INSTALLDIR/complete --force
+# rm $INSTALLDIR/masternode.all --force
+# rm $INSTALLDIR/masternode.1 --force
+# rm $INSTALLDIR/masternode.l* --force
+# rm $INSTALLDIR/DONATION --force
+# rm $INSTALLDIR/DONATEADDR --force
+# rm $INSTALLDIR/txid --force
+# rm $INSTALLDIR/mnaliases --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
