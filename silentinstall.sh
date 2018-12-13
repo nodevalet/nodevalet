@@ -22,7 +22,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then PROJECT=`cat $INSTALLDIR/vpsproject.info`
 	echo -e "vpsproject.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for the list supported projects."  | tee -a "$LOGFILE"
-		echo -e " In one work, which project are you planning to install today?\n"
+		echo -e " In one word, which project are you planning to install today?\n"
 		
 #		for ((i=1;i<=$MNS;i++)); 
 #		do 
