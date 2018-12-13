@@ -1,6 +1,5 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
-exit
 
 # for testing
 echo 'helium' >> /root/installtemp/vpsproject.info
@@ -32,7 +31,6 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 #		done
-	
 	
 	fi
 
@@ -176,12 +174,12 @@ function install_mns() {
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
 		echo -e "Reporting ${PROJECT}d build success to the mothership" | tee -a "$LOGFILE"
-		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}'
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}' && echo -e " "
 		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
 		echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
-		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: $PROJECTd failed to build or start"}'
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: $PROJECTd failed to build or start"}' && echo -e " "
 		exit
 		fi
 	fi
@@ -371,25 +369,26 @@ function restart_server() {
 # This is where the script actually starts
 
 setup_environment
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " "
 
 begin_log
 add_cron
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}' && echo -e " "
 silent_harden
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading $PROJECT Binaries..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading $PROJECT Binaries..."}' && echo -e " "
 install_binaries
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating $PROJECT Masternodes..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating $PROJECT Masternodes..."}' && echo -e " "
 install_mns
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}' && echo -e " "
 get_genkeys
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
+
 # restart_server
 
 echo -e "Log of events saved to: $LOGFILE \n"
