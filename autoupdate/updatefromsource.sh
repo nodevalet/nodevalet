@@ -1,12 +1,20 @@
 #!/bin/bash
 #check for updates and build from source if installing binaries failed. 
+
+LOGFILE='/root/installtemp/autoupdate.log'
+echo -e "Running updatefromsource.sh" | tee -a "$LOGFILE"
+date | tee -a "$LOGFILE"
  
 cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then systemctl stop 'helium*' \
+then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSION" | tee -a "$LOGFILE"
+	echo -e "I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
+	echo -e "attempting to build new wallet version from source" | tee -a "$LOGFILE"
+	
+	systemctl stop 'helium*' \
 	&& git clone https://github.com/heliumchain/helium.git \
 	&& cd helium \
 	&& ./autogen.sh \
