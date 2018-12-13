@@ -31,18 +31,8 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 #		done
-	fi
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	echo -e "vpsproject.info not found, setting project to $PROJECT"  | tee -a "$LOGFILE"
 	fi
 
 # set hostname variable to the name planted by install script
@@ -135,8 +125,13 @@ echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$L
 
 function add_cron() {
 # reboot logic for status feedback
-	echo -e "Adding crontab"  | tee -a "$LOGFILE"
+	echo -e "Adding crontabs"  | tee -a "$LOGFILE"
+	echo -e "Adding postinstall crontab to run every minute"  | tee -a "$LOGFILE"
+	echo -e "Adding autoupdate crontab to run every day"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
+	chmod 0700 /root/code-red/autoupdate/autoupdate.sh
+	(crontab -l ; echo "*/* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	
 }
 
 function silent_harden() {
