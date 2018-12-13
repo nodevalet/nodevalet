@@ -2,7 +2,7 @@
 # Silently install masternodes and insert privkeys
 
 # for testing
-echo 'helium' >> /root/installtemp/vpsproject.info
+echo 'helium' >> /root/installtemp/vpscoin.info
 
 function setup_environment() {
 # Set Variables
@@ -18,9 +18,9 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	
 # set project name
 # need to get this configured before we scale additional projects
-	if [ -s $INSTALLDIR/vpsproject.info ]
-	then PROJECT=`cat $INSTALLDIR/vpsproject.info`
-	echo -e "vpsproject.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
+	if [ -s $INSTALLDIR/vpscoin.info ]
+	then PROJECT=`cat $INSTALLDIR/vpscoin.info`
+	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for the list supported projects."  | tee -a "$LOGFILE"
 		echo -e " In one word, which project are you planning to install today?\n"
 		
@@ -31,7 +31,6 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 #		done
-	
 	fi
 
 # set hostname variable to the name planted by install script
@@ -196,7 +195,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 else
    		# Create a file containing all masternode genkeys
    		echo -e "Saving genkey(s) to $INSTALLDIR/genkeys \n"  | tee -a "$LOGFILE"
-   		# rm $INSTALLDIR/genkeys --force
    		touch $INSTALLDIR/genkeys
 
 # create initial masternode.conf file and populate with notes
@@ -322,6 +320,7 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
+	
 # rm $INSTALLDIR/complete --force
 # rm $INSTALLDIR/masternode.all --force
 # rm $INSTALLDIR/masternode.1 --force
@@ -376,10 +375,13 @@ add_cron
 
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}' && echo -e " "
 silent_harden
+
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading $PROJECT Binaries..."}' && echo -e " "
 install_binaries
+
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating $PROJECT Masternodes..."}' && echo -e " "
 install_mns
+
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}' && echo -e " "
 get_genkeys
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}' && echo -e " "
@@ -388,7 +390,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
-
 restart_server
 
-echo -e "Log of events saved to: $LOGFILE \n"
+echo -e "A log of these install events was saved to: $LOGFILE \n"
