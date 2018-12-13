@@ -173,7 +173,7 @@ function install_mns() {
 		cat $INSTALLDIR/$PROJECTDs >> $INSTALLDIR/$LOGFILE
 		if [ -s $INSTALLDIR/$PROJECTDs ]
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
-		then echo -e "It looks like VPS install script completed and $(PROJECT)d is running... " | tee -a "$LOGFILE"
+		     echo -e "It looks like VPS install script completed and $(PROJECT)d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
 		echo -e "Reporting $PROJECTd build success to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}'
