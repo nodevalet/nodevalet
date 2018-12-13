@@ -1,6 +1,9 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
+# for testing
+echo 'helium' >> /root/installtemp/vpsproject.info
+
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/root/installtemp'
@@ -11,6 +14,35 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then mkdir $INSTALLDIR
 	echo -e "creating /root/installtemp"  | tee -a "$LOGFILE"
 	else :
+	fi
+	
+# set project name
+# need to get this configured before we scale additional projects
+	if [ -s $INSTALLDIR/vpsproject.info ]
+	then PROJECT=`cat $INSTALLDIR/vpsproject.info`
+	echo -e "vpsproject.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
+	else echo -e "Please check the readme for the list supported projects."  | tee -a "$LOGFILE"
+		echo -e " In one work, which project are you planning to install today?\n"
+		
+#		for ((i=1;i<=$MNS;i++)); 
+#		do 
+		read -p "  --> " PROJECT
+		
+		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
+		# add error checking logic and repeat if necessary
+#		done
+	fi
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	echo -e "vpsproject.info not found, setting project to $PROJECT"  | tee -a "$LOGFILE"
 	fi
 
 # set hostname variable to the name planted by install script
