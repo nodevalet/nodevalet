@@ -130,7 +130,9 @@ function add_cron() {
 	echo -e "Adding autoupdate crontab to run every day"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 	chmod 0700 /root/code-red/autoupdate/autoupdate.sh
-	(crontab -l ; echo "*/* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	# for testing, going to set autoupdate to run every horu
+	# (crontab -l ; echo "*/* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/* 1 * * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 	
 }
 
