@@ -327,6 +327,10 @@ rm $INSTALLDIR/complete --force
 rm $INSTALLDIR/masternode.all --force
 rm $INSTALLDIR/masternode.1 --force
 rm $INSTALLDIR/masternode.l* --force
+rm $INSTALLDIR/DONATION --force
+rm $INSTALLDIR/DONATEADDR --force
+rm $INSTALLDIR/txid --force
+rm $INSTALLDIR/mnaliases --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
