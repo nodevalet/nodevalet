@@ -1,5 +1,6 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
+exit
 
 # for testing
 echo 'helium' >> /root/installtemp/vpsproject.info
