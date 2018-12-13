@@ -169,18 +169,17 @@ function install_mns() {
 		sleep 3
 		
 		# check if $PROJECTd was built correctly and started
-		ps -A |  grep $PROJECT >> $INSTALLDIR/$PROJECTDs
-		cat $INSTALLDIR/$PROJECTDs >> $INSTALLDIR/$LOGFILE
-		if [ -s $INSTALLDIR/$PROJECTDs ]
+		ps -A |  grep $PROJECT >> $INSTALLDIR/${PROJECT}d
+		cat $INSTALLDIR/${PROJECT}d >> $INSTALLDIR/$LOGFILE
+		if [ -s $INSTALLDIR/${PROJECT}ds ]
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
-		     echo -e "It looks like VPS install script completed and $(PROJECT)d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
-		echo -e "Reporting $PROJECTd build success to the mothership" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build success to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}'
-		else echo -e "It looks like VPS install script failed, $PROJECTd is not running... " | tee -a "$LOGFILE"
-		echo -e "Aborting installation, can't install masternodes without $PROJECTd" | tee -a "$LOGFILE"
+		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
+		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
-		echo -e "Reporting $PROJECTd build failure to the mothership" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: $PROJECTd failed to build or start"}'
 		exit
 		fi
@@ -192,7 +191,7 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
-echo -e "Reporting $PROJECTd build failure to the mothership" | tee -a "$LOGFILE"
+echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
 		exit
 else
