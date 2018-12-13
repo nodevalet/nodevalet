@@ -22,7 +22,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then PROJECT=`cat $INSTALLDIR/vpsproject.info`
 	echo -e "vpsproject.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for the list supported projects."  | tee -a "$LOGFILE"
-		echo -e " In one work, which project are you planning to install today?\n"
+		echo -e " In one word, which project are you planning to install today?\n"
 		
 #		for ((i=1;i<=$MNS;i++)); 
 #		do 
@@ -31,7 +31,6 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 #		done
-	
 	
 	fi
 
@@ -52,7 +51,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	fi
 	
 # set donation address front project.env
-	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/helium/helium.env`
+	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $DONATION_ADDRESS ] ; then 
 	echo "$DONATION_ADDRESS" > $INSTALLDIR/DONATEADDR
 	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/DONATEADDR
@@ -153,7 +152,7 @@ function silent_harden() {
 }
 
 function install_mns() {
-	if [ -e /etc/masternodes/helium_n1.conf ]
+	if [ -e /etc/masternodes/$PROJECT_n1.conf ]
 	then touch $INSTALLDIR/mnsexist
 	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
@@ -162,25 +161,25 @@ function install_mns() {
 		echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
 		# echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
 		# sudo git clone https://github.com/heliumchain/vps.git && cd vps
-		echo -e "Launching Nodemaster using ./install.sh -p helium" | tee -a "$LOGFILE"
-		sudo bash install.sh -n 6 -p helium -c $MNS
-		echo -e "activating_masternodes_helium" | tee -a "$LOGFILE"
-		activate_masternodes_helium echo -e | tee -a "$LOGFILE"
+		echo -e "Launching Nodemaster using bash install.sh -p $PROJECT" | tee -a "$LOGFILE"
+		sudo bash install.sh -n 6 -p $PROJECT -c $MNS
+		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
+		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 		sleep 3
 		
-		# check if heliumd was built correctly and started
-		ps -A |  grep helium >> $INSTALLDIR/HELIUMDs
-		cat $INSTALLDIR/HELIUMDs >> $INSTALLDIR/$LOGFILE
-		if [ -s $INSTALLDIR/HELIUMDs ]
-		then echo -e "It looks like VPS install script completed and heliumd is running... " | tee -a "$LOGFILE"
+		# check if $PROJECTd was built correctly and started
+		ps -A | grep $PROJECT >> $INSTALLDIR/${PROJECT}Ds
+		cat $INSTALLDIR/${PROJECT}Ds >> $LOGFILE
+		if [ -s $INSTALLDIR/${PROJECT}Ds ]
+		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
-		echo -e "Reporting heliumd build success to the mothership" | tee -a "$LOGFILE"
-		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Heliumd has started..."}'
-		else echo -e "It looks like VPS install script failed, heliumd is not running... " | tee -a "$LOGFILE"
-		echo -e "Aborting installation, can't install masternodes without heliumd" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build success to the mothership" | tee -a "$LOGFILE"
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}' && echo -e " "
+		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
+		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
-		echo -e "Reporting heliumd build failure to the mothership" | tee -a "$LOGFILE"
-		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Heliumd failed to build or start"}'
+		echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
+		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: $PROJECTd failed to build or start"}' && echo -e " "
 		exit
 		fi
 	fi
@@ -191,7 +190,7 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
-echo -e "Reporting heliumd build failure to the mothership" | tee -a "$LOGFILE"
+echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
 		exit
 else
@@ -214,7 +213,7 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	for ((i=1;i<=$MNS;i++)); 
 	do
 	# create masternode genkeys
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf masternode genkey >> $INSTALLDIR/genkeys
+	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/genkeys
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
 	done
@@ -243,10 +242,10 @@ do
 	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
 	# insert new genkey into project_n$i.conf files
-	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/helium_n$i.conf >> $LOGFILE 2>&1
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf >> $LOGFILE 2>&1
 
 	# create file with IP addresses
-	sed -n -e '/^bind/p' /etc/masternodes/helium_n$i.conf >> $INSTALLDIR/mnipaddresses
+	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
 	
 	# remove "bind=" from mnipaddresses
 	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
@@ -291,9 +290,9 @@ do
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1	
 	
 # declutter ; take out trash
-rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+# rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 sleep 2
@@ -323,14 +322,14 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-rm $INSTALLDIR/complete --force
-rm $INSTALLDIR/masternode.all --force
-rm $INSTALLDIR/masternode.1 --force
-rm $INSTALLDIR/masternode.l* --force
-rm $INSTALLDIR/DONATION --force
-rm $INSTALLDIR/DONATEADDR --force
-rm $INSTALLDIR/txid --force
-rm $INSTALLDIR/mnaliases --force
+# rm $INSTALLDIR/complete --force
+# rm $INSTALLDIR/masternode.all --force
+# rm $INSTALLDIR/masternode.1 --force
+# rm $INSTALLDIR/masternode.l* --force
+# rm $INSTALLDIR/DONATION --force
+# rm $INSTALLDIR/DONATEADDR --force
+# rm $INSTALLDIR/txid --force
+# rm $INSTALLDIR/mnaliases --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
@@ -370,25 +369,26 @@ function restart_server() {
 # This is where the script actually starts
 
 setup_environment
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " "
 
 begin_log
 add_cron
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Hardening Server..."}' && echo -e " "
 silent_harden
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading Helium Binaries..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading $PROJECT Binaries..."}' && echo -e " "
 install_binaries
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Helium Masternodes..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating $PROJECT Masternodes..."}' && echo -e " "
 install_mns
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring Masternodes..."}' && echo -e " "
 get_genkeys
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode configuration complete..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}'
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
+
 restart_server
 
 echo -e "Log of events saved to: $LOGFILE \n"

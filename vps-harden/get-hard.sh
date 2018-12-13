@@ -103,7 +103,7 @@ printf "${nocolor}"
 clear
 
 # Set Vars
-LOGFILE='/var/log/server_hardening.log'
+LOGFILE='/root/installtemp/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 }
