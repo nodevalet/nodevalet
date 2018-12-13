@@ -268,12 +268,8 @@ do
 	# merge data fields to prepare masternode.return file
 	# add in donation if requested to do so
 	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-	echo -e "User chose to donate $DONATE % to $DONATEADDR with masternode $i"  | tee -a "$LOGFILE"
 	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.line$i
-	else 
-	echo -e "User chose not to donate masternode $i"  | tee -a "$LOGFILE"
-	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
-	paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
+	else paste -d '|' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.line$i
 	fi
 	
 	# if line contains collateral_tx then start the line with #
@@ -285,24 +281,29 @@ do
 	# add in donation if requested to do so
 	# if [ "$DONATE" > 0 ] && [ -n "$DONATEADDR" ]; then
 	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.conf
-	else 
-	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
+	else paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
 	fi
 
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1	
 	
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-# rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
+rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+rm $INSTALLDIR/HELIUMDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 sleep 2
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
+	# Log whether or not a donation has been entered into masternode.conf
+	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
+	echo -e "User chose to donate $DONATE % to $DONATEADDR"  | tee -a "$LOGFILE"
+	else 
+	echo -e "User chose not to donate, and that's ok. We'll survive."  | tee -a "$LOGFILE"
+	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
+	fi
 	
 	echo -e "Converting masternode.conf to one delineated line for mothership" | tee -a "$LOGFILE"
 	# convert masternode.conf to one delineated line separated using | and ||
@@ -320,12 +321,12 @@ done
 	
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-# rm $INSTALLDIR/complete --force
-# rm $INSTALLDIR/masternode.all --force
-# rm $INSTALLDIR/masternode.1 --force
-# rm $INSTALLDIR/masternode.l* --force
+rm $INSTALLDIR/complete --force
+rm $INSTALLDIR/masternode.all --force
+rm $INSTALLDIR/masternode.1 --force
+rm $INSTALLDIR/masternode.l* --force
 
-	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf" | tee -a "$LOGFILE"
+	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 	echo -e "\n"  | tee -a "$LOGFILE"
 	
