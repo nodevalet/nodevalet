@@ -170,9 +170,9 @@ function install_mns() {
 		sleep 3
 		
 		# check if $PROJECTd was built correctly and started
-		ps -A |  grep $PROJECT >> $INSTALLDIR/${PROJECT}d
-		cat $INSTALLDIR/${PROJECT}d >> $INSTALLDIR/$LOGFILE
-		if [ -s $INSTALLDIR/${PROJECT}ds ]
+		ps -A | grep $PROJECT >> $INSTALLDIR/${PROJECT}Ds
+		cat $INSTALLDIR/${PROJECT}Ds >> $INSTALLDIR/$LOGFILE
+		if [ -s $INSTALLDIR/${PROJECT}Ds ]
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
 		# report back to mothership
 		echo -e "Reporting ${PROJECT}d build success to the mothership" | tee -a "$LOGFILE"
