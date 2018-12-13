@@ -389,6 +389,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}'
-restart_server
+# restart_server
 
 echo -e "Log of events saved to: $LOGFILE \n"
