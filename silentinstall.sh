@@ -244,10 +244,10 @@ do
 	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
 	# insert new genkey into project_n$i.conf files
-	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/{PROJECT}_n$i.conf >> $LOGFILE 2>&1
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf >> $LOGFILE 2>&1
 
 	# create file with IP addresses
-	sed -n -e '/^bind/p' /etc/masternodes/{PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
+	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
 	
 	# remove "bind=" from mnipaddresses
 	sed -i "s/bind=//" $INSTALLDIR/mnipaddresses >> log 2>&1
