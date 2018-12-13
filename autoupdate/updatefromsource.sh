@@ -2,8 +2,7 @@
 #check for updates and build from source if installing binaries failed. 
 
 LOGFILE='/root/installtemp/autoupdate.log'
-echo -e "Running updatefromsource.sh" | tee -a "$LOGFILE"
-date | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
  
 cd /root/installtemp
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
