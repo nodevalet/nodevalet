@@ -215,7 +215,7 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	for ((i=1;i<=$MNS;i++)); 
 	do
 	# create masternode genkeys
-	/usr/local/bin/{PROJECT}-cli -conf=/etc/masternodes/{PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/genkeys
+	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/genkeys
 	echo -e "$(sed -n ${i}p $INSTALLDIR/genkeys)" >> $INSTALLDIR/GENKEY$i
 	echo "masternodeprivkey=" > $INSTALLDIR/MNPRIV1
 	done
