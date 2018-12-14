@@ -8,6 +8,7 @@ function setup_environment() {
 # Set Variables
 INSTALLDIR='/root/installtemp'
 LOGFILE='/root/installtemp/silentinstall.log'
+touch '/root/installtemp/checkdaemon.log'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
