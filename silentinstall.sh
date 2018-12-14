@@ -52,6 +52,7 @@ touch '/root/installtemp/checkdaemon.log'
 	fi
 	
 # set donation address front project.env
+	curl -LJO https://raw.githubusercontent.com/akcryptoguy/code-red/master/nodemaster/config/$PROJECT/$PROJECT.env
 	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $DONATION_ADDRESS ] ; then 
 	echo "$DONATION_ADDRESS" > $INSTALLDIR/DONATEADDR
@@ -176,7 +177,7 @@ function install_mns() {
 		sudo bash install.sh -n 6 -p $PROJECT -c $MNS
 		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
-		sleep 3
+		sleep 1
 		
 		# check if $PROJECTd was built correctly and started
 		ps -A | grep $PROJECT >> $INSTALLDIR/${PROJECT}Ds
@@ -297,9 +298,9 @@ do
 	fi	
 	
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
-# rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
+rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 # sleep 2
@@ -339,14 +340,14 @@ EOT
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
 	
-# rm $INSTALLDIR/complete --force
-# rm $INSTALLDIR/masternode.all --force
-# rm $INSTALLDIR/masternode.1 --force
-# rm $INSTALLDIR/masternode.l* --force
-# rm $INSTALLDIR/DONATION --force
-# rm $INSTALLDIR/DONATEADDR --force
-# rm $INSTALLDIR/txid --force
-# rm $INSTALLDIR/mnaliases --force
+rm $INSTALLDIR/complete --force
+rm $INSTALLDIR/masternode.all --force
+rm $INSTALLDIR/masternode.1 --force
+rm $INSTALLDIR/masternode.l* --force
+rm $INSTALLDIR/DONATION --force
+rm $INSTALLDIR/DONATEADDR --force
+rm $INSTALLDIR/txid --force
+rm $INSTALLDIR/mnaliases --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
