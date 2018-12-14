@@ -11,7 +11,7 @@ LOGFILE='/root/installtemp/checkdaemon.log'
 
 for ((i=1;i<=$MNS;i++));
 do
-echo -e " Checking for stuck blocks on masternode $i"
+echo -e " Checking for stuck blocks on masternode "$PROJECT"_n${i}"
 previousBlock=`cat /root/installtemp/blockcount${i}`
 currentBlock=$(/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
 /usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > /root/installtemp/blockcount${i}
