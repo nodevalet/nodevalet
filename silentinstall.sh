@@ -52,7 +52,7 @@ touch '/root/installtemp/checkdaemon.log'
 	fi
 	
 # set donation address front project.env
-	curl -LJO https://raw.githubusercontent.com/akcryptoguy/code-red/master/nodemaster/config/$PROJECT/$PROJECT.env
+	curl -LJO https://raw.githubusercontent.com/akcryptoguy/code-red/master/nodemaster/config/$PROJECT/$PROJECT.env  | tee -a "$LOGFILE"
 	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $DONATION_ADDRESS ] ; then 
 	echo "$DONATION_ADDRESS" > $INSTALLDIR/DONATEADDR
