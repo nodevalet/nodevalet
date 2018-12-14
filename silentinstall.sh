@@ -281,10 +281,7 @@ do
 	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
 	paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i $INSTALLDIR/DONATION >> $INSTALLDIR/masternode.conf
 	else paste -d ' ' $INSTALLDIR/MNALIAS$i $INSTALLDIR/IPADDR$i $INSTALLDIR/GENKEY$i $INSTALLDIR/TXID$i >> $INSTALLDIR/masternode.conf
-	fi
-
-	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
-	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1	
+	fi	
 	
 # declutter ; take out trash
 # rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
@@ -295,6 +292,9 @@ do
 sleep 2
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
+	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
+	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
+
 	# Log whether or not a donation has been entered into masternode.conf
 	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
 	echo -e "User chose to donate $DONATE % to $DONATEADDR"  | tee -a "$LOGFILE"
