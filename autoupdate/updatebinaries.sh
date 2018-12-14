@@ -3,15 +3,16 @@
 
 LOGFILE='/root/installtemp/autoupdate.log'
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh" | tee -a "$LOGFILE"
-
 cd /root/installtemp
+INSTALLDIR='/root/installtemp'
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
 GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSION" | tee -a "$LOGFILE"
 	echo -e "Attempting to install new binaries" | tee -a "$LOGFILE"
-		systemctl stop 'helium*' \
+		systemctl stop '$PROJECT*' \
 		| curl -s $GITAPI_URL \
 		| grep browser_download_url \
   		| grep x86_64-linux-gnu.tar.gz \
