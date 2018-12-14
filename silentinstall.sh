@@ -2,7 +2,7 @@
 # Silently install masternodes and insert privkeys
 
 # for testing
-echo 'helium' >> /root/installtemp/vpscoin.info
+# echo 'helium' >> /root/installtemp/vpscoin.info
 
 function setup_environment() {
 # Set Variables
@@ -389,6 +389,7 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
-restart_server
+echo "this is where i'd normally restart"
+# restart_server
 
 echo -e "A log of these install events was saved to: $LOGFILE \n"
