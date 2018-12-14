@@ -131,7 +131,7 @@ function add_cron() {
 	chmod 0700 /root/code-red/autoupdate/updatebinaries.sh
 	chmod 0700 /root/code-red/autoupdate/updatefromsource.sh
 	# automatically check for wallet updates every 1 day
-	(crontab -l ; echo "*/* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 	
 }
 
