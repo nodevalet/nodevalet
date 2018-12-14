@@ -5,4 +5,6 @@ LOGFILE='/root/installtemp/autoupdate.log'
 
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate to make sure wallet software is up to date." | tee -a "$LOGFILE"
 
-bash /root/code-red/autoupdate/updatebinaries.sh || bash /root/code-red/autoupdate/updatefromsource.sh || cd /usr/local/bin && ./activate_masternodes_helium
+INSTALLDIR='/root/installtemp'
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
+bash /root/code-red/autoupdate/updatebinaries.sh || bash /root/code-red/autoupdate/updatefromsource.sh || cd /usr/local/bin && ./activate_masternodes_"$PROJECT"
