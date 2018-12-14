@@ -135,21 +135,21 @@ function add_cron() {
 	echo -e "Adding crontabs"  | tee -a "$LOGFILE"
 # reboot logic for status feedback
 	echo -e "Adding postinstall crontab to run every minute"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/1 * * * * root sh /root/code-red/postinstall_api.sh") | crontab - | tee -a "$LOGFILE"
-	# (crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
+	# (crontab -l ; echo "*/1 * * * * root sh /root/code-red/postinstall_api.sh") | crontab - | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 	echo -e "Adding autoupdate crontab to run every day"  | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
 	echo -e "Adding crontab to check for wallet updates every day"  | tee -a "$LOGFILE"
 	chmod 0700 /root/code-red/autoupdate/autoupdate.sh
 	chmod 0700 /root/code-red/autoupdate/updatebinaries.sh
 	chmod 0700 /root/code-red/autoupdate/updatefromsource.sh	
-	(crontab -l ; echo "* * 1 * * root sh /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
-	# (crontab -l ; echo "* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	# (crontab -l ; echo "* * 1 * * root sh /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "* * 1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check that for stuck blocks and restart masternode if it is stuck
 	echo -e "Adding crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	chmod 0700 /root/code-red/maintenance/checkdaemon.sh
-	(crontab -l ; echo "*/30 * * * * root sh /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
-	# (crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
+	# (crontab -l ; echo "*/30 * * * * root sh /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
 }
 
 function silent_harden() {
