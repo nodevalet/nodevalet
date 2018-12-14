@@ -22,24 +22,17 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	then PROJECT=`cat $INSTALLDIR/vpscoin.info`
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."  | tee -a "$LOGFILE"
-		
-		# 		![ -d /root/code-red/nodemaster/config/${PROJECT} ] || echo -e " --> Try again; that's not a supported program. \n";continue; }	
+		echo -e " In one word, which coin are installing today? "
 		while :; do
-		read -p " In one word, which coin are installing today? " PROJECT
+		read -p "  --> " PROJECT
 		if [ -d /root/code-red/nodemaster/config/${PROJECT} ]
 		then echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		break
-		else echo -e " --> $PROJECT is not supported, try again. \n"  | tee -a "$LOGFILE"
+		else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
 		fi
 		done
-	
 	fi
 		
-		# add error checking logic and repeat if necessary
-		
-		
-		
-
 # set hostname variable to the name planted by install script
 	if [ -e $INSTALLDIR/vpshostname.info ]
 	then HNAME=$(<$INSTALLDIR/vpshostname.info)
@@ -107,7 +100,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e " Please enter the masternode address for masternode #$i :"
 		read -p "  --> " MNADDP
 		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
-		echo -e "Masternode $i address set to: $MNADDP."  | tee -a "$LOGFILE"
+		echo -e "Masternode $i address is: $MNADDP."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 		done
 	fi
