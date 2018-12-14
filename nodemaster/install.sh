@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# Set Variables
+INSTALLDIR='/root/installtemp'
+LOGFILE='/root/installtemp/silentinstall.log'
+
+
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
 #  ████╗  ██║██╔═══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
 #  ██╔██╗ ██║██║   ██║██║  ██║█████╗  ██╔████╔██║███████║███████╗   ██║   █████╗  ██████╔╝
@@ -111,6 +117,13 @@ function check_distro() {
 # /* no parameters, installs the base set of packages that are required for all projects */
 #
 function install_packages() {
+
+# check if binaries already exist, skip installing crypto packages if they aren't needed
+dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
+if [ "$dEXIST" = ${CODENAME}d ] ; then
+echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" tee -a ${SCRIPT_LOGFILE}
+else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" tee -a ${SCRIPT_LOGFILE}
+
     # development and build packages
     # these are common on all cryptos
     echo "* Package installation!"
@@ -121,7 +134,8 @@ function install_packages() {
     libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
     libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
     pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
-    
+fi
+
 # add custom logo to VPS login
 rm -r /etc/update-motd.d/
 mkdir /etc/update-motd.d/
