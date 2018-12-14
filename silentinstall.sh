@@ -135,7 +135,7 @@ function add_cron() {
 	echo -e "Adding crontabs"  | tee -a "$LOGFILE"
 # reboot logic for status feedback
 	echo -e "Adding postinstall crontab to run every minute"  | tee -a "$LOGFILE"
-	# (crontab -l ; echo "*/1 * * * * root sh /root/code-red/postinstall_api.sh") | crontab - | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/1 * * * * root sh /root/code-red/postinstall_api.sh") | crontab - | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * /root/code-red/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 	echo -e "Adding autoupdate crontab to run every day"  | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
