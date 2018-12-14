@@ -84,8 +84,16 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
-	else MNS=5
-	echo -e "vpsnumber.info not found, will build $MNS for now"  | tee -a "$LOGFILE"
+	else echo -e "Please enter the number of masternodes to install : "  | tee -a "$LOGFILE"
+		while :; do
+		read -p "  --> " MNS
+		if (($MNS >= 1 && $MNS <= 50))
+		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
+		echo -e "${MNS}" > $INSTALLDIR/vpsnumber.info
+		break
+		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
+		fi
+		done
 	fi
 	
 # read or collect masternode addresses
