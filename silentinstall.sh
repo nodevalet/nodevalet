@@ -290,7 +290,7 @@ do
 # rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
-sleep 2
+# sleep 2
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
