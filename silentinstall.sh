@@ -36,8 +36,9 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	fi
 		
 		# add error checking logic and repeat if necessary
-#		done
-	fi
+		
+		
+		
 
 # set hostname variable to the name planted by install script
 	if [ -e $INSTALLDIR/vpshostname.info ]
