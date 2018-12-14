@@ -21,14 +21,20 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	if [ -s $INSTALLDIR/vpscoin.info ]
 	then PROJECT=`cat $INSTALLDIR/vpscoin.info`
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
-	else echo -e "Please check the readme for the list supported projects."  | tee -a "$LOGFILE"
-		echo -e " In one word, which project are you planning to install today?\n"
+	else echo -e "Please check the readme for a list supported coins."  | tee -a "$LOGFILE"
 		
-#		for ((i=1;i<=$MNS;i++)); 
-#		do 
-		read -p "  --> " PROJECT
+		# 		![ -d /root/code-red/nodemaster/config/${PROJECT} ] || echo -e " --> Try again; that's not a supported program. \n";continue; }	
+		while :; do
+		read -p " In one word, which coin are installing today? " PROJECT
+		if [ -d /root/code-red/nodemaster/config/${PROJECT} ]
+		then echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
+		break
+		else echo -e " --> $PROJECT is not supported, try again. \n"  | tee -a "$LOGFILE"
+		fi
+		done
+	
+	fi
 		
-		echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
 #		done
 	fi
