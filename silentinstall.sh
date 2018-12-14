@@ -171,13 +171,13 @@ function install_mns() {
 		cat $INSTALLDIR/${PROJECT}Ds >> $LOGFILE
 		if [ -s $INSTALLDIR/${PROJECT}Ds ]
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
-		# report back to mothership
-		echo -e "Reporting ${PROJECT}d build success to the mothership" | tee -a "$LOGFILE"
+		# report back to mother
+		echo -e "Reporting ${PROJECT}d build success to the mother" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "$PROJECTd has started..."}' && echo -e " "
 		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
-		echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build failure to the mother" | tee -a "$LOGFILE"
 		curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: $PROJECTd failed to build or start"}' && echo -e " "
 		exit
 		fi
@@ -189,7 +189,7 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
-echo -e "Reporting ${PROJECT}d build failure to the mothership" | tee -a "$LOGFILE"
+echo -e "Reporting ${PROJECT}d build failure to the mother" | tee -a "$LOGFILE"
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
 		exit
 else
@@ -304,7 +304,7 @@ done
 	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
 	fi
 	
-	echo -e "Converting masternode.conf to one delineated line for mothership" | tee -a "$LOGFILE"
+	echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE"
 	# convert masternode.conf to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/complete
 
@@ -367,7 +367,7 @@ echo -e "Probably finished installing binaries"  | tee -a "$LOGFILE"
 }
 
 function restart_server() {
-	echo -e "Going to restart server immediately. . . " | tee -a "$LOGFILE"
+	echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
 	shutdown -r now
 }
 
@@ -396,7 +396,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 touch /root/vpsvaletreboot.txt
 chmod 0700 /root/code-red/postinstall_api.sh
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
-echo "this is where i'd normally restart"
 restart_server
 
 echo -e "A log of these install events was saved to: $LOGFILE \n"
