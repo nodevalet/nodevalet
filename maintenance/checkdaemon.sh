@@ -6,15 +6,22 @@
 
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
+MNS=`cat $INSTALLDIR/vpsnumber.info`
+LOGFILE='/root/installtemp/checkdaemon.log'
 
-previousBlock=$(cat /root/installtemp/blockcount)
-currentBlock=$(/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n1.conf getblockcount)
-
-/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n1.conf getblockcount > /root/installtemp/blockcount
-
-if [ "$previousBlock" == "$currentBlock" ]; then
-  	systemctl stop '$PROJECT*';
-  	sleep 10;
-  	cd /usr/local/bin; 
-	./activate_masternodes_"$PROJECT";
+for ((i=1;i<=$MNS;i++));
+do
+echo -e " Checking for stuck blocks on masternode $i"
+previousBlock=`cat /root/installtemp/blockcount${i}`
+currentBlock=$(/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
+/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > /root/installtemp/blockcount${i}
+if [ "$previousBlock$" == "$currentBlock$" ]; then
+	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
+	echo -e " `date +%Y.%m.%d" "%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
+        systemctl stop "$PROJECT"_n${i};
+        sleep 10;
+        systemctl start "$PROJECT"_n${i};
+else echo -e " Previous block is $previousBlock and current block is $currentBlock."
+echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
 fi
+done
