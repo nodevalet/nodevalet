@@ -25,8 +25,9 @@ LOGFILE='/root/installtemp/silentinstall.log'
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
-		if [ -d /root/code-red/nodemaster/config/${PROJECT} ]
+		if [ -d /root/code-red/nodemaster/config/${PROJECT,,} ]
 		then echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
+		echo -e "${PROJECT,,}" > $INSTALLDIR/vpscoin.info
 		break
 		else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
 		fi
