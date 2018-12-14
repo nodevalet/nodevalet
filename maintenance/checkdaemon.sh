@@ -2,7 +2,7 @@
 # checkdaemon.sh
 # Make sure the daemon is not stuck.
 # Add the following to the crontab (i.e. crontab -e)
-# */30 * * * * /root/code-red/checkdaemon.sh
+# */30 * * * * /root/code-red/maintenance/checkdaemon.sh
 
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
