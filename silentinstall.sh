@@ -311,9 +311,9 @@ echo -e " ${PROJECT}_n$i.conf after substitution is : $masternodeprivkeybefore" 
 	fi	
 	
 # declutter ; take out trash
-# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV$i ; rm $INSTALLDIR/TXID$i
-# rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
+rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/TXID$i
+rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 # sleep 2
@@ -366,6 +366,7 @@ rm $INSTALLDIR/DONATEADDR --force
 rm $INSTALLDIR/txid --force
 rm $INSTALLDIR/mnaliases --force
 rm $INSTALLDIR/${PROJECT}Ds --force
+rm $INSTALLDIR/MNPRIV* --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
