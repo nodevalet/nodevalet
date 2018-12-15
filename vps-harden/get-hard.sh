@@ -1161,7 +1161,7 @@ begin_log
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space..."}' && echo -e " "
 create_swap
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server ..."}' && echo -e " "
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server Software ..."}' && echo -e " "
 update_upgrade
 favored_packages
 # crypto_packages
