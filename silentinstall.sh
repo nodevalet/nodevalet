@@ -409,6 +409,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
-# restart_server
+restart_server
 
 echo -e "A log of these install events was saved to: $LOGFILE \n"
