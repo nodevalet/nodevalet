@@ -381,7 +381,7 @@ echo -e "Probably finished installing binaries"  | tee -a "$LOGFILE"
 
 function restart_server() {
 	echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
-	cat /run/reboot* > "$LOGFILE"
+	cat /run/reboot* >> "$LOGFILE"
 	shutdown -r now "Server is going down for upgrade."
 }
 
