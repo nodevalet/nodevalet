@@ -320,9 +320,6 @@ rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
 
-echo "/etc/masternodes/helium_n1.conf"
-sleep 30
-
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
