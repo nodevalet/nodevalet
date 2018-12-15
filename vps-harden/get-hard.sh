@@ -199,6 +199,7 @@ printf "${white}"
 	printf "${cyan}"
 	figlet System Upgrade | tee -a "$LOGFILE"
 	printf "${yellow}"
+	curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server..."}' && echo -e " "
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
@@ -1151,12 +1152,16 @@ echo -e "${nocolor}"
 }
 
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Upgrading Server..."}' && echo -e " "
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server..."}' && echo -e " "
 setup_environment
 
 display_banner
 begin_log
+
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space..."}' && echo -e " "
 create_swap
+
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server..."}' && echo -e " "
 update_upgrade
 favored_packages
 # crypto_packages
