@@ -22,6 +22,7 @@ if [ -e /root/vpsvaletreboot.txt ]; then
 
 # Add a sequence to interpret the reply as success or fail $?
 rm /root/vpsvaletreboot.txt
+crontab -l | grep -v '/root/code-red/maintenance/postinstall_api.sh'  | crontab -
 
 # add code to clean up the rest of unnecessary files; keep the log and masternode files except for the mnaddresses
 # rm -rf /root/installtemp
