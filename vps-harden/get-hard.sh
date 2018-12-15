@@ -1167,7 +1167,7 @@ favored_packages
 # crypto_packages
 # add_user
 
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Now Hardening the Server..."}' && echo -e " "
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Now Hardening Server Security..."}' && echo -e " "
 collect_sshd
 prompt_rootlogin
 disable_passauth
