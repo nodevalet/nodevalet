@@ -6,7 +6,14 @@ echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOG
 cd /root/installtemp
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
-GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+
+# Pull GITAPI_URL from $PROJECT.env
+GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+echo "$GIT_API" > $INSTALLDIR/GIT_API
+sed -i "s/GITAPI_URL=//" $INSTALLDIR/GIT_API
+GITAPI_URL=$(<$INSTALLDIR/GIT_API)
+
+# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
