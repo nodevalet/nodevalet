@@ -27,7 +27,7 @@ then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSIO
 	libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
 	libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
 	pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev
-	systemctl stop '$PROJECT*' \
+	systemctl stop $PROJECT* \
 	&& git clone https://github.com/heliumchain/helium.git \
 	&& cd $PROJECT \
 	&& ./autogen.sh \
