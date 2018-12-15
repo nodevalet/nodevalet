@@ -353,6 +353,7 @@ rm $INSTALLDIR/DONATION --force
 rm $INSTALLDIR/DONATEADDR --force
 rm $INSTALLDIR/txid --force
 rm $INSTALLDIR/mnaliases --force
+rm $INSTALLDIR/${PROJECT}Ds --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
@@ -381,7 +382,13 @@ EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
 cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 rm -r $EXTRACTDIR
 rm -f $TARBALL
-echo -e "Probably finished installing binaries"  | tee -a "$LOGFILE"
+
+# check if binaries already exist, skip installing crypto packages if they aren't needed
+dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
+if [ "$dEXIST" = ${CODENAME}d ]
+then echo -e "Binaries for ${CODENAME} were downloaded and installed." tee -a ${SCRIPT_LOGFILE}
+else echo -e "Binaries for ${CODENAME} could not be downloaded."  | tee -a "$LOGFILE"
+fi
 }
 
 function restart_server() {
@@ -415,5 +422,3 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 touch /root/vpsvaletreboot.txt
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
 restart_server
-
-echo -e "A log of these install events was saved to: $LOGFILE \n"
