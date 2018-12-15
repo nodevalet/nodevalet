@@ -257,10 +257,16 @@ do
 	
 	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
+echo -e "genkey variable for substitution set to: $GENKEYVAR" >> $LOGFILE
 	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
 	# insert new genkey into project_n$i.conf files
+masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+echo -e " ${PROJECT}_n$i.conf before substitution is : $masternodeprivkeybefore" > $LOGFILE
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf >> $LOGFILE 2>&1
+masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+echo -e " ${PROJECT}_n$i.conf after substitution is : $masternodeprivkeybefore" > $LOGFILE
+		
 	
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
@@ -305,14 +311,18 @@ do
 	fi	
 	
 # declutter ; take out trash
-rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV$i ; rm $INSTALLDIR/TXID$i
-rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
+# rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
+# rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV$i ; rm $INSTALLDIR/TXID$i
+# rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
 # sleep 2
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
+
+echo "/etc/masternodes/helium_n1.conf"
+sleep 30
+
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
