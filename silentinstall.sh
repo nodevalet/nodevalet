@@ -394,7 +394,7 @@ cd /root/installtemp
 	GITAPI_URL=$(<$INSTALLDIR/GIT_API)
 	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
 	else
-	echo -e "Cannot download binaries; no GIT_URL was detected." | tee -a "$LOGFILE"
+	echo -e "Cannot download binaries; no $GITAPI_URL was detected." | tee -a "$LOGFILE"
 	fi
 	
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
@@ -414,7 +414,8 @@ rm -f $TARBALL
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
 dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
-if [ "$dEXIST" = ${CODENAME}d ]
+
+if [ "$dEXIST" = "${CODENAME}d" ]
 then echo -e "Binaries for ${CODENAME} were downloaded and installed." tee -a ${SCRIPT_LOGFILE}
 else echo -e "Binaries for ${CODENAME} could not be downloaded."  | tee -a "$LOGFILE"
 fi
