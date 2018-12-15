@@ -275,7 +275,18 @@ do
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
 	
 	# obtain txid
-	curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
+	
+	# Pull BLOCKEXP from $PROJECT.env
+	BLOCKEX=`grep ^BLOCKEXP /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	if [ -n $BLOCKEX ] ; then 
+	echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
+	sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
+	BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
+	echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE" ; else
+	echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+	fi
+	
+	curl -s "$BLOCKEXP`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
 	TX=`echo $(cat $INSTALLDIR/TXID$i)`
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
