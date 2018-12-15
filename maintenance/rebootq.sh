@@ -11,12 +11,15 @@ cat /run/reboot* > $INSTALLDIR/REBOOTREQ
 
 if [ -s $INSTALLDIR/REBOOTREQ ]
 then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Reboot required to finish installing these updates" | tee -a "$LOGFILE"
-echo -e "`cat /run/reboot*" | tee -a "$LOGFILE"
+echo -e "`cat /run/reboot*`" | tee -a "$LOGFILE"
+# cat /run/reboot* | tr -d "*** System restart required ***"
+# sed '/^$/d' "$LOGFILE"
+
 rm $INSTALLDIR/REBOOTREQ
 shutdown -r +5 "Restarting server to install updates"
 # reboot server
-	
-else 
+
+else
 echo -e "No reboot is required at this time"
 fi
 
