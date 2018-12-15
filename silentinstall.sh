@@ -21,7 +21,7 @@ touch '/root/installtemp/checkdaemon.log'
 	else HNAME=`hostname`
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your VPS is online and has begun reporting its status ..."}' && echo -e " "
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and has begun reporting its status ..."}' && echo -e " "
 sleep 2
 	
 # set project name
