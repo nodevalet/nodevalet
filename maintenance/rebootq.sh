@@ -17,7 +17,7 @@ shutdown -r +5 "Restarting server to install updates"
 # reboot server
 	
 else 
-echo -e "No restart is required at this time"
+echo -e "No reboot is required at this time"
 fi
 
 exit
