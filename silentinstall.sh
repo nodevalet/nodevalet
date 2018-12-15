@@ -375,7 +375,18 @@ function install_binaries() {
 #check for binaries and install if found   
 echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
 cd /root/installtemp
-GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+	# Pull GITAPI_URL from $PROJECT.env
+	GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	if [ -n $GIT_API ] ; then 
+	echo "$GIT_API" > $INSTALLDIR/GIT_API
+	sed -i "s/GITAPI_URL=//" $INSTALLDIR/GIT_API
+	GITAPI_URL=$(<$INSTALLDIR/GIT_API)
+	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
+	else
+	echo -e "Cannot download binaries; no GIT_URL was detected." | tee -a "$LOGFILE"
+	fi
+	
+# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 curl -s $GITAPI_URL \
       | grep tag_name > currentversion   | tee -a "$LOGFILE"
 curl -s $GITAPI_URL \
