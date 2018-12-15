@@ -413,11 +413,11 @@ rm -r $EXTRACTDIR
 rm -f $TARBALL
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
+dEXIST=`ls /usr/local/bin | grep ${PROJECT}d`
 
-if [ "$dEXIST" = "${CODENAME}d" ]
-then echo -e "Binaries for ${CODENAME} were downloaded and installed." tee -a ${SCRIPT_LOGFILE}
-else echo -e "Binaries for ${CODENAME} could not be downloaded."  | tee -a "$LOGFILE"
+if [ "$dEXIST" = "${PROJECT}d" ]
+then echo -e "Binaries for ${PROJECT} were downloaded and installed."   | tee -a "$LOGFILE"
+else echo -e "Binaries for ${PROJECT} could not be downloaded."  | tee -a "$LOGFILE"
 fi
 }
 
