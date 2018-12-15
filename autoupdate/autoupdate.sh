@@ -7,4 +7,4 @@ PROJECT=`cat $INSTALLDIR/vpscoin.info`
 
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
 
-bash /root/code-red/autoupdate/updatebinaries.sh || bash /root/code-red/autoupdate/updatefromsource.sh || cd /usr/local/bin && ./activate_masternodes_"$PROJECT"
+bash /root/code-red/autoupdate/updatebinaries.sh || bash /root/code-red/autoupdate/updatefromsource.sh || /usr/local/bin/activate_masternodes_"$PROJECT"
