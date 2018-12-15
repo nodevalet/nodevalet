@@ -106,6 +106,8 @@ clear
 LOGFILE='/root/installtemp/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
+HNAME=$(<$INSTALLDIR/vpshostname.info)
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
 }
 
 function begin_log() {
@@ -1149,18 +1151,9 @@ echo -e "${nocolor}"
 }
 
 
-function gather_genkeys() {
-echo -e "${lightcyan}"
-
-
-echo -e "${nocolor}"
-}
-
-
-
-
-
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating and Upgrading Server..."}' && echo -e " "
 setup_environment
+
 display_banner
 begin_log
 create_swap
@@ -1168,6 +1161,8 @@ update_upgrade
 favored_packages
 # crypto_packages
 # add_user
+
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Now Hardening the Server..."}' && echo -e " "
 collect_sshd
 prompt_rootlogin
 disable_passauth
@@ -1178,6 +1173,5 @@ server_hardening
 restart_sshd
 install_complete
 
-gather_genkeys
 
 exit
