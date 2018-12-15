@@ -263,7 +263,7 @@ echo -e "genkey variable for substitution set to: $GENKEYVAR" >> $LOGFILE
 	# insert new genkey into project_n$i.conf files
 masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
 echo -e " ${PROJECT}_n$i.conf before substitution is : $masternodeprivkeybefore" >> $LOGFILE
-	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf >> $LOGFILE 2>&1
+	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
 masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
 echo -e " ${PROJECT}_n$i.conf after substitution is : $masternodeprivkeybefore" >> $LOGFILE
 		
