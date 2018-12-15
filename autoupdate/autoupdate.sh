@@ -2,8 +2,9 @@
 # to be added to crontab to run updatebinaries and, if that fails, run updatefromsource, if that fails, restarts daemon and try again tomorrow.
 
 LOGFILE='/root/installtemp/autoupdate.log'
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
 
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate to make sure wallet software is up to date." | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
 
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
