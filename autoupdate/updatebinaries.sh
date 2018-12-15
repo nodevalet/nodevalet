@@ -19,7 +19,7 @@ NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSION" | tee -a "$LOGFILE"
 	echo -e "Attempting to install new binaries" | tee -a "$LOGFILE"
-		systemctl stop '$PROJECT*' \
+		systemctl stop $PROJECT* \
 		| curl -s $GITAPI_URL \
 		| grep browser_download_url \
   		| grep x86_64-linux-gnu.tar.gz \
