@@ -2,7 +2,7 @@
 #check for updates and install binaries if necessary
 
 LOGFILE='/root/installtemp/autoupdate.log'
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh" | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"
 cd /root/installtemp
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
