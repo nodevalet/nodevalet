@@ -14,6 +14,16 @@ touch '/root/installtemp/checkdaemon.log'
 	else :
 	fi
 	
+# set hostname variable to the name planted by install script
+	if [ -e $INSTALLDIR/vpshostname.info ]
+	then HNAME=$(<$INSTALLDIR/vpshostname.info)
+	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
+	else HNAME=`hostname`
+	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
+	fi
+curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your VPS is online and reporting its status ..."}' && echo -e " "
+sleep 2
+	
 # set project name
 # need to get this configured before we scale additional projects
 	if [ -s $INSTALLDIR/vpscoin.info ]
@@ -31,16 +41,6 @@ touch '/root/installtemp/checkdaemon.log'
 		fi
 		done
 	fi
-		
-# set hostname variable to the name planted by install script
-	if [ -e $INSTALLDIR/vpshostname.info ]
-	then HNAME=$(<$INSTALLDIR/vpshostname.info)
-	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
-	else HNAME=`hostname`
-	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
-	fi
-curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is checking in ..."}' && echo -e " "
-sleep 5
 
 # set donation percentage
 	if [ -e $INSTALLDIR/vpsdonation.info ]
