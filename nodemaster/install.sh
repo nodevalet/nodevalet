@@ -122,8 +122,8 @@ function install_packages() {
 # check if binaries already exist, skip installing crypto packages if they aren't needed
 dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
 if [ "$dEXIST" = ${CODENAME}d ] ; then
-echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" tee -a ${SCRIPT_LOGFILE}
-else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" tee -a ${SCRIPT_LOGFILE}
+echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
+else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
 
     # development and build packages
     # these are common on all cryptos
@@ -870,7 +870,7 @@ source ${SCRIPTPATH}/config/default.env
 
 main() {
 
-    echo "starting" &> ${SCRIPT_LOGFILE}
+    echo "starting" &>> ${SCRIPT_LOGFILE}
     showbanner
 
     # debug

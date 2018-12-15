@@ -275,7 +275,18 @@ do
 	echo -e "$(sed -n ${i}p $INSTALLDIR/mnipaddresses)" > $INSTALLDIR/IPADDR$i
 	
 	# obtain txid
-	curl -s "https://www.heliumchain.info/api/address/`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
+	
+	# Pull BLOCKEXP from $PROJECT.env
+	BLOCKEX=`grep ^BLOCKEXP /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	if [ -n $BLOCKEX ] ; then 
+	echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
+	sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
+	BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
+	echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE" ; else
+	echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+	fi
+	
+	curl -s "$BLOCKEXP`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
 	TX=`echo $(cat $INSTALLDIR/TXID$i)`
 	echo -e $TX >> $INSTALLDIR/txid
 	echo -e $TX > $INSTALLDIR/TXID$i
@@ -375,7 +386,18 @@ function install_binaries() {
 #check for binaries and install if found   
 echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
 cd /root/installtemp
-GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+	# Pull GITAPI_URL from $PROJECT.env
+	GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	if [ -n $GIT_API ] ; then 
+	echo "$GIT_API" > $INSTALLDIR/GIT_API
+	sed -i "s/GITAPI_URL=//" $INSTALLDIR/GIT_API
+	GITAPI_URL=$(<$INSTALLDIR/GIT_API)
+	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
+	else
+	echo -e "Cannot download binaries; no $GITAPI_URL was detected." | tee -a "$LOGFILE"
+	fi
+	
+# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 curl -s $GITAPI_URL \
       | grep tag_name > currentversion   | tee -a "$LOGFILE"
 curl -s $GITAPI_URL \
@@ -391,10 +413,11 @@ rm -r $EXTRACTDIR
 rm -f $TARBALL
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
-if [ "$dEXIST" = ${CODENAME}d ]
-then echo -e "Binaries for ${CODENAME} were downloaded and installed." tee -a ${SCRIPT_LOGFILE}
-else echo -e "Binaries for ${CODENAME} could not be downloaded."  | tee -a "$LOGFILE"
+dEXIST=`ls /usr/local/bin | grep ${PROJECT}d`
+
+if [ "$dEXIST" = "${PROJECT}d" ]
+then echo -e "Binaries for ${PROJECT} were downloaded and installed."   | tee -a "$LOGFILE"
+else echo -e "Binaries for ${PROJECT} could not be downloaded."  | tee -a "$LOGFILE"
 fi
 }
 
