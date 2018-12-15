@@ -137,16 +137,21 @@ function add_cron() {
 # reboot logic for status feedback
 	echo -e "Add postinstall crontab to run every minute"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * /root/code-red/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
-	echo -e "Add autoupdate crontab to run every day"  | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
-	echo -e "Add crontab to check for wallet updates every day"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "* * */1 * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	echo -e "Add crontab to check for wallet updates every day at noon"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 0 12 * * ? /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check that for stuck blocks and restart masternode if it is stuck
 	echo -e "Add crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for updates that require a reboot and reboot if necessary
-	echo -e "Add crontab to reboot if required to install updates every day"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "* * */1 * * /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"	
+	echo -e "Add crontab to reboot if required to install updates every day at midnight"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 0 0 * * ? /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
+# make sure all daemon are running
+	echo -e "Add crontab to make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/5 * * * * /root/code-red/maintenance/makerun.sh") | crontab -   | tee -a "$LOGFILE"
+# clear coin's debug.log every two days
+	echo -e "Add crontab to clear deamon debug logs bi-daily to prevent clog"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 0 0 ? * 1/2 * /root/code-red/maintenance/cleardebuglog.sh") | crontab -   | tee -a "$LOGFILE"
 }
 
 function silent_harden() {
