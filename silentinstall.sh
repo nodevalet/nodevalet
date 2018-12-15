@@ -147,6 +147,9 @@ function add_cron() {
 # automatically check that for stuck blocks and restart masternode if it is stuck
 	echo -e "Adding crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
+# automatically check for updates that require a reboot and reboot if necessary
+	echo -e "Adding crontab to check for required update-reboots every 10 minutes"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/10 * * * * /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"	
 }
 
 function silent_harden() {
@@ -409,6 +412,6 @@ curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type
 # create file to signal cron that reboot has occurred
 touch /root/vpsvaletreboot.txt
 curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting server to finalize installation..."}' && echo -e " "
-restart_server
+# restart_server
 
 echo -e "A log of these install events was saved to: $LOGFILE \n"
