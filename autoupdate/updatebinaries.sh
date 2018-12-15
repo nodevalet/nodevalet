@@ -8,7 +8,7 @@ INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
 
 # Pull GITAPI_URL from $PROJECT.env
-GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GIT_API" > $INSTALLDIR/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/GIT_API)
