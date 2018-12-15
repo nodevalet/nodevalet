@@ -107,6 +107,7 @@ LOGFILE='/root/installtemp/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 HNAME=$(<$INSTALLDIR/vpshostname.info)
+INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
 }
 
