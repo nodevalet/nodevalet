@@ -257,16 +257,13 @@ do
 	
 	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
-echo -e "genkey variable for substitution set to: $GENKEYVAR" >> $LOGFILE
+	
 	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
 
 	# insert new genkey into project_n$i.conf files
-masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
-echo -e " ${PROJECT}_n$i.conf before substitution is : $masternodeprivkeybefore" >> $LOGFILE
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
-masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
-echo -e " ${PROJECT}_n$i.conf after substitution is : $masternodeprivkeybefore" >> $LOGFILE
-		
+	masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+	echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : $masternodeprivkeybefore" >> $LOGFILE	
 	
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
