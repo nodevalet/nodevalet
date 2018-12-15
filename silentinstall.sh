@@ -1,9 +1,6 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
-# for testing
-# echo 'helium' >> /root/installtemp/vpscoin.info
-
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/root/installtemp'
