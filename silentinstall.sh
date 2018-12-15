@@ -259,7 +259,7 @@ do
 
 	# insert new genkey into project_n$i.conf files
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf >> $LOGFILE 2>&1
-
+	
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
 	
@@ -304,7 +304,7 @@ do
 	
 # declutter ; take out trash
 rm $INSTALLDIR/GENKEY${i}FIN ; rm $INSTALLDIR/GENKEY$i ; rm $INSTALLDIR/IPADDR$i ; rm $INSTALLDIR/MNADD$i
-rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV* ; rm $INSTALLDIR/TXID$i
+rm $INSTALLDIR/MNALIAS$i ; rm $INSTALLDIR/MNPRIV$i ; rm $INSTALLDIR/TXID$i
 rm $INSTALLDIR/$PROJECTDs --force; rm $INSTALLDIR/DELIMETER
 
 # slow it down to not upset the blockchain API
