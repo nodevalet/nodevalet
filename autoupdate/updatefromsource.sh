@@ -2,7 +2,7 @@
 #check for updates and build from source if installing binaries failed. 
 
 LOGFILE='/root/installtemp/autoupdate.log'
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
 cd /root/installtemp
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
@@ -17,8 +17,8 @@ GITAPI_URL=$(<$INSTALLDIR/GIT_API)
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then 	echo -e "I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
-	echo -e "attempting to build new wallet version from source" | tee -a "$LOGFILE"
+then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
+	echo -e " attempting to build new wallet version from source" | tee -a "$LOGFILE"
 	add-apt-repository -yu ppa:bitcoin/bitcoin
 	apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
 	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install build-essential \
@@ -39,7 +39,7 @@ then 	echo -e "I couldn't download the new binaries, so I am now" | tee -a "$LOG
 	&& cd /root/installtemp \
 	&& curl -s $GITAPI_URL \
 		| grep tag_name > currentversion \
-	&& echo -e "Rebooting after building new ${PROJECT} wallet\n" \
+	&& echo -e " Rebooting after building new ${PROJECT} wallet\n" \
 		| tee -a "$LOGFILE" \
 	&& reboot
 fi
