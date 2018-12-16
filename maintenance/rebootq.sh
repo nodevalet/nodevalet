@@ -6,6 +6,9 @@
 INSTALLDIR='/root/installtemp'
 LOGFILE='/root/installtemp/update-reboot.log'
 
+
+then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running rebootsq.sh to check for required reboot" | tee -a "$LOGFILE"
+
 # if reqboot is required, write which packages require it
 cat /run/reboot* > $INSTALLDIR/REBOOTREQ
 
@@ -18,7 +21,7 @@ sed -i '/restart required/d' "$LOGFILE"
 # sed '/^$/d' "$LOGFILE"
 
 rm $INSTALLDIR/REBOOTREQ
-shutdown -r +5 "Restarting server to install updates"
+shutdown -r +5 "Restarting server to install updates in 5 minutes \n" | tee -a "$LOGFILE"
 # reboot server
 
 else
