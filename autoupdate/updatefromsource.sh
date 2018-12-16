@@ -17,8 +17,7 @@ GITAPI_URL=$(<$INSTALLDIR/GIT_API)
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSION" | tee -a "$LOGFILE"
-	echo -e "I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
+then 	echo -e "I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
 	echo -e "attempting to build new wallet version from source" | tee -a "$LOGFILE"
 	add-apt-repository -yu ppa:bitcoin/bitcoin
 	apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
@@ -39,6 +38,8 @@ then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSIO
 	&& rm -rf root/installtemp/$PROJECT \
 	&& cd /root/installtemp \
 	&& curl -s $GITAPI_URL \
-             | grep tag_name > currentversion \
+		| grep tag_name > currentversion \
+	&& echo -e "Rebooting after building new ${PROJECT} wallet\n" \
+		| tee -a "$LOGFILE" \
 	&& reboot
 fi
