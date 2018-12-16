@@ -2,7 +2,7 @@
 #check for updates and install binaries if necessary
 
 LOGFILE='/root/installtemp/autoupdate.log'
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
 cd /root/installtemp
 INSTALLDIR='/root/installtemp'
 PROJECT=`cat $INSTALLDIR/vpscoin.info`
@@ -34,7 +34,7 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
              		| grep tag_name > currentversion \
 		&& rm -r $EXTRACTDIR \
 		&& rm -f $TARBALL \
-		&& echo -e "Rebooting after installation of new ${PROJECT} binaries\n" \
+		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" \
 			| tee -a "$LOGFILE" \
 		&& reboot
 fi
