@@ -17,8 +17,9 @@ GITAPI_URL=$(<$INSTALLDIR/GIT_API)
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSION" | tee -a "$LOGFILE"
-	echo -e "Attempting to install new binaries" | tee -a "$LOGFILE"
+then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
+     echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
+     echo -e " Attempting to install new binaries" | tee -a "$LOGFILE"
 		systemctl stop $PROJECT* \
 		| curl -s $GITAPI_URL \
 		| grep browser_download_url \
@@ -33,5 +34,7 @@ then echo -e "Installed version is $CURVERSION; new version detected: $NEWVERSIO
              		| grep tag_name > currentversion \
 		&& rm -r $EXTRACTDIR \
 		&& rm -f $TARBALL \
+		&& echo -e "Rebooting after installation of new ${PROJECT} binaries\n" \
+			| tee -a "$LOGFILE" \
 		&& reboot
 fi
