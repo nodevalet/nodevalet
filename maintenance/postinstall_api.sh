@@ -18,7 +18,7 @@ if [ -e /root/vpsvaletreboot.txt ]; then
 	echo -e "Server has restarted after masternode install"  | tee -a "$LOGFILE"
 	echo -e "Sending masternode.return data to mother"  | tee -a "$LOGFILE"
 	# transmit masternode.return to mothership
-	curl -X POST https://www.heliumstats.online/code-red/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}'
+	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}'
 
 # Add a sequence to interpret the reply as success or fail $?
 rm /root/vpsvaletreboot.txt
