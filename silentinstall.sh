@@ -76,8 +76,14 @@ sleep 4
 	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
 		for ((i=1;i<=$MNS;i++)); 
 		do 
+		
+		
 		echo -e " Please enter the masternode address for masternode #$i :"
 		read -p "  --> " MNADDP
+		
+		echo -e "You entered: ${MNADDP}. Is this correct?
+		
+		
 		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
 		echo -e "Masternode $i address is: $MNADDP."  | tee -a "$LOGFILE"
 		# add error checking logic and repeat if necessary
@@ -90,8 +96,15 @@ echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS.\n" | 
 	if [ -e $INSTALLDIR/vpsdonation.info ]
 	then DONATE=`cat $INSTALLDIR/vpsdonation.info`
 	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATE=0
-	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	else DONATEN=""
+		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
+		echo -e "Although this script is smart, it didn't write itself. If you"
+		echo -e "would like to donate a percentage of your masternode rewards"
+		echo -e "to the developers of this script, please enter a number here,"
+		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
+    		read DONATE
+		done
+		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
 	fi
 	
 # set donation address front project.env
