@@ -92,7 +92,8 @@ sleep 4
 		done
 	fi
 
-echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS.\n" | tee -a "$LOGFILE"
+echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | tee -a "$LOGFILE"
+echo -e "\n"
 
 # set donation percentage
 	if [ -e $INSTALLDIR/vpsdonation.info ]
@@ -149,7 +150,7 @@ function add_cron() {
 	chmod 0700 /root/code-red/autoupdate/*.sh
 	chmod 0700 /root/code-red/maintenance/*.sh
 # reboot logic for status feedback
-	echo -e "Add postinstall crontab to run every minute"  | tee -a "$LOGFILE"
+	echo -e "Add crontab to run post install script upon reboot"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * /root/code-red/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 # make sure all daemon are running
 	echo -e "Add crontab to make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
@@ -295,7 +296,7 @@ do
 		then echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
 		sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
 		BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
-		echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+		# echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
 		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 	fi
 	
@@ -373,7 +374,7 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 #######################################################
 EOT
 	# round 2: cleanup and declutter
-	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
+	echo -e "Cleaning up clutter and taking out trash \n" | tee -a "$LOGFILE"
 	rm $INSTALLDIR/complete --force
 	rm $INSTALLDIR/masternode.all --force
 	rm $INSTALLDIR/masternode.1 --force
