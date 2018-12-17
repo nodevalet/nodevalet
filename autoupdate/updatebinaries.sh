@@ -37,4 +37,5 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" \
 			| tee -a "$LOGFILE" \
 		&& reboot
+else echo -e " No new version is detected \n" | tee -a "$LOGFILE"
 fi
