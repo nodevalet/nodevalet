@@ -1,4 +1,10 @@
 #!/bin/sh
+
+INSTALLDIR='/root/installtemp'
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
+MNS=`cat $INSTALLDIR/vpsnumber.info`
+LOGFILE='/root/installtemp/checkdaemon.log'
+
 ## Black        0;30     Dark Gray     1;30
 ## Red          0;31     Light Red     1;31
 ## Green        0;32     Light Green   1;32
@@ -25,11 +31,11 @@ color14='\033[1;33m'  # yellow
 nocolor='\033[0m'    # no color
 
 #nodecount
-total=`ps aux | grep -i heliumd | wc -l`
+total=`ps aux | grep -i ${PROJECT}d | wc -l`
 nodes=`expr $total - 1`
 
 # AKcryptoGUY's mod
-printf " ${color5} dddhoooooosdddddddhoooooosddd ${color1}  You've logged into a Helium Masternode.${nocolor}\n"
+printf " ${color5} dddhoooooosdddddddhoooooosddd ${color1}  You've logged into a $PROJECT Masternode.${nocolor}\n"
 printf " ${color5} dddy      odddddddy      oddd ${color9}  No currency is stored on this server.${nocolor}\n"
 printf " ${color5} dddy      odddddddy      oddd ${nocolor}\n"
 printf " ${color5} dddy      odddddddy      oddd ${color13}  ------ General Information ------\n"
