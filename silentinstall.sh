@@ -1,53 +1,112 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
+# create root/installtemp if it doesn't exist
+	if [ ! -d $INSTALLDIR ]
+	then mkdir $INSTALLDIR
+	else :
+	fi
+
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/root/installtemp'
 LOGFILE='/root/installtemp/silentinstall.log'
 touch '/root/installtemp/checkdaemon.log'
 
-# create root/installtemp if it doesn't exist
-	if [ ! -d $INSTALLDIR ]
-	then mkdir $INSTALLDIR
-	echo -e "creating /root/installtemp"  | tee -a "$LOGFILE"
-	else :
-	fi
-	
+# Create Log File and Begin
+echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
+echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
+echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
+echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
+
 # set hostname variable to the name planted by install script
 	if [ -e $INSTALLDIR/vpshostname.info ]
 	then HNAME=$(<$INSTALLDIR/vpshostname.info)
 	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	else HNAME=`hostname`
+	echo -e "$HNAME" > $INSTALLDIR/vpshostname.info
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and has begun reporting its status ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' && echo -e " "
 sleep 4
 	
 # set project name
-# need to get this configured before we scale additional projects
 	if [ -s $INSTALLDIR/vpscoin.info ]
 	then PROJECT=`cat $INSTALLDIR/vpscoin.info`
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
-	else echo -e "Please check the readme for a list supported coins."  | tee -a "$LOGFILE"
+	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
-		if [ -d /root/code-red/nodemaster/config/${PROJECT,,} ]
-		then echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
-		echo -e "${PROJECT,,}" > $INSTALLDIR/vpscoin.info
+			if [ -d /root/code-red/nodemaster/config/${PROJECT,,} ]
+			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
+			echo -e "${PROJECT,,}" > $INSTALLDIR/vpscoin.info
+			PROJECT=`cat $INSTALLDIR/vpscoin.info`
+			break
+			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
+			fi
+		done
+	fi
+
+# read or assign number of masternodes to install
+	if [ -e $INSTALLDIR/vpsnumber.info ]
+	then MNS=$(<$INSTALLDIR/vpsnumber.info)
+	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
+	# create a subroutine here to check memory and size MNS appropriately
+	# or prompt user how many they would like to build
+	else echo -e "Please enter the number of masternodes to install : "
+		while :; do
+		read -p "  --> " MNS
+		if (($MNS >= 1 && $MNS <= 50))
+		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
+		echo -e "${MNS}" > $INSTALLDIR/vpsnumber.info
 		break
-		else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
+		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
 		fi
 		done
 	fi
+
+# read or collect masternode addresses
+	if [ -e $INSTALLDIR/vpsmnaddress.info ]
+	then :
+	# create a subroutine here to check memory and size MNS appropriately
+	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
+	echo -e " Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
+	echo -e " Please double check your addresses for accuracy."
+	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
+		for ((i=1;i<=$MNS;i++)); 
+		do 
+			while :; do
+			printf "${cyan}"
+			echo -e " Please enter the masternode address for masternode #$i :"
+			read -p "  --> " MNADDP
+				echo -e "You entered: ${MNADDP}. Is this correct? y/n"
+				read -p "  --> " VERIFY
+				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+				then printf "${cyan}" ; break
+  				fi
+			done	
+		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
+		echo -e "Masternode $i address is: $MNADDP.\n"  | tee -a "$LOGFILE"
+		done
+	fi
+
+echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS.\n" | tee -a "$LOGFILE"
 
 # set donation percentage
 	if [ -e $INSTALLDIR/vpsdonation.info ]
 	then DONATE=`cat $INSTALLDIR/vpsdonation.info`
 	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATE=0
-	echo -e "vpsdonation.info not found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	else DONATEN=""
+		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
+		echo -e "Although this script is smart, it didn't write itself. If you"
+		echo -e "would like to donate a percentage of your masternode rewards"
+		echo -e "to the developers of this script, please enter a number here,"
+		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
+    		read -p "  --> " DONATE
+		done
+		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
 	fi
 	
 # set donation address front project.env
@@ -78,57 +137,10 @@ sleep 4
 	else MNPREFIX=`hostname`
 	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
 	fi
-
-# read or assign number of masternodes to install
-	if [ -e $INSTALLDIR/vpsnumber.info ]
-	then MNS=$(<$INSTALLDIR/vpsnumber.info)
-	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
-	# create a subroutine here to check memory and size MNS appropriately
-	# or prompt user how many they would like to build
-	else echo -e "Please enter the number of masternodes to install : "  | tee -a "$LOGFILE"
-		while :; do
-		read -p "  --> " MNS
-		if (($MNS >= 1 && $MNS <= 50))
-		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
-		echo -e "${MNS}" > $INSTALLDIR/vpsnumber.info
-		break
-		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
-		fi
-		done
-	fi
 	
-# read or collect masternode addresses
-	if [ -e $INSTALLDIR/vpsmnaddress.info ]
-	then :
-	# create a subroutine here to check memory and size MNS appropriately
-	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e "Manually gathering masternode addresses from user"  | tee -a "$LOGFILE"
-	echo -e " This logic does not presently allow for any mistakes; be careful."
-	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
-		for ((i=1;i<=$MNS;i++)); 
-		do 
-		echo -e " Please enter the masternode address for masternode #$i :"
-		read -p "  --> " MNADDP
-		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
-		echo -e "Masternode $i address is: $MNADDP."  | tee -a "$LOGFILE"
-		# add error checking logic and repeat if necessary
-		done
-	fi
-	
-	# enable softwrap so masternode.conf file can be easily copied
-	sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
-}
+# enable softwrap so masternode.conf file can be easily copied
+sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 
-function begin_log() {
-# Create Log File and Begin
-echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
-echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
-echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
-echo -e " I am going to create $MNS masternodes and install them\n" | tee -a "$LOGFILE"
-
-# sleep 1
 }
 
 function add_cron() {
@@ -192,12 +204,12 @@ function install_mns() {
 		if [ -s $INSTALLDIR/${PROJECT}Ds ]
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
 		# report back to mother
-		echo -e "Reporting ${PROJECT}d build success to the mother" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build success to mother" | tee -a "$LOGFILE"
 		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$PROJECT"'d has started..."}' && echo -e " "
 		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
-		echo -e "Reporting ${PROJECT}d build failure to the mother" | tee -a "$LOGFILE"
+		echo -e "Reporting ${PROJECT}d build failure to mother" | tee -a "$LOGFILE"
 		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$PROJECT"'d failed to build or start"}' && echo -e " "
 		exit
 		fi
@@ -209,7 +221,7 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
-echo -e "Reporting ${PROJECT}d build failure to the mother" | tee -a "$LOGFILE"
+echo -e "Reporting ${PROJECT}d build failure to mother" | tee -a "$LOGFILE"
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
 		exit
 else
@@ -278,12 +290,12 @@ do
 	
 	# Pull BLOCKEXP from $PROJECT.env
 	BLOCKEX=`grep ^BLOCKEXP /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
-	if [ -n $BLOCKEX ] ; then 
-	echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
-	sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
-	BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
-	echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE" ; else
-	echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+	if [ -n $BLOCKEX ] 
+		then echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
+		sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
+		BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
+		echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 	fi
 	
 	curl -s "$BLOCKEXP`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
@@ -361,24 +373,23 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-	
-rm $INSTALLDIR/complete --force
-rm $INSTALLDIR/masternode.all --force
-rm $INSTALLDIR/masternode.1 --force
-rm $INSTALLDIR/masternode.l* --force
-rm $INSTALLDIR/DONATION --force
-rm $INSTALLDIR/DONATEADDR --force
-rm $INSTALLDIR/txid --force
-rm $INSTALLDIR/mnaliases --force
-rm $INSTALLDIR/${PROJECT}Ds --force
-rm $INSTALLDIR/MNPRIV* --force
+	rm $INSTALLDIR/complete --force
+	rm $INSTALLDIR/masternode.all --force
+	rm $INSTALLDIR/masternode.1 --force
+	rm $INSTALLDIR/masternode.l* --force
+	rm $INSTALLDIR/DONATION --force
+	rm $INSTALLDIR/DONATEADDR --force
+	rm $INSTALLDIR/txid --force
+	rm $INSTALLDIR/mnaliases --force
+	rm $INSTALLDIR/${PROJECT}Ds --force
+	rm $INSTALLDIR/MNPRIV* --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 	echo -e "\n"  | tee -a "$LOGFILE"
 	
 	# lists the garbage leftover after installation
-	ls $INSTALLDIR | tee -a "$LOGFILE"
+	# ls $INSTALLDIR | tee -a "$LOGFILE"
 fi
  }
 
@@ -434,7 +445,6 @@ function restart_server() {
 setup_environment
 # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " "
 
-begin_log
 add_cron
 
 # moved curl update commands into get-hard.sh to provide better detail
