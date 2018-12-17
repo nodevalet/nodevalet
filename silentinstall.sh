@@ -40,8 +40,9 @@ sleep 4
 		while :; do
 		read -p "  --> " PROJECT
 			if [ -d /root/code-red/nodemaster/config/${PROJECT,,} ]
-			then echo -e "Project name set to $PROJECT."  | tee -a "$LOGFILE"
+			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
 			echo -e "${PROJECT,,}" > $INSTALLDIR/vpscoin.info
+			PROJECT=`cat $INSTALLDIR/vpscoin.info`
 			break
 			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
 			fi
@@ -71,22 +72,23 @@ sleep 4
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
 	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e "Manually gathering masternode addresses from user"  | tee -a "$LOGFILE"
-	echo -e " This logic does not presently allow for any mistakes; be careful."
+	echo -e "Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
+	echo -e " This script does not presently allow for any mistakes; be careful."
 	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
 		for ((i=1;i<=$MNS;i++)); 
 		do 
-		
-		
-		echo -e " Please enter the masternode address for masternode #$i :"
-		read -p "  --> " MNADDP
-		
-		echo -e "You entered: ${MNADDP}. Is this correct?"
-		
-		
+			while :; do
+			printf "${cyan}"
+			echo -e " Please enter the masternode address for masternode #$i :"
+			read -p "  --> " MNADDP
+				echo -e "You entered: ${MNADDP}. Is this correct? y/n"
+				read -p "  --> " VERIFY
+				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+				then printf "${cyan}" ; break
+  				fi
+			done	
 		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
-		echo -e "Masternode $i address is: $MNADDP."  | tee -a "$LOGFILE"
-		# add error checking logic and repeat if necessary
+		echo -e "Masternode $i address is: $MNADDP.\n"  | tee -a "$LOGFILE"
 		done
 	fi
 
