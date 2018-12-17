@@ -7,4 +7,5 @@ sudo wget https://ksplice.oracle.com/uptrack/dist/xenial/ksplice-uptrack.deb
 sudo dpkg -i ksplice-uptrack.deb
 sudo sed -i "s/autoinstall = no/autoinstall = yes/" /etc/uptrack/uptrack.conf
 sudo chmod 755 /etc/cron.d/uptrack
+rm ksplice-uptrack.deb
 sudo uptrack-upgrade -y
