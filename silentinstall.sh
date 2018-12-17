@@ -274,8 +274,9 @@ do
 
 	# insert new genkey into project_n$i.conf files
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
-	masternodeprivkeybefore=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
-	echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : $masternodeprivkeybefore" >> $LOGFILE	
+	masternodeprivkeyafter=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+	echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
+	echo -e " $masternodeprivkeyafter" >> $LOGFILE
 	
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/mnipaddresses
@@ -294,7 +295,7 @@ do
 		then echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
 		sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
 		BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
-		echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+		echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
 		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 	fi
 	
