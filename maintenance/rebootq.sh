@@ -6,23 +6,26 @@
 INSTALLDIR='/root/installtemp'
 LOGFILE='/root/installtemp/update-reboot.log'
 
-# if reqboot is required, write which packages require it
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Checking if system requires a reboot" | tee -a "$LOGFILE"
+
+# write which packages require it
 cat /run/reboot* > $INSTALLDIR/REBOOTREQ
 
-if [ -s $INSTALLDIR/REBOOTREQ ]
-then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Reboot required to finish installing these updates" | tee -a "$LOGFILE"
-echo -e "`cat /run/reboot*`" | tee -a "$LOGFILE"
-sed -i '/restart required/d' "$LOGFILE"
+if grep -q "restart required" "$INSTALLDIR/REBOOTREQ"
+then echo -e "`date +%m.%d.%Y_%H:%M:%S` : These updates require a reboot:" | tee -a "$LOGFILE"
 
-# cat /run/reboot* | tr -d "*** System restart required ***"
-# sed '/^$/d' "$LOGFILE"
+# this sed removes the line "*** System restart required ***" from the REBOOTREQ
+sed -i '/restart required/d' $INSTALLDIR/REBOOTREQ
+# this echo writes the packages requiring reboot to the log
+echo -e "`cat ${INSTALLDIR}/REBOOTREQ`" | tee -a "$LOGFILE"
 
 rm $INSTALLDIR/REBOOTREQ
-shutdown -r +5 "Restarting server to install updates"
-# reboot server
+echo -e "Server will restart in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
+
+shutdown -r +5 "Server will restart in 5 minutes to complete required updates"
 
 else
-echo -e "No reboot is required at this time"
+echo -e "No reboot is required at this time\n" | tee -a "$LOGFILE"
 fi
 
 exit
