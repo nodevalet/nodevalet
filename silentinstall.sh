@@ -72,8 +72,8 @@ sleep 4
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
 	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e "Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
-	echo -e " This script does not presently allow for any mistakes; be careful."
+	echo -e " Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
+	echo -e " Please double check your addresses for accuracy."
 	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
 		for ((i=1;i<=$MNS;i++)); 
 		do 
