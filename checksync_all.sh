@@ -1,19 +1,23 @@
 #!/bin/bash
 
 # Set Variables
-LOGFILE='/root/installtemp/silentinstall.log'
 INSTALLDIR='/root/installtemp'
+PROJECT=`cat $INSTALLDIR/vpscoin.info`
+MNS=`cat $INSTALLDIR/vpsnumber.info`
+LOGFILE='/root/installtemp/checkdaemon.log'
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /root/installtemp/vpshostname.info ]
 	then HNAME=$(</root/installtemp/vpshostname.info)
 	else HNAME=`hostname`
 	fi
-# read or assign number of masternodes to install
+# read number of masternodes that were installed
 	if [ -e /root/installtemp/vpsnumber.info ]
 	then MNS=$(</root/installtemp/vpsnumber.info)
 	else MNS=5
 	fi
+
+
 
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
@@ -84,7 +88,32 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 }
 
 
-# This is where the script actually starts
 
+for ((i=1;i<=$MNS;i++));
+do
+echo -e " Checking sync status for masternode "$PROJECT"_n${i}"
+
+
+# This is where the script actually starts
 check_blocksync
 # sync_check
+
+# previousBlock=`cat /root/installtemp/blockcount${i}`
+# currentBlock=$(/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
+# /usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > /root/installtemp/blockcount${i}
+# if [ "$previousBlock$" == "$currentBlock$" ]; then
+# 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
+# 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
+#         systemctl stop "$PROJECT"_n${i};
+#         sleep 10;
+#         systemctl start "$PROJECT"_n${i};
+# else echo -e " Previous block is $previousBlock and current block is $currentBlock."
+# echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
+# fi
+
+
+done
+
+
+
+
