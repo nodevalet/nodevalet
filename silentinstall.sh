@@ -81,7 +81,7 @@ sleep 4
 		echo -e " Please enter the masternode address for masternode #$i :"
 		read -p "  --> " MNADDP
 		
-		echo -e "You entered: ${MNADDP}. Is this correct?
+		echo -e "You entered: ${MNADDP}. Is this correct?"
 		
 		
 		echo "$MNADDP" >> $INSTALLDIR/vpsmnaddress.info
