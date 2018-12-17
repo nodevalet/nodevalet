@@ -9,3 +9,12 @@ sudo sed -i "s/autoinstall = no/autoinstall = yes/" /etc/uptrack/uptrack.conf
 sudo chmod 755 /etc/cron.d/uptrack
 rm ksplice-uptrack.deb
 sudo uptrack-upgrade -y
+exit
+
+# What next? Here are some ways to use Kspliec Uptrack:
+#
+# uptrack-show – Show the patches that have been applied to your kernel.
+# uptrack-show –available – Show patches that are available to be installed.
+# uptrack-remove – Remove a patch from your active kernel.
+# uptrack-uname -a – Display the active kernel version. Note that Ksplice does not alter the normal uname output, so this is necessary to determine what “actual” kernel version you are running.
+# uptrack-upgrade – Display (and, if the -y flag is given, install) available updates to your kernel.
