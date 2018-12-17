@@ -961,7 +961,8 @@ echo -e " information along with a login banner prohibiting unauthorized"
 echo -e " access.  All modifications are strictly cosmetic."
 echo -e "\n"
 	printf "${cyan}"
-	read -p " Would you like to enhance your MOTD & login banner? y/n  " MOTDP
+	MOTDP="yes"
+	# read -p " Would you like to enhance your MOTD & login banner? y/n  " MOTDP
 	printf "${nocolor}"
 	while [ "${MOTDP,,}" != "yes" ] && [ "${MOTDP,,}" != "no" ] && [ "${MOTDP,,}" != "y" ] && [ "${MOTDP,,}" != "n" ]; do
 	echo -e "\n"
@@ -1175,7 +1176,7 @@ disable_passauth
 ufw_config
 server_hardening
 # ksplice_install
-# motd_install
+motd_install
 restart_sshd
 install_complete
 

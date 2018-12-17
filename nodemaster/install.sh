@@ -138,15 +138,15 @@ else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages"
 fi
 
 # add custom logo to VPS login
-rm -r /etc/update-motd.d/
-mkdir /etc/update-motd.d/
-touch /etc/update-motd.d/00-header ; touch /etc/update-motd.d/10-sysinfo ; touch /etc/update-motd.d/90-footer
-chmod +x /etc/update-motd.d/*
-rm /etc/motd.dynamic
-cat motdcustom/00-header > /etc/update-motd.d/00-header
-cat motdcustom/10-sysinfo > /etc/update-motd.d/10-sysinfo
-cat motdcustom/90-footer > /etc/update-motd.d/90-footer
-systemctl restart sshd
+# rm -r /etc/update-motd.d/
+# mkdir /etc/update-motd.d/
+# touch /etc/update-motd.d/00-header ; touch /etc/update-motd.d/10-sysinfo ; touch /etc/update-motd.d/90-footer
+# chmod +x /etc/update-motd.d/*
+# rm /etc/motd.dynamic
+# cat motdcustom/00-header > /etc/update-motd.d/00-header
+# cat motdcustom/10-sysinfo > /etc/update-motd.d/10-sysinfo
+# cat motdcustom/90-footer > /etc/update-motd.d/90-footer
+# systemctl restart sshd
         
     # only for 18.04 // openssl
     if [[ "${VERSION_ID}" == "18.04" ]] ; then
