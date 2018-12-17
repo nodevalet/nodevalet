@@ -35,7 +35,7 @@ sleep 4
 	if [ -s $INSTALLDIR/vpscoin.info ]
 	then PROJECT=`cat $INSTALLDIR/vpscoin.info`
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
-	else echo -e "Please check the readme for a list supported coins."  | tee -a "$LOGFILE"
+	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
@@ -54,7 +54,7 @@ sleep 4
 	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
-	else echo -e "Please enter the number of masternodes to install : "  | tee -a "$LOGFILE"
+	else echo -e "Please enter the number of masternodes to install : "
 		while :; do
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
@@ -102,7 +102,7 @@ echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS.\n" | 
 		echo -e "would like to donate a percentage of your masternode rewards"
 		echo -e "to the developers of this script, please enter a number here,"
 		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
-    		read DONATE
+    		read -p "  --> " DONATE
 		done
 		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
 	fi
@@ -288,12 +288,12 @@ do
 	
 	# Pull BLOCKEXP from $PROJECT.env
 	BLOCKEX=`grep ^BLOCKEXP /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
-	if [ -n $BLOCKEX ] ; then 
-	echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
-	sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
-	BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
-	echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE" ; else
-	echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+	if [ -n $BLOCKEX ] 
+		then echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
+		sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
+		BLOCKEXP=$(<$INSTALLDIR/BLOCKEXP)
+		echo -e "Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 	fi
 	
 	curl -s "$BLOCKEXP`cat $INSTALLDIR/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/TXID$i
@@ -371,24 +371,23 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 	# round 2: cleanup and declutter
 	echo -e "Cleaning up clutter and taking out trash" | tee -a "$LOGFILE"
-	
-rm $INSTALLDIR/complete --force
-rm $INSTALLDIR/masternode.all --force
-rm $INSTALLDIR/masternode.1 --force
-rm $INSTALLDIR/masternode.l* --force
-rm $INSTALLDIR/DONATION --force
-rm $INSTALLDIR/DONATEADDR --force
-rm $INSTALLDIR/txid --force
-rm $INSTALLDIR/mnaliases --force
-rm $INSTALLDIR/${PROJECT}Ds --force
-rm $INSTALLDIR/MNPRIV* --force
+	rm $INSTALLDIR/complete --force
+	rm $INSTALLDIR/masternode.all --force
+	rm $INSTALLDIR/masternode.1 --force
+	rm $INSTALLDIR/masternode.l* --force
+	rm $INSTALLDIR/DONATION --force
+	rm $INSTALLDIR/DONATEADDR --force
+	rm $INSTALLDIR/txid --force
+	rm $INSTALLDIR/mnaliases --force
+	rm $INSTALLDIR/${PROJECT}Ds --force
+	rm $INSTALLDIR/MNPRIV* --force
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 	echo -e "\n"  | tee -a "$LOGFILE"
 	
 	# lists the garbage leftover after installation
-	ls $INSTALLDIR | tee -a "$LOGFILE"
+	# ls $INSTALLDIR | tee -a "$LOGFILE"
 fi
  }
 
