@@ -1,8 +1,8 @@
 #!/bin/bash
-# Silently install masternodes and insert privkeys
 
-function setup_environment() {
 # Set Variables
+LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/root/installtemp'
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /root/installtemp/vpshostname.info ]
@@ -14,9 +14,6 @@ function setup_environment() {
 	then MNS=$(</root/installtemp/vpsnumber.info)
 	else MNS=5
 	fi
-LOGFILE='/root/installtemp/silentinstall.log'
-INSTALLDIR='/root/installtemp'
-}
 
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
@@ -89,9 +86,5 @@ echo -e "This masternode is $TIMEDIF seconds behind the latest block."
 
 # This is where the script actually starts
 
-setup_environment
-
 check_blocksync
 # sync_check
-
-echo -e "Log of events saved to: $LOGFILE \n"
