@@ -159,11 +159,11 @@ function add_cron() {
 	echo -e "Add crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for updates that require a reboot and reboot if necessary
-	echo -e "Add crontab to reboot if required to install updates every day"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 0 12 * * ? /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
+	echo -e "Add crontab to reboot if required to install updates every ten hours"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "30 */10 * * * /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
-	echo -e "Add crontab to check for wallet updates every day"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 0 13 * * ? /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	echo -e "Add crontab to check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 */12 * * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # clear daemon debug.log every week
 	echo -e "Add crontab to clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly /root/code-red/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
