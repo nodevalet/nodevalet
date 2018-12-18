@@ -6,6 +6,11 @@
 INSTALLDIR='/root/installtemp'
 LOGFILE='/root/installtemp/update-reboot.log'
 
+if [ -e "$INSTALLDIR/updating ]
+	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
+	exit
+fi
+
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Checking if system requires a reboot" | tee -a "$LOGFILE"
 
 # write which packages require it
