@@ -40,7 +40,6 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	&& rm -f updating \
 	&& curl -s $GITAPI_URL \
 		| grep tag_name > currentversion \
-	&& echo -e " Rebooting after building new ${PROJECT} wallet\n" \
-		| tee -a "$LOGFILE" \
+	&& echo -e " Rebooting after building new ${PROJECT} wallet\n" >> "$LOGFILE" \
 	&& reboot
 fi
