@@ -20,6 +20,7 @@ if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
      echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
      echo -e " Attempting to install new binaries" | tee -a "$LOGFILE"
+		touch updating
 		systemctl stop $PROJECT* \
 		| curl -s $GITAPI_URL \
 		| grep browser_download_url \
@@ -34,6 +35,7 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
              		| grep tag_name > currentversion \
 		&& rm -r $EXTRACTDIR \
 		&& rm -f $TARBALL \
+		&& rm -f updating
 		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" \
 			| tee -a "$LOGFILE" \
 		&& reboot
