@@ -37,6 +37,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	&& cp /root/installtemp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
 	&& rm -rf root/installtemp/$PROJECT \
 	&& cd /root/installtemp \
+	&& rm -f updating \
 	&& curl -s $GITAPI_URL \
 		| grep tag_name > currentversion \
 	&& echo -e " Rebooting after building new ${PROJECT} wallet\n" \
