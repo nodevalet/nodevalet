@@ -36,8 +36,7 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 		&& rm -r $EXTRACTDIR \
 		&& rm -f $TARBALL \
 		&& rm -f updating
-		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" \
-			| tee -a "$LOGFILE" \
+		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" >> "$LOGFILE" \
 		&& reboot
 else echo -e " No new version is detected \n" | tee -a "$LOGFILE"
 fi
