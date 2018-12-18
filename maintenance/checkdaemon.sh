@@ -9,6 +9,11 @@ PROJECT=`cat $INSTALLDIR/vpscoin.info`
 MNS=`cat $INSTALLDIR/vpsnumber.info`
 LOGFILE='/root/installtemp/checkdaemon.log'
 
+if [ -e "$INSTALLDIR/updating ]
+	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
+	exit
+fi
+
 for ((i=1;i<=$MNS;i++));
 do
 echo -e " Checking for stuck blocks on masternode "$PROJECT"_n${i}"
