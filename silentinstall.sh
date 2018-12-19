@@ -3,8 +3,8 @@
 
 function setup_environment() {
 # Set Variables
-INSTALLDIR='/root/installtemp'
-LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/var/temp/nodevalet/temp'
+LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
@@ -12,7 +12,7 @@ LOGFILE='/root/installtemp/silentinstall.log'
 	else :
 	fi
 
-touch '/root/installtemp/checkdaemon.log'
+touch '/var/temp/nodevalet/log/checkdaemon.log'
 
 # Create Log File and Begin
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
@@ -40,7 +40,7 @@ sleep 4
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
-			if [ -d /root/code-red/nodemaster/config/${PROJECT,,} ]
+			if [ -d /var/temp/nodevalet/nodemaster/config/${PROJECT,,} ]
 			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
 			echo -e "${PROJECT,,}" > $INSTALLDIR/vpscoin.info
 			PROJECT=`cat $INSTALLDIR/vpscoin.info`
@@ -113,7 +113,7 @@ echo -e "\n"
 	
 # set donation address front project.env
 	curl -LJO https://raw.githubusercontent.com/akcryptoguy/code-red/master/nodemaster/config/$PROJECT/$PROJECT.env
-	DONATION_ADDRESS=`grep ^DONATION /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	DONATION_ADDRESS=`grep ^DONATION /var/temp/nodevalet/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $DONATION_ADDRESS ] ; then 
 	echo "$DONATION_ADDRESS" > $INSTALLDIR/DONATEADDR
 	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/DONATEADDR
@@ -147,27 +147,27 @@ sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 
 function add_cron() {
 	echo -e "Adding crontabs"  | tee -a "$LOGFILE"
-	chmod 0700 /root/code-red/*.sh
-	chmod 0700 /root/code-red/autoupdate/*.sh
-	chmod 0700 /root/code-red/maintenance/*.sh
+	chmod 0700 /var/temp/nodevalet/*.sh
+	chmod 0700 /var/temp/nodevalet/autoupdate/*.sh
+	chmod 0700 /var/temp/nodevalet/maintenance/*.sh
 # reboot logic for status feedback
 	echo -e "Add crontab to run post install script upon reboot"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/1 * * * * /root/code-red/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/1 * * * * /var/temp/nodevalet/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 # make sure all daemon are running
 	echo -e "Add crontab to make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/5 * * * * /root/code-red/maintenance/makerun.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/5 * * * * /var/temp/nodevalet/maintenance/makerun.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check that for stuck blocks and restart masternode if it is stuck
 	echo -e "Add crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/30 * * * * /root/code-red/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/30 * * * * /var/temp/nodevalet/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for updates that require a reboot and reboot if necessary
 	echo -e "Add crontab to reboot if required to install updates every ten hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "30 */10 * * * /root/code-red/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "30 */10 * * * /var/temp/nodevalet/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
 	echo -e "Add crontab to check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 */12 * * * /root/code-red/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 */12 * * * /var/temp/nodevalet/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # clear daemon debug.log every week
 	echo -e "Add crontab to clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "@weekly /root/code-red/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
+	(crontab -l ; echo "@weekly /var/temp/nodevalet/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
 }
 
 function silent_harden() {
@@ -272,7 +272,7 @@ do
 	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/MNPRIVKEY$i`
 	
-	# this is an alternative text that also works GENKEYVAR=$(</root/installtemp/MNPRIVKEY$i)
+	# this is an alternative text that also works GENKEYVAR=$(</var/temp/nodevalet/temp/MNPRIVKEY$i)
 
 	# insert new genkey into project_n$i.conf files
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
@@ -292,7 +292,7 @@ do
 	# obtain txid
 	
 	# Pull BLOCKEXP from $PROJECT.env
-	BLOCKEX=`grep ^BLOCKEXP /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	BLOCKEX=`grep ^BLOCKEXP /var/temp/nodevalet/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $BLOCKEX ] 
 		then echo "$BLOCKEX" > $INSTALLDIR/BLOCKEXP
 		sed -i "s/BLOCKEXP=//" $INSTALLDIR/BLOCKEXP
@@ -399,9 +399,9 @@ fi
 function install_binaries() {
 #check for binaries and install if found   
 echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
-cd /root/installtemp
+cd /var/temp/nodevalet/temp
 	# Pull GITAPI_URL from $PROJECT.env
-	GIT_API=`grep ^GITAPI_URL /root/code-red/nodemaster/config/$PROJECT/$PROJECT.env`
+	GIT_API=`grep ^GITAPI_URL /var/temp/nodevalet/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $GIT_API ] ; then 
 	echo "$GIT_API" > $INSTALLDIR/GIT_API
 	sed -i "s/GITAPI_URL=//" $INSTALLDIR/GIT_API
@@ -437,7 +437,7 @@ fi
 
 function restart_server() {
 	echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
-	cp /root/code-red/maintenance/postinstall_api.sh /etc/init.d/
+	cp /var/temp/nodevalet/maintenance/postinstall_api.sh /etc/init.d/
 	update-rc.d postinstall_api.sh defaults
 	shutdown -r now "Server is going down for upgrade."
 }
@@ -464,6 +464,6 @@ get_genkeys
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
-touch /root/vpsvaletreboot.txt
+touch /var/temp/nodevalet/temp/vpsvaletreboot.txt
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
 restart_server
