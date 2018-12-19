@@ -4,13 +4,13 @@ function final_message() {
 
 if [ -e /root/vpsvaletreboot.txt ]; then
 	# Set Variables
-	INSTALLDIR='/root/installtemp'
-	LOGFILE='/root/installtemp/silentinstall.log'
-	TRANSMITMN=`cat /root/installtemp/masternode.return`
+	INSTALLDIR='/var/temp/nodevalet'
+	LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
+	TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
 
 	# set hostname variable to the name planted by install script
-	if [ -e $INSTALLDIR/vpshostname.info ]
-	then HNAME=$(<$INSTALLDIR/vpshostname.info)
+	if [ -e $INSTALLDIR/info/vpshostname.info ]
+	then HNAME=$(<$INSTALLDIR/info/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 
@@ -23,10 +23,7 @@ if [ -e /root/vpsvaletreboot.txt ]; then
 
 # Add a sequence to interpret the reply as success or fail $?
 rm /root/vpsvaletreboot.txt
-crontab -l | grep -v '/root/code-red/maintenance/postinstall_api.sh'  | crontab -
-
-# add code to clean up the rest of unnecessary files; keep the log and masternode files except for the mnaddresses
-# rm -rf /root/installtemp
+crontab -l | grep -v '$INSTALLDIR/maintenance/postinstall_api.sh'  | crontab -
 
 else :
 fi
