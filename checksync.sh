@@ -10,8 +10,8 @@ INSTALLDIR='/var/temp/nodevalet'
 	else HNAME=`hostname`
 	fi
 # read or assign number of masternodes to install
-	if [ -e /var/temp/nodevalet/info/vpsnumber.info ]
-	then MNS=$(</var/temp/nodevalet/info/vpsnumber.info)
+	if [ -e $INSTALLDIR/info/vpsnumber.info ]
+	then MNS=$(<$INSTALLDIR/info/vpsnumber.info)
 	else MNS=5
 	fi
 
