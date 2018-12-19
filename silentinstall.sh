@@ -1,16 +1,17 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
+function setup_environment() {
+# Set Variables
+INSTALLDIR='/root/installtemp'
+LOGFILE='/root/installtemp/silentinstall.log'
+
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
 	then mkdir $INSTALLDIR
 	else :
 	fi
 
-function setup_environment() {
-# Set Variables
-INSTALLDIR='/root/installtemp'
-LOGFILE='/root/installtemp/silentinstall.log'
 touch '/root/installtemp/checkdaemon.log'
 
 # Create Log File and Begin
