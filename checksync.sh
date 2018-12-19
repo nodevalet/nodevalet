@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Set Variables
-LOGFILE='/root/installtemp/silentinstall.log'
-INSTALLDIR='/root/installtemp'
+LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
+INSTALLDIR='/var/temp/nodevalet'
 
 # set hostname variable to the name planted by API installation script
-	if [ -e /root/installtemp/vpshostname.info ]
-	then HNAME=$(</root/installtemp/vpshostname.info)
+	if [ -e /var/temp/nodevalet/info/vpshostname.info ]
+	then HNAME=$(</var/temp/nodevalet/info/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 # read or assign number of masternodes to install
-	if [ -e /root/installtemp/vpsnumber.info ]
-	then MNS=$(</root/installtemp/vpsnumber.info)
+	if [ -e /var/temp/nodevalet/info/vpsnumber.info ]
+	then MNS=$(</var/temp/nodevalet/info/vpsnumber.info)
 	else MNS=5
 	fi
 
