@@ -34,8 +34,8 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	&& make \
 	&& make install \
 	&& cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")" \
-	&& cp /var/tmp/nodevalet/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
-	&& rm -rf /var/tmp/nodevalet/$PROJECT \
+	&& cp $INSTALLDIR/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
+	&& rm -rf $INSTALLDIR/$PROJECT \
 	&& cd $INSTALLDIR/temp \
 	&& rm -f updating \
 	&& curl -s $GITAPI_URL \
