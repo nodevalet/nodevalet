@@ -5,15 +5,13 @@ function setup_environment() {
 # Set Variables
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+INFODIR='var/tmp/nvtemp'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
 	then mkdir $INSTALLDIR
 	else :
 	fi
-	mkdir $INSTALLDIR/logs
-	mkdir $INSTALLDIR/info
-	mkdir $INSTALLDIR/temp
 
 touch $INSTALLDIR/logs/checkdaemon.log
 touch $INSTALLDIR/logs/silentinstall.log
@@ -26,19 +24,19 @@ echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFI
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 
 # set hostname variable to the name planted by install script
-	if [ -e $INSTALLDIR/info/vpshostname.info ]
-	then HNAME=$(<$INSTALLDIR/info/vpshostname.info)
+	if [ -e $INFODIR/vpshostname.info ]
+	then HNAME=$(<$INFODIR/vpshostname.info)
 	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	else HNAME=`hostname`
-	echo -e "$HNAME" > $INSTALLDIR/info/vpshostname.info
+	echo -e "$HNAME" > $INFODIR/vpshostname.info
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' && echo -e " "
 sleep 4
 	
 # set project name
-	if [ -s $INSTALLDIR/info/vpscoin.info ]
-	then PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
+	if [ -s $INFODIR/vpscoin.info ]
+	then PROJECT=`cat $INFODIR/vpscoin.info`
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
@@ -46,8 +44,8 @@ sleep 4
 		read -p "  --> " PROJECT
 			if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
 			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
-			echo -e "${PROJECT,,}" > $INSTALLDIR/info/vpscoin.info
-			PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
+			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
+			PROJECT=`cat $INFODIR/vpscoin.info`
 			break
 			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
 			fi
@@ -55,8 +53,8 @@ sleep 4
 	fi
 
 # read or assign number of masternodes to install
-	if [ -e $INSTALLDIR/info/vpsnumber.info ]
-	then MNS=$(<$INSTALLDIR/info/vpsnumber.info)
+	if [ -e $INFODIR/vpsnumber.info ]
+	then MNS=$(<$INFODIR/vpsnumber.info)
 	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
@@ -65,7 +63,7 @@ sleep 4
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
 		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
-		echo -e "${MNS}" > $INSTALLDIR/info/vpsnumber.info
+		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
 		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
 		fi
@@ -73,7 +71,7 @@ sleep 4
 	fi
 
 # read or collect masternode addresses
-	if [ -e $INSTALLDIR/info/vpsmnaddress.info ]
+	if [ -e $INFODIR/vpsmnaddress.info ]
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
 	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
@@ -92,7 +90,7 @@ sleep 4
 				then printf "${cyan}" ; break
   				fi
 			done	
-		echo "$MNADDP" >> $INSTALLDIR/info/vpsmnaddress.info
+		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
 		echo -e "Masternode $i address is: $MNADDP.\n"  | tee -a "$LOGFILE"
 		done
 	fi
@@ -101,8 +99,8 @@ echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | te
 echo -e "\n"
 
 # set donation percentage
-#	if [ -e $INSTALLDIR/info/vpsdonation.info ]
-#	then DONATE=`cat $INSTALLDIR/info/vpsdonation.info`
+#	if [ -e $INFODIR/vpsdonation.info ]
+#	then DONATE=`cat $INFODIR/vpsdonation.info`
 #	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
 #	else DONATEN=""
 #		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
@@ -123,21 +121,21 @@ echo -e "\n"
 	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/temp/DONATEADDR
 	DONATEADDR=$(<$INSTALLDIR/temp/DONATEADDR)
 	echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
-	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INSTALLDIR/info/vpsdonation.info > $INSTALLDIR/temp/DONATION
+	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INFODIR/vpsdonation.info > $INSTALLDIR/temp/DONATION
 	else
 	echo -e "No donation address was detected." | tee -a "$LOGFILE"
 	fi
 
 # create or assign customssh
-	if [ -s $INSTALLDIR/info/vpssshport.info ]
-	then SSHPORT=$(<$INSTALLDIR/info/vpssshport.info)
+	if [ -s $INFODIR/vpssshport.info ]
+	then SSHPORT=$(<$INFODIR/vpssshport.info)
 	echo -e "vpssshport.info found, setting SSHPORT to $SSHPORT"  | tee -a "$LOGFILE"
 	else SSHPORT='22'
 	echo -e "vpssshport.info not found, setting SSHPORT to default ($SSHPORT)"  | tee -a "$LOGFILE"
 	fi
 
 # create or assign mnprefix
-	if [ -s $INSTALLDIR/info/vpsmnprefix.info ]
+	if [ -s $INFODIR/vpsmnprefix.info ]
 	then :
 	echo -e "vpsmnprefix.info found, will pull masternode aliases from that"  | tee -a "$LOGFILE"
 	else MNPREFIX=`hostname`
@@ -258,8 +256,8 @@ for ((i=1;i<=$MNS;i++));
 do
 
 	# get or iterate mnprefixes
-	if [ -s $INSTALLDIR/info/vpsmnprefix.info ] ; then
-		echo -e "$(sed -n ${i}p $INSTALLDIR/info/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
+	if [ -s $INFODIR/vpsmnprefix.info ] ; then
+		echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
 	else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/temp/mnaliases
 	fi
 	
@@ -267,7 +265,7 @@ do
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnaliases)" >> $INSTALLDIR/temp/MNALIAS$i
 
 	# create masternode address files
-	echo -e "$(sed -n ${i}p $INSTALLDIR/info/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+	echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
 
 	# append "masternodeprivkey="
 	paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
