@@ -15,6 +15,13 @@ echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
+# Pull GIT URL from $PROJECT.env
+
+GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
+sed -i "s/GITURL_URL=//" $INSTALLDIR/temp/GIT_URL
+GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
@@ -29,7 +36,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
 	pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev
 	systemctl stop $PROJECT* \
-	&& git clone https://github.com/heliumchain/helium.git \
+	&& git clone $GIT_URL \
 	&& cd $PROJECT \
 	&& ./autogen.sh \
 	&& ./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz" \
