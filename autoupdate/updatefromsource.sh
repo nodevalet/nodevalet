@@ -7,6 +7,8 @@ INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 
+cd /var/tmp/nodevalet/temp
+
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
