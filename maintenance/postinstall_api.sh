@@ -6,7 +6,7 @@ if [ -e /var/tmp/nodevalet/temp/vpsvaletreboot.txt ]; then
 	# Set Variables
 	
 	INSTALLDIR='/var/tmp/nodevalet'
-	INFODIR='var/tmp/nvtemp'
+	INFODIR='/var/tmp/nvtemp'
 	PROJECT=`cat $INFODIR/vpscoin.info`
 	LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 	TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
