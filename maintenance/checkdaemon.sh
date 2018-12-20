@@ -4,8 +4,9 @@
 # Add the following to the crontab (i.e. crontab -e)
 
 INSTALLDIR='/var/tmp/nodevalet'
-PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
-MNS=`cat $INSTALLDIR/info/vpsnumber.info`
+INFODIR='var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+MNS=`cat $INFODIR/vpsnumber.info`
 LOGFILE='$INSTALLDIR/logs/checkdaemon.log'
 
 if [ -e "$INSTALLDIR/temp/updating ]
