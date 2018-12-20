@@ -408,11 +408,11 @@ printf "${nocolor}"
 	while :; do
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
-	if [ -s /root/installtemp/vpssshport.info ]
-	then SSHPORT=$(</root/installtemp/vpssshport.info)
-	echo -e "Detected /root/installtemp/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	if [ -s $INFODIR/vpssshport.info ]
+	then SSHPORT=$(<$INFODIR/vpssshport.info)
+	echo -e "Detected $INFODIR/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	else SSHPORT=22
-	echo -e "/root/installtemp/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	echo -e "$INFODIR/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
