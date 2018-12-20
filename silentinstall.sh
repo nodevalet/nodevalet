@@ -4,7 +4,7 @@
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/var/temp/nodevalet/temp'
-LOGFILE='/var/temp/nodevalet/logs/silentinstall.log'
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
