@@ -1,15 +1,15 @@
 #!/bin/bash
 #compare nr. of running nodes to number of installed nodes. If different restart daemon
 # Add the following to the crontab (i.e. crontab -e)
-# */5 * * * * /root/code-red/maintenance/makerun.sh
-LOGFILE='/root/installtemp/makerun.log'
-INSTALLDIR='/root/installtemp'
-PROJECT=`cat $INSTALLDIR/vpscoin.info`
+
+LOGFILE='/var/tmp/nodevalet/logs/makerun.log'
+INSTALLDIR='/var/tmp/nodevalet'
+PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 TOTAL=`ps aux | grep -i "$PROJECT"d | wc -l`
 CUR_DAEMON=`expr $TOTAL - 1`
-EXP_DAEMON=`cat /root/installtemp/vpsnumber.info`
+EXP_DAEMON=`cat /var/temp/nodevalet/info/vpsnumber.info`
 
-if [ -e "$INSTALLDIR/updating ]
+if [ -e "$INSTALLDIR/temp/updating ]
 	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
 	exit
 fi
