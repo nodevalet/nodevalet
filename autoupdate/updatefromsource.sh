@@ -4,7 +4,6 @@
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
 INSTALLDIR='/var/tmp/nodevalet'
-cd $INSTALLDIR
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 
