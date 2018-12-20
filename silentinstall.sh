@@ -101,19 +101,19 @@ echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | te
 echo -e "\n"
 
 # set donation percentage
-	if [ -e $INSTALLDIR/info/vpsdonation.info ]
-	then DONATE=`cat $INSTALLDIR/info/vpsdonation.info`
-	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATEN=""
-		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
-		echo -e "Although this script is smart, it didn't write itself. If you"
-		echo -e "would like to donate a percentage of your masternode rewards"
-		echo -e "to the developers of this script, please enter a number here,"
-		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
-    		read -p "  --> " DONATE
-		done
-		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
-	fi
+#	if [ -e $INSTALLDIR/info/vpsdonation.info ]
+#	then DONATE=`cat $INSTALLDIR/info/vpsdonation.info`
+#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+#	else DONATEN=""
+#		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
+#		echo -e "Although this script is smart, it didn't write itself. If you"
+#		echo -e "would like to donate a percentage of your masternode rewards"
+#		echo -e "to the developers of this script, please enter a number here,"
+#		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
+ #   		read -p "  --> " DONATE
+#		done
+#		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
+#	fi
 	
 # set donation address front project.env
 	curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
