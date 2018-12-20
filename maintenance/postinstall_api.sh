@@ -2,15 +2,18 @@
 
 function final_message() {
 
-if [ -e /root/vpsvaletreboot.txt ]; then
+if [ -e /var/tmp/nodevalet/temp/vpsvaletreboot.txt ]; then
 	# Set Variables
+	
 	INSTALLDIR='/var/tmp/nodevalet'
+	INFODIR='var/tmp/nvtemp'
+	PROJECT=`cat $INFODIR/vpscoin.info`
 	LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 	TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
 
 	# set hostname variable to the name planted by install script
-	if [ -e $INSTALLDIR/info/vpshostname.info ]
-	then HNAME=$(<$INSTALLDIR/info/vpshostname.info)
+	if [ -e $INFODIR/vpshostname.info ]
+	then HNAME=$(<$INFODIR/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 
