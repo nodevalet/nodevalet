@@ -3,18 +3,18 @@
 
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
-cd /var/tmp/nodevalet
+cd /var/tmp/nodevalet/temp
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 
-# Pull GITAPI_URL from $PROJECT.env
+#Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
-# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+#GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
 CURVERSION=`cat currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
