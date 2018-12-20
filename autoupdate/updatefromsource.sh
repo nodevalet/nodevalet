@@ -3,8 +3,8 @@
 
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
-cd /var/tmp/nodevalet
 INSTALLDIR='/var/tmp/nodevalet'
+cd $INSTALLDIR
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 
 # Pull GITAPI_URL from $PROJECT.env
