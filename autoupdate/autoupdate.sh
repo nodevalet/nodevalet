@@ -9,4 +9,4 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
 
 bash $INSTALLDIR/autoupdate/updatebinaries.sh || bash $INSTALLDIR/autoupdate/updatefromsource.sh || rm -f $INSTALLDIR/temp/updating | /usr/local/bin/activate_masternodes_"$PROJECT" \
-| echo -e "It looks like something went wrong while updating. Restarting daemon and pretending nothing happened." | tee -a "$LOGFILE"
+| rm -r -f $PROJECT* | echo -e "It looks like something went wrong while updating. Restarting daemon and pretending nothing happened." | tee -a "$LOGFILE"
