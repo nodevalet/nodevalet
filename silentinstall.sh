@@ -15,9 +15,9 @@ INFODIR='/var/tmp/nvtemp'
 
 mkdir $INSTALLDIR/logs
 mkdir $INSTALLDIR/temp
-
 touch $INSTALLDIR/logs/checkdaemon.log
 touch $INSTALLDIR/logs/silentinstall.log
+sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 
 # Create Log File and Begin
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
