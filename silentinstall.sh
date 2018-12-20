@@ -11,6 +11,9 @@ LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
 	then mkdir $INSTALLDIR
 	else :
 	fi
+	mkdir $INSTALLDIR/log
+	mkdir $INSTALLDIR/info
+	mkdir $INSTALLDIR/temp
 
 touch '/var/temp/nodevalet/log/checkdaemon.log'
 
