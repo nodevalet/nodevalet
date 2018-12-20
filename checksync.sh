@@ -6,7 +6,7 @@ INSTALLDIR='/var/tmp/nodevalet'
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
-	then HNAME=$(</var/temp/nodevalet/info/vpshostname.info)
+	then HNAME=$(</var/tmp/nodevalet/info/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 # read or assign number of masternodes to install
