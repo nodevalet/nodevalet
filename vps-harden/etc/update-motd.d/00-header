@@ -1,9 +1,10 @@
 #!/bin/sh
 
-INSTALLDIR='/root/installtemp'
-PROJECT=`cat $INSTALLDIR/vpscoin.info`
-MNS=`cat $INSTALLDIR/vpsnumber.info`
-LOGFILE='/root/installtemp/checkdaemon.log'
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+MNS=`cat $INFODIR/vpsnumber.info`
+LOGFILE='/var/tmp/nodevalet/logs/checkdaemon.log'
 
 ## Black        0;30     Dark Gray     1;30
 ## Red          0;31     Light Red     1;31
