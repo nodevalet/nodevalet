@@ -1,7 +1,7 @@
 #!/bin/bash
 #check for updates and build from source if installing binaries failed. 
 
-LOGFILE='/var/temp/nodevalet/logs/autoupdate.log'
+LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
 cd /var/tmp/nodevalet
 INSTALLDIR='/var/tmp/nodevalet'
