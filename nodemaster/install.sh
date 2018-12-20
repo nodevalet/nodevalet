@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set Variables
-INSTALLDIR='/root/installtemp'
-LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/var/tmp/nodevalet'
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 
 
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
