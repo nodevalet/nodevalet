@@ -3,8 +3,8 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "0 0 12 * * ? /root/code-red/maintenance/rebootq.sh") | crontab - 
 
-INSTALLDIR='/var/temp/nodevalet'
-LOGFILE='/var/temp/nodevalet/log/update-reboot.log'
+INSTALLDIR='/var/tmp/nodevalet'
+LOGFILE='/var/tmp/nodevalet/logs/update-reboot.log'
 
 if [ -e "$INSTALLDIR/temp/updating ]
 	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
