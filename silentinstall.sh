@@ -13,6 +13,9 @@ INFODIR='var/tmp/nvtemp'
 	else :
 	fi
 
+mkdir $INSTALLDIR/logs
+mkdir $INSTALLDIR/temp
+
 touch $INSTALLDIR/logs/checkdaemon.log
 touch $INSTALLDIR/logs/silentinstall.log
 
