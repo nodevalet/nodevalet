@@ -24,7 +24,7 @@ sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e "--------- AKcryptoGUY's Code Red Script ------------ " | tee -a "$LOGFILE"
+echo -e "-------- AKcryptoGUY's Node Valet Script ----------- " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 
 # set hostname variable to the name planted by install script
@@ -50,7 +50,9 @@ sleep 4
 			if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
 			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
 			touch $INFODIR/vpscoin.info
+			touch $INFODIR/fullauto.info
 			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
+			echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			break
 			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
@@ -416,6 +418,20 @@ EOT
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 	echo -e "\n"  | tee -a "$LOGFILE"
+	
+	if [ -s $INFODIR/fullauto.info ]
+		then echo -e " Please copy the above file and paste it into the masternode.conf " \
+		echo -e " file on your local wallet. Then reboot the local wallet. Then enter " \
+		echo -e " any command to reboot this VPS and begin syncing the blockchain. Once " \
+		echo -e " your local wallet has restarted, you may click Start Missing to start " \
+		echo -e " your new masternodes. If starting any masternodes fails, you may need " \
+		echo -e " to start them from debug console using 'startmasternode alias 0 MN1' " \
+		echo -e " where you replace MN1 with the alias of your masternode. This is due " \
+		echo -e " to a bug in the wallet that doesn't always recognize IPv6 addresses. " \
+		read -n 1 -s -r -p "  --- Press any key to reboot VPS ---"
+		else :
+	fi
+	
 	
 	# lists the garbage leftover after installation
 	# ls $INSTALLDIR | tee -a "$LOGFILE"
