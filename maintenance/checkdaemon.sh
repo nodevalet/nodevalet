@@ -6,7 +6,7 @@
 INSTALLDIR='/var/tmp/nodevalet'
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 MNS=`cat $INSTALLDIR/info/vpsnumber.info`
-LOGFILE='$INSTALLDIR/log/checkdaemon.log'
+LOGFILE='$INSTALLDIR/logs/checkdaemon.log'
 
 if [ -e "$INSTALLDIR/tmp/updating ]
 	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
