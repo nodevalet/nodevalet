@@ -1,10 +1,10 @@
 #!/bin/bash
 #check for updates and install binaries if necessary
 
-LOGFILE='/var/temp/nodevalet/log/autoupdate.log'
+LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
-cd /var/temp/nodevalet
-INSTALLDIR='/var/temp/nodevalet'
+cd /var/tmp/nodevalet
+INSTALLDIR='/var/tmp/nodevalet'
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 
 # Pull GITAPI_URL from $PROJECT.env
