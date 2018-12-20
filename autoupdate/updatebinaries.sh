@@ -5,7 +5,8 @@ LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
 cd /var/tmp/nodevalet
 INSTALLDIR='/var/tmp/nodevalet'
-PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
+INFODIR='var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
