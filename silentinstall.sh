@@ -53,6 +53,7 @@ sleep 4
 			touch $INFODIR/fullauto.info
 			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
 			echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
+			echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			break
 			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
@@ -108,20 +109,21 @@ sleep 4
 echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | tee -a "$LOGFILE"
 echo -e "\n"
 
-# set donation percentage
-#	if [ -e $INFODIR/vpsdonation.info ]
-#	then DONATE=`cat $INFODIR/vpsdonation.info`
-#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-#	else DONATEN=""
-#		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
-#		echo -e "Although this script is smart, it didn't write itself. If you"
-#		echo -e "would like to donate a percentage of your masternode rewards"
-#		echo -e "to the developers of this script, please enter a number here,"
-#		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
- #   		read -p "  --> " DONATE
-#		done
-#		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
-#	fi
+set donation percentage
+	if [ -e $INFODIR/vpsdonation.info ]
+	then DONATE=`cat $INFODIR/vpsdonation.info`
+	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+	else DONATEN=""
+		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
+		echo -e "Although this script is smart, it didn't write itself. If you"
+		echo -e "would like to donate a percentage of your masternode rewards"
+		echo -e "to the developers of this script, please enter a number here,"
+		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
+   		# read -p "  --> " DONATE
+		DONATE='0'
+		done
+		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
+	fi
 	
 # set donation address front project.env
 	cd $INSTALLDIR/nodemaster/config/$PROJECT
