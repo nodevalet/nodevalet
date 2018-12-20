@@ -179,7 +179,7 @@ function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
 	then echo -e "System seems to already be hard, skipping this part" | tee -a "$LOGFILE"
 	else echo -e "System is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
-	cd ~ $INSTALLDIR/vps-harden
+	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
 	echo -e "Installing jq package" | tee -a "$LOGFILE"
