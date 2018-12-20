@@ -4,7 +4,7 @@
 
 LOGFILE='/var/tmp/nodevalet/logs/makerun.log'
 INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='var/tmp/nvtemp'
+INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
 
