@@ -107,7 +107,7 @@ LOGFILE='/var/tmp/nodevalet/logs/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
 INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='var/tmp/nvtemp'
+INFODIR='/var/tmp/nvtemp'
 
 HNAME=$(<$INFODIR/vpshostname.info)
 PROJECT=`cat $INFODIR/vpscoin.info`
