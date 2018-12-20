@@ -31,6 +31,7 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 	then HNAME=$(<$INFODIR/vpshostname.info)
 	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	else HNAME=`hostname`
+	touch $INFODIR/vpshostname.info
 	echo -e "$HNAME" > $INFODIR/vpshostname.info
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
@@ -47,6 +48,7 @@ sleep 4
 		read -p "  --> " PROJECT
 			if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
 			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
+			touch $INFODIR/vpscoin.info
 			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			break
