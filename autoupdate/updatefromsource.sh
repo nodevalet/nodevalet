@@ -8,6 +8,7 @@ INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 
 cd /var/tmp/nodevalet/temp
+rm -r -f $PROJECT*
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
@@ -19,7 +20,7 @@ GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
 GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
-sed -i "s/GITURL_URL=//" $INSTALLDIR/temp/GIT_URL
+sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
 
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
