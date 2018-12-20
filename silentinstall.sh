@@ -69,6 +69,7 @@ sleep 4
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
 		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
+		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
 		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
@@ -84,6 +85,7 @@ sleep 4
 	echo -e " Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
 	echo -e " Please double check your addresses for accuracy."
 	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
+	touch $INFODIR/vpsmnaddress.info
 		for ((i=1;i<=$MNS;i++)); 
 		do 
 			while :; do
