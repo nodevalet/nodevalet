@@ -3,8 +3,8 @@
 
 LOGFILE='/var/temp/nodevalet/log/autoupdate.log'
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
-cd /root/installtemp
-INSTALLDIR='/var/temp/nodevalet'
+cd /var/tmp/nodevalet
+INSTALLDIR='/var/tmp/nodevalet'
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 
 # Pull GITAPI_URL from $PROJECT.env
@@ -34,9 +34,9 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	&& make \
 	&& make install \
 	&& cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")" \
-	&& cp /var/temp/nodevalet/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
-	&& rm -rf /var/temp/nodevalet/$PROJECT \
-	&& cd /var/temp/nodevalet/temp \
+	&& cp /var/tmp/nodevalet/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
+	&& rm -rf /var/tmp/nodevalet/$PROJECT \
+	&& cd $INSTALLDIR/temp \
 	&& rm -f updating \
 	&& curl -s $GITAPI_URL \
 		| grep tag_name > currentversion \
