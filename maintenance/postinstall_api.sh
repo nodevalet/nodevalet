@@ -4,8 +4,8 @@ function final_message() {
 
 if [ -e /root/vpsvaletreboot.txt ]; then
 	# Set Variables
-	INSTALLDIR='/var/temp/nodevalet'
-	LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
+	INSTALLDIR='/var/tmp/nodevalet'
+	LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 	TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
 
 	# set hostname variable to the name planted by install script
