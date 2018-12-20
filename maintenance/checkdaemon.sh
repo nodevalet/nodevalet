@@ -8,7 +8,7 @@ PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 MNS=`cat $INSTALLDIR/info/vpsnumber.info`
 LOGFILE='$INSTALLDIR/logs/checkdaemon.log'
 
-if [ -e "$INSTALLDIR/tmp/updating ]
+if [ -e "$INSTALLDIR/temp/updating ]
 	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
 	exit
 fi
@@ -16,9 +16,9 @@ fi
 for ((i=1;i<=$MNS;i++));
 do
 echo -e " Checking for stuck blocks on masternode "$PROJECT"_n${i}"
-previousBlock=`cat $INSTALLDIR/tmp/blockcount${i}`
+previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
 currentBlock=$(/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
-/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > $INSTALLDIR/tmp/blockcount${i}
+/usr/local/bin/"$PROJECT"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 if [ "$previousBlock$" == "$currentBlock$" ]; then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
