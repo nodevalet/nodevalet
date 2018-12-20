@@ -3,7 +3,8 @@
 
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 INSTALLDIR='/var/tmp/nodevalet'
-PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
+INFODIR='var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
 
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
 
