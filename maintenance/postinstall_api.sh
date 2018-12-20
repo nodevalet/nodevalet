@@ -1,15 +1,16 @@
 #!/bin/bash
 
+# Set Variables
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
+
+
 function final_message() {
 
-if [ -e /var/tmp/nodevalet/temp/vpsvaletreboot.txt ]; then
-	# Set Variables
-	
-	INSTALLDIR='/var/tmp/nodevalet'
-	INFODIR='/var/tmp/nvtemp'
-	PROJECT=`cat $INFODIR/vpscoin.info`
-	LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-	TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
+if [ -e $INSTALLDIR/temp/vpsvaletreboot.txt ]; then
 
 	# set hostname variable to the name planted by install script
 	if [ -e $INFODIR/vpshostname.info ]
@@ -25,7 +26,7 @@ if [ -e /var/tmp/nodevalet/temp/vpsvaletreboot.txt ]; then
 	
 
 # Add a sequence to interpret the reply as success or fail $?
-rm /var/tmp/nodevalet/temp/vpsvaletreboot.txt
+rm $INSTALLDIR/temp/vpsvaletreboot.txt
 crontab -l | grep -v '$INSTALLDIR/maintenance/postinstall_api.sh'  | crontab -
 
 else :
