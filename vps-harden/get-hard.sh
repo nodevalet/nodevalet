@@ -103,12 +103,12 @@ printf "${nocolor}"
 clear
 
 # Set Vars
-LOGFILE='/root/installtemp/vps-harden.log'
+LOGFILE='/var/tmp/nodevalet/logs/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
-INSTALLDIR='/root/installtemp'
-HNAME=$(<$INSTALLDIR/vpshostname.info)
-PROJECT=`cat $INSTALLDIR/vpscoin.info`
+INSTALLDIR='/var/tmp/nodevalet'
+HNAME=$(<$INSTALLDIR/info/vpshostname.info)
+PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 }
 
 function begin_log() {
