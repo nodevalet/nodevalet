@@ -4,18 +4,19 @@
 function setup_environment() {
 # Set Variables
 INSTALLDIR='/var/temp/nodevalet/temp'
-LOGFILE='/var/temp/nodevalet/log/silentinstall.log'
+LOGFILE='/var/temp/nodevalet/logs/silentinstall.log'
 
 # create root/installtemp if it doesn't exist
 	if [ ! -d $INSTALLDIR ]
 	then mkdir $INSTALLDIR
 	else :
 	fi
-	mkdir $INSTALLDIR/log
+	mkdir $INSTALLDIR/logs
 	mkdir $INSTALLDIR/info
 	mkdir $INSTALLDIR/temp
 
-touch '/var/temp/nodevalet/log/checkdaemon.log'
+touch $INSTALLDIR/logs/checkdaemon.log
+touch $INSTALLDIR/logs/silentinstall.log
 
 # Create Log File and Begin
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
