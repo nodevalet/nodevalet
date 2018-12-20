@@ -1,6 +1,6 @@
 #!/bin/bash
 # to be added to crontab to run updatebinaries and, if that fails, run updatefromsource, if that fails, restarts daemon and try again tomorrow.
-
+cd /var/tmp/nodevalet/temp
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
