@@ -2,8 +2,8 @@
 #compare nr. of running nodes to number of installed nodes. If different restart daemon
 # Add the following to the crontab (i.e. crontab -e)
 
-LOGFILE='/var/temp/nodevalet/log/makerun.log'
-INSTALLDIR='/var/temp/nodevalet'
+LOGFILE='/var/tmp/nodevalet/logs/makerun.log'
+INSTALLDIR='/var/tmp/nodevalet'
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
 TOTAL=`ps aux | grep -i "$PROJECT"d | wc -l`
 CUR_DAEMON=`expr $TOTAL - 1`
