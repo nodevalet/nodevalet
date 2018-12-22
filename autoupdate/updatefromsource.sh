@@ -17,7 +17,6 @@ sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
 # Pull GIT URL from $PROJECT.env
-
 GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
 sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
