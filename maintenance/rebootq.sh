@@ -6,7 +6,7 @@
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/update-reboot.log'
 
-if [ -e "$INSTALLDIR/temp/updating ]
+if [ -e $INSTALLDIR/temp/updating ]
 	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
 	exit
 fi
@@ -25,7 +25,7 @@ sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 # this echo writes the packages requiring reboot to the log
 echo -e "`cat ${INSTALLDIR}/temp/REBOOTREQ`" | tee -a "$LOGFILE"
 
-rm $INSTALLDIR/REBOOTREQ
+rm $INSTALLDIR/temp/REBOOTREQ
 echo -e "Server will restart in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
 shutdown -r +5 "Server will restart in 5 minutes to complete required updates"
 
