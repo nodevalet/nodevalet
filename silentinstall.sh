@@ -358,11 +358,13 @@ do
 	echo "|" > $INSTALLDIR/temp/DELIMETER
 	
 	# merge data fields to prepare masternode.return file
+	paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
+	
 	# add in donation if requested to do so
-	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-	paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/temp/masternode.line$i
-	else paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
-	fi
+	# if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
+	# paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/temp/masternode.line$i
+	# else paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
+	# fi
 	
 	# if line contains collateral_tx then start the line with #
 	sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/temp/masternode.line$i >> $INSTALLDIR/temp/masternode.line$i 2>&1
@@ -370,11 +372,12 @@ do
 	paste -d '|' $INSTALLDIR/temp/DELIMETER $INSTALLDIR/temp/masternode.line$i >> $INSTALLDIR/temp/masternode.all
 
 	# create the masternode.conf output that is returned to consumer
+	paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 	# add in donation if requested to do so
-	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-	paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/masternode.conf
-	else paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
-	fi	
+	# if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
+	# paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/masternode.conf
+	# else paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
+	# fi	
 	
 # declutter ; take out trash
 rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
@@ -390,13 +393,13 @@ done
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
 	# Log whether or not a donation has been entered into masternode.conf
-	if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-	echo -e "User chose to donate $DONATE % to $DONATEADDR"  | tee -a "$LOGFILE"
-	else 
-	echo -e "User chose not to donate, and that's ok. We'll survive."  | tee -a "$LOGFILE"
-	echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
-	fi
-	
+	# if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
+	# echo -e "User chose to donate $DONATE % to $DONATEADDR"  | tee -a "$LOGFILE"
+	# else 
+	# echo -e "User chose not to donate, and that's ok. We'll survive."  | tee -a "$LOGFILE"
+	# echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
+	# fi
+
 	echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE"
 	# convert masternode.conf to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/temp/complete
@@ -444,7 +447,7 @@ EOT
 		echo -e " to start them from debug console using 'startmasternode alias 0 MN1' "
 		echo -e " where you replace MN1 with the alias of your masternode. This is due "
 		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
-		read -n 1 -s -r -p "  --- Press any key to reboot VPS ---" ANYKEY
+		read -n 1 -s -r -p "  -- Copy masternode.conf data above and then type 'reboot' to reboot VPS --" ANYKEY
 		else echo -e "Fullauto detected, skipping masternode.conf display\n"  >> "$LOGFILE"
 	fi
 	
