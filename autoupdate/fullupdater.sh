@@ -5,6 +5,8 @@ LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
 
 
 #Pull GITAPI_URL from $PROJECT.env
@@ -16,7 +18,7 @@ GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"  | tee -a "$LOGFILE"
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags." | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 
 #GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
@@ -25,7 +27,7 @@ NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
      echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
-     echo -e " Attempting to install new binaries" | tee -a "$LOGFILE"
+     echo -e " Attempting to install new $PROJECTt binaries" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT* \
 		| curl -s $GITAPI_URL \
@@ -39,7 +41,7 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 		rm -r $EXTRACTDIR
 		rm -f $TARBALL
-		echo -e " Restarting masternodes after installation of new ${PROJECT} binaries\n" >> "$LOGFILE"
+		echo -e " Restarting masternodes after installation of new ${PROJECTt} binaries\n" >> "$LOGFILE"
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 		sleep 2
 		check_project
@@ -77,11 +79,11 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	cp $INSTALLDIR/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/$PROJECT
 	cd $INSTALLDIR/temp
-	echo -e " Restarting masternodes after building ${PROJECT} from source\n" >> "$LOGFILE"
+	echo -e " Restarting masternodes after building ${PROJECTt} from source\n" >> "$LOGFILE"
 	activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 	sleep 2
 	check_project
-	echo -e " Looks like we couldn't build ${PROJECT} either, unsure of what to do next\n" >> "$LOGFILE"
+	echo -e " Looks like we couldn't build ${PROJECTt} either, unsure of what to do next\n" >> "$LOGFILE"
 	rm -f $INSTALLDIR/temp/updating
 	exit
 fi
@@ -90,14 +92,13 @@ fi
 function check_project() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
-	cat $INSTALLDIR/temp/${PROJECT}Ds >> $LOGFILE
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e "It looks like ${PROJECT}d is running...update complete \n" | tee -a "$LOGFILE"
+	then echo -e "${PROJECT}d is up and running...update has completed \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
-	else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
+	else echo -e "It looks like VPS install script failed, ${PROJECTt}d is not running... " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
 }
