@@ -26,7 +26,7 @@ if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
-	echo -e "  --> Now attempting to install new $PROJECTt binaries" | tee -a "$LOGFILE"
+	echo -e " ** Attempting to install new $PROJECTt binaries **" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
 		mkdir /usr/local/bin/backup mkdir 2>/dev/null
@@ -99,14 +99,14 @@ function check_project() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : ${PROJECTt}d is running..." | tee -a "$LOGFILE"
+	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${PROJECTt}d is running..." | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
-	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ${PROJECTt}d is not running..." | tee -a "$LOGFILE"
-	echo -e "  --> This update step failed, trying to autocorrect ... " | tee -a "$LOGFILE"
+	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${PROJECTt}d is not running..." | tee -a "$LOGFILE"
+	echo -e " ** This update step failed, trying to autocorrect ... " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
 }
@@ -115,7 +115,7 @@ function check_restore() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " ${PROJECTt}d is up and running...original binaries were restored" | tee -a "$LOGFILE"
+	then echo -e " ${PROJECTt}d is running...former binaries were restored" | tee -a "$LOGFILE"
 	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
