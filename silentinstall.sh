@@ -435,19 +435,20 @@ EOT
 
 	echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 	cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-	echo -e "\n"  | tee -a "$LOGFILE"
+	echo -e "\n"  >> "$LOGFILE"
 	
 	if [ ! -s $INFODIR/fullauto.info ]
-		then # echo -e "Not on fullauto install, display masternode.conf\n"  >> "$LOGFILE"
+		then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
+		update-rc.d postinstall_api.sh defaults
 		echo -e " Please copy the above file and paste it into the masternode.conf "
-		echo -e " file on your local wallet. Then reboot the local wallet. Then enter "
-		echo -e " any command to reboot this VPS and begin syncing the blockchain. Once "
+		echo -e " file on your local wallet. Then reboot the local wallet. Next, type "
+		echo -e " 'reboot' to reboot this VPS and begin syncing the blockchain. Once "
 		echo -e " your local wallet has restarted, you may click Start Missing to start "
 		echo -e " your new masternodes. If starting any masternodes fails, you may need "
 		echo -e " to start them from debug console using 'startmasternode alias 0 MN1' "
 		echo -e " where you replace MN1 with the alias of your masternode. This is due "
 		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
-		read -n 1 -s -r -p "  -- Copy masternode.conf data above and then type 'reboot' to reboot VPS --" ANYKEY
+		read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
 		else echo -e "Fullauto detected, skipping masternode.conf display\n"  >> "$LOGFILE"
 	fi
 	
