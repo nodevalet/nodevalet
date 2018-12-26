@@ -338,8 +338,8 @@ do
 	fi
 	
 	# Check for presence of txid and, if present, use it for txid/txidx
-	if [ -e $INFODIR/vpstxdata.info ]
-		then echo -e "$(sed -n ${i}p $INFODIR/vpstxdata.info)" > $INSTALLDIR/temp/TXID$i
+	if [ -e $INFODIR/vpsmntxdata.info ]
+		then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
 		TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
 		echo -e $TX >> $INSTALLDIR/temp/txid
 		echo -e $TX > $INSTALLDIR/temp/TXID$i
