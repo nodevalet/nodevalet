@@ -68,8 +68,9 @@ cd $INSTALLDIR/temp
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
-	echo -e " attempting to build new wallet version from source" | tee -a "$LOGFILE"
+then 	echo -e " I couldn't download the new binaries, so I am now"
+	echo -e " attempting to build new wallet version from source"
+	sleep 3
 	add-apt-repository -yu ppa:bitcoin/bitcoin
 	apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
 	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install build-essential \
@@ -127,7 +128,8 @@ function check_restore() {
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
-	else echo -e " It looks like restoring the binaries failed, ${PROJECTt}d is not running... " | tee -a "$LOGFILE"
+	else echo -e " Restoring the original binaries failed, ${PROJECTt}d is not running... " | tee -a "$LOGFILE"
+	echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord." | tee -a "$LOGFILE"
 	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
