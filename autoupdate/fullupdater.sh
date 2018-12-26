@@ -51,7 +51,7 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		rm -r $EXTRACTDIR
 		rm -f $TARBALL
 		echo -e " Restarting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
-		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
+		activate_masternodes_$PROJECT
 		sleep 2
 		check_project
 else echo -e " No new version is detected \n"
