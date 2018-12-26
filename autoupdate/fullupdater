@@ -1,0 +1,120 @@
+#!/bin/bash
+# to be added to crontab to run updatebinaries and, if that fails, run updatefromsource, if that fails, restarts daemon and try again tomorrow.
+cd /var/tmp/nodevalet/temp
+LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECT tags." | tee -a "$LOGFILE"
+
+bash $INSTALLDIR/autoupdate/updatebinaries.sh || bash $INSTALLDIR/autoupdate/updatefromsource.sh || rm -f $INSTALLDIR/temp/updating | /usr/local/bin/activate_masternodes_"$PROJECT" \
+| rm -r -f $PROJECT* | echo -e "It looks like something went wrong while updating. Restarting daemon and pretending nothing happened." | tee -a "$LOGFILE"
+
+
+
+
+
+
+
+#check for updates and install binaries if necessary
+
+LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running autoupdatebinaries.sh"  | tee -a "$LOGFILE"
+cd /var/tmp/nodevalet/temp
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+
+#Pull GITAPI_URL from $PROJECT.env
+GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
+sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
+GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+
+#GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+CURVERSION=`cat currentversion`
+NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
+if [ "$CURVERSION" != "$NEWVERSION" ]
+then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
+     echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
+     echo -e " Attempting to install new binaries" | tee -a "$LOGFILE"
+		touch $INSTALLDIR/temp/updating
+		systemctl stop $PROJECT* \
+		| curl -s $GITAPI_URL \
+		| grep browser_download_url \
+  		| grep x86_64-linux-gnu.tar.gz \
+  		| cut -d '"' -f 4 \
+  		| wget -qi -
+	TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
+	EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
+	tar -xzf $TARBALL \
+		&& cp -r $EXTRACTDIR/bin/. /usr/local/bin/ \
+		&& curl -s $GITAPI_URL \
+             		| grep tag_name > currentversion \
+		&& rm -r $EXTRACTDIR \
+		&& rm -f $TARBALL \
+		&& rm -f $INSTALLDIR/temp/updating \
+		&& echo -e " Rebooting after installation of new ${PROJECT} binaries\n" >> "$LOGFILE" \
+		&& reboot
+else echo -e " No new version is detected \n" | tee -a "$LOGFILE"
+fi
+
+
+
+
+
+
+#check for updates and build from source if installing binaries failed. 
+
+LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running updatefromsource.sh" | tee -a "$LOGFILE"
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
+
+cd /var/tmp/nodevalet/temp
+rm -r -f $PROJECT*
+
+# Pull GITAPI_URL from $PROJECT.env
+GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
+sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
+GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+
+# Pull GIT URL from $PROJECT.env
+GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
+sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
+GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+
+# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
+CURVERSION=`cat currentversion`
+NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
+if [ "$CURVERSION" != "$NEWVERSION" ]
+then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LOGFILE"
+	echo -e " attempting to build new wallet version from source" | tee -a "$LOGFILE"
+	add-apt-repository -yu ppa:bitcoin/bitcoin
+	apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
+	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install build-essential \
+	libcurl4-gnutls-dev protobuf-compiler libboost-all-dev autotools-dev automake \
+	libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
+	libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
+	pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev
+	systemctl stop $PROJECT* \
+	&& git clone $GIT_URL \
+	&& cd $PROJECT \
+	&& ./autogen.sh \
+	&& ./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz" \
+	&& make \
+	&& make install \
+	&& cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")" \
+	&& cp $INSTALLDIR/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/ \
+	&& rm -rf $INSTALLDIR/$PROJECT \
+	&& cd $INSTALLDIR/temp \
+	&& rm -f updating \
+	&& curl -s $GITAPI_URL \
+		| grep tag_name > currentversion \
+	&& echo -e " Rebooting after building new ${PROJECT} wallet\n" >> "$LOGFILE" \
+	&& reboot
+fi
