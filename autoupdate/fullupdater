@@ -44,6 +44,7 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 		sleep 2
 		check_project
 else echo -e " No new version is detected \n" | tee -a "$LOGFILE"
+exit
 fi
 }
 
@@ -100,7 +101,6 @@ function check_project() {
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
 }
-
 
 # this is where the current update sequence begins
 update_binaries
