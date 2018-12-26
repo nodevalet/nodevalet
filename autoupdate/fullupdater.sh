@@ -14,6 +14,12 @@ echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
+# Pull GIT URL from $PROJECT.env
+GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
+sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
+GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
@@ -82,7 +88,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	cp $INSTALLDIR/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/$PROJECT
 	cd $INSTALLDIR/temp
-	echo -e " Restarting masternodes after building ${PROJECTt} from source\n" >> "$LOGFILE"
+	echo -e " Restarting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
 	activate_masternodes_$PROJECT
 	sleep 2
 	check_project
@@ -116,7 +122,7 @@ function check_restore() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " ${PROJECTt}d is running...former binaries were restored" | tee -a "$LOGFILE"
+	then echo -e " ** ${PROJECTt}d is running...original binaries were restored" | tee -a "$LOGFILE"
 	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
