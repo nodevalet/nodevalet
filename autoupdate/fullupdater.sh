@@ -32,7 +32,7 @@ if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
-	echo -e " ** Attempting to install new $PROJECTt binaries **" | tee -a "$LOGFILE"
+	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
 		mkdir /usr/local/bin/backup mkdir 2>/dev/null
@@ -50,7 +50,7 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 		rm -r $EXTRACTDIR
 		rm -f $TARBALL
-		echo -e " Restarting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
+		echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
 		activate_masternodes_$PROJECT
 		sleep 2
 		check_project
@@ -62,7 +62,7 @@ fi
 function update_from_source() {
 #check for updates and build from source if installing binaries failed. 
 
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function \n" | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
@@ -89,7 +89,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	cp $INSTALLDIR/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/$PROJECT
 	cd $INSTALLDIR/temp
-	echo -e " Restarting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
+	echo -e " Starting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
 	activate_masternodes_$PROJECT
 	sleep 2
 	check_project
@@ -115,7 +115,7 @@ function check_project() {
 	rm -f $INSTALLDIR/temp/updating
 	exit
 	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${PROJECTt}d is not running..." | tee -a "$LOGFILE"
-	echo -e " ** This update step failed, trying to autocorrect ... " | tee -a "$LOGFILE"
+	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
 }
