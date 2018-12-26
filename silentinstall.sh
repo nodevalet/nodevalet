@@ -479,8 +479,8 @@ rm -f $TARBALL
 dEXIST=`ls /usr/local/bin | grep ${PROJECT}d`
 
 if [ "$dEXIST" = "${PROJECT}d" ]
-then echo -e "Binaries for ${PROJECT} were downloaded and installed."   | tee -a "$LOGFILE"
-else echo -e "Binaries for ${PROJECT} could not be downloaded."  | tee -a "$LOGFILE"
+then echo -e "Binaries for ${PROJECTt} were downloaded and installed."   | tee -a "$LOGFILE"
+else echo -e "Binaries for ${PROJECTt} could not be downloaded."  | tee -a "$LOGFILE"
 fi
 }
 
