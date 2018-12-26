@@ -42,6 +42,8 @@ sleep 4
 # set project name
 	if [ -s $INFODIR/vpscoin.info ]
 	then PROJECT=`cat $INFODIR/vpscoin.info`
+	PROJECTl=${PROJECT,,}
+	PROJECTt=${PROJECTl~}
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
@@ -55,6 +57,8 @@ sleep 4
 			echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
 			echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
 			PROJECT=`cat $INFODIR/vpscoin.info`
+			PROJECTl=${PROJECT,,}
+			PROJECTt=${PROJECTl~}
 			break
 			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
 			fi
@@ -239,12 +243,12 @@ function install_mns() {
 		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
 		# report back to mother
 		echo -e "Reporting ${PROJECT}d build success to mother" | tee -a "$LOGFILE"
-		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$PROJECT"'d has started..."}' && echo -e " "
+		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$PROJECTt"'d has started..."}' && echo -e " "
 		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
 		echo -e "Reporting ${PROJECT}d build failure to mother" | tee -a "$LOGFILE"
-		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$PROJECT"'d failed to build or start"}' && echo -e " "
+		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$PROJECTt"'d failed to build or start"}' && echo -e " "
 		exit
 		fi
 	fi
@@ -498,13 +502,13 @@ add_cron
 # moved curl update commands into get-hard.sh to provide better detail
 silent_harden
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECT"' Binaries ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECTt"' Binaries ..."}' && echo -e " "
 install_binaries
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating '"$PROJECT"' Masternodes ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 install_mns
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$PROJECT"' Masternodes ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 get_genkeys
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
