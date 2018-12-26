@@ -344,7 +344,7 @@ do
 		echo -e $TX >> $INSTALLDIR/temp/txid
 		echo -e $TX > $INSTALLDIR/temp/TXID$i
 		# Query external block explorer for collateral transaction
-		else curl -s "$BLOCKEXP`cat $INSTALLDIR/temp/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+		else curl -s "$BLOCKEXP`cat $INSTALLDIR/temp/MNADD$i`" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
 		TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
 		echo -e $TX >> $INSTALLDIR/temp/txid
 		echo -e $TX > $INSTALLDIR/temp/TXID$i
