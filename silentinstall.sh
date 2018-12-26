@@ -36,7 +36,7 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 	echo -e "$HNAME" > $INFODIR/vpshostname.info
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' 2>/dev/null && echo -e " "
 sleep 5
 	
 # set project name
@@ -435,7 +435,8 @@ EOT
 	echo -e "\n"  | tee -a "$LOGFILE"
 	
 	if [ ! -s $INFODIR/fullauto.info ]
-		then echo -e " Please copy the above file and paste it into the masternode.conf " \
+		then echo -e "Not on fullauto install, display masternode.conf\n"  >> "$LOGFILE"
+		echo -e " Please copy the above file and paste it into the masternode.conf " \
 		echo -e " file on your local wallet. Then reboot the local wallet. Then enter " \
 		echo -e " any command to reboot this VPS and begin syncing the blockchain. Once " \
 		echo -e " your local wallet has restarted, you may click Start Missing to start " \
@@ -444,7 +445,7 @@ EOT
 		echo -e " where you replace MN1 with the alias of your masternode. This is due " \
 		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. " \
 		read -n 1 -s -r -p "  --- Press any key to reboot VPS ---" ANYKEY
-		else :
+		else echo -e "Fullauto detected, skipping masternode.conf display\n"  >> "$LOGFILE"
 	fi
 	
 fi
