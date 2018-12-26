@@ -44,6 +44,9 @@ sleep 5
 	then PROJECT=`cat $INFODIR/vpscoin.info`
 	PROJECTl=${PROJECT,,}
 	PROJECTt=${PROJECTl~}
+	touch $INFODIR/fullauto.info
+	echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
+	echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
 	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
@@ -52,10 +55,7 @@ sleep 5
 			if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
 			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
 			touch $INFODIR/vpscoin.info
-			touch $INFODIR/fullauto.info
 			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
-			echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
-			echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			PROJECTl=${PROJECT,,}
 			PROJECTt=${PROJECTl~}
@@ -114,20 +114,20 @@ echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | te
 echo -e "\n"
 
 set donation percentage
-	if [ -e $INFODIR/vpsdonation.info ]
-	then DONATE=`cat $INFODIR/vpsdonation.info`
-	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-	else DONATEN=""
-		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
-		echo -e "Although this script is smart, it didn't write itself. If you"
-		echo -e "would like to donate a percentage of your masternode rewards"
-		echo -e "to the developers of this script, please enter a number here,"
-		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
-   		# read -p "  --> " DONATE
-		DONATE='0'
-		done
-		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
-	fi
+#	if [ -e $INFODIR/vpsdonation.info ]
+#	then DONATE=`cat $INFODIR/vpsdonation.info`
+#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
+#	else DONATEN=""
+#		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
+#		echo -e "Although this script is smart, it didn't write itself. If you"
+#		echo -e "would like to donate a percentage of your masternode rewards"
+#		echo -e "to the developers of this script, please enter a number here,"
+#		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
+#		 read -p "  --> " DONATE
+#		DONATE='0'
+#		done
+#		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
+#	fi
 	
 # set donation address front project.env
 	cd $INSTALLDIR/nodemaster/config/$PROJECT
