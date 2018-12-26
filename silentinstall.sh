@@ -139,7 +139,7 @@ set donation percentage
 	echo "$DONATION_ADDRESS" > $INSTALLDIR/temp/DONATEADDR
 	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/temp/DONATEADDR
 	DONATEADDR=$(<$INSTALLDIR/temp/DONATEADDR)
-	echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
+	# echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
 	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INFODIR/vpsdonation.info > $INSTALLDIR/temp/DONATION
 	else
 	echo -e "No donation address was detected." | tee -a "$LOGFILE"
