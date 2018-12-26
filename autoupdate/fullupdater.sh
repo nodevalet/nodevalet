@@ -32,6 +32,7 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		mkdir /usr/local/bin/backup mkdir 2>/dev/null
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
+		rm /usr/local/bin/${PROJECT}*
 		curl -s $GITAPI_URL \
 		| grep browser_download_url \
   		| grep x86_64-linux-gnu.tar.gz \
