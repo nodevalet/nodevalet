@@ -16,22 +16,23 @@ GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
 function update_binaries() {
 #check for updates and install binaries if necessary
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"  | tee -a "$LOGFILE"
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags." | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
 cd $INSTALLDIR/temp
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
-     echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
-     echo -e " Attempting to install new $PROJECTt binaries" | tee -a "$LOGFILE"
+then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
+	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
+	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
+	echo -e "  --> Now attempting to install new $PROJECTt binaries" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
 		mkdir /usr/local/bin/backup
-		echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
+		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
-		| curl -s $GITAPI_URL \
+		curl -s $GITAPI_URL \
 		| grep browser_download_url \
   		| grep x86_64-linux-gnu.tar.gz \
   		| cut -d '"' -f 4 \
@@ -42,11 +43,11 @@ then echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
 		rm -r $EXTRACTDIR
 		rm -f $TARBALL
-		echo -e " Restarting masternodes after installation of new ${PROJECTt} binaries\n" >> "$LOGFILE"
+		echo -e " Restarting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 		sleep 2
 		check_project
-else echo -e " No new version is detected \n" | tee -a "$LOGFILE"
+else echo -e " No new version is detected \n"
 exit
 fi
 }
@@ -84,7 +85,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now" | tee -a "$LO
 	activate_masternodes_$PROJECT
 	sleep 2
 	check_project
-	echo -e " It looks like we couldn't rebuild ${PROJECTt} from source, either." >> "$LOGFILE"
+	echo -e " It looks like we couldn't rebuild ${PROJECTt} from source, either" >> "$LOGFILE"
 	echo -e " Restoring original binaries from /usr/local/bin/backup" | tee -a "$LOGFILE"
 	cp /usr/local/bin/backup/${PROJECT}* /usr/local/bin/
 	activate_masternodes_$PROJECT
@@ -99,13 +100,13 @@ function check_project() {
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
 	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : ${PROJECTt}d is running..." | tee -a "$LOGFILE"
-		echo -e " Your ${PROJECTt}d was successfully updated \n" | tee -a "$LOGFILE"
+		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
 	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ${PROJECTt}d is not running..." | tee -a "$LOGFILE"
-	echo -e "This update step failed, trying to autocorrect ... " | tee -a "$LOGFILE"
+	echo -e "  --> This update step failed, trying to autocorrect ... " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
 }
@@ -115,12 +116,12 @@ function check_restore() {
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
 	then echo -e " ${PROJECTt}d is up and running...original binaries were restored" | tee -a "$LOGFILE"
-	then echo -e " We will try this update again later. \n" | tee -a "$LOGFILE"
+	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
 	else echo -e " It looks like restoring the binaries failed, ${PROJECTt}d is not running... " | tee -a "$LOGFILE"
-	else echo -e " I'm all out of options; your VPS may need service. \n " | tee -a "$LOGFILE"
+	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	reboot
@@ -130,9 +131,4 @@ function check_restore() {
 # this is where the current update sequence begins
 update_binaries
 update_from_source
-
 exit
-
-# original update sequence
-bash $INSTALLDIR/autoupdate/updatebinaries.sh || bash $INSTALLDIR/autoupdate/updatefromsource.sh || rm -f $INSTALLDIR/temp/updating | /usr/local/bin/activate_masternodes_"$PROJECT" \
-| rm -r -f $PROJECT* | echo -e "It looks like something went wrong while updating. Restarting daemon and pretending nothing happened." | tee -a "$LOGFILE"
