@@ -449,7 +449,7 @@ EOT
 		echo -e " where you replace MN1 with the alias of your masternode. This is due "
 		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
 		read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
-		else echo -e "Fullauto detected, skipping masternode.conf display\n"  >> "$LOGFILE"
+		else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
 	fi
 	
 fi
