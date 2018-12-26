@@ -37,7 +37,7 @@ echo -e "---------------------------------------------------- \n" | tee -a "$LOG
 	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
 	fi
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' && echo -e " "
-sleep 4
+sleep 5
 	
 # set project name
 	if [ -s $INFODIR/vpscoin.info ]
@@ -337,10 +337,18 @@ do
 		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 	fi
 	
-	curl -s "$BLOCKEXP`cat $INSTALLDIR/temp/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-	TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
-	echo -e $TX >> $INSTALLDIR/temp/txid
-	echo -e $TX > $INSTALLDIR/temp/TXID$i
+	# Check for presence of txid and, if present, use it for txid/txidx
+	if [ -e $INFODIR/vpstxdata.info ]
+		then echo -e "$(sed -n ${i}p $INFODIR/vpstxdata.info)" > $INSTALLDIR/temp/TXID$i
+		TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
+		echo -e $TX >> $INSTALLDIR/temp/txid
+		echo -e $TX > $INSTALLDIR/temp/TXID$i
+		# Query external block explorer for collateral transaction
+		else curl -s "$BLOCKEXP`cat $INSTALLDIR/temp/MNADD$i`" | jq '.["utxo"][0]["txId","n"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+		TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
+		echo -e $TX >> $INSTALLDIR/temp/txid
+		echo -e $TX > $INSTALLDIR/temp/TXID$i
+	fi
 	
 	# replace null with txid info
 	sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/temp/txid >> $INSTALLDIR/temp/txid 2>&1
@@ -434,14 +442,11 @@ EOT
 		echo -e " your new masternodes. If starting any masternodes fails, you may need " \
 		echo -e " to start them from debug console using 'startmasternode alias 0 MN1' " \
 		echo -e " where you replace MN1 with the alias of your masternode. This is due " \
-		echo -e " to a bug in the wallet that doesn't always recognize IPv6 addresses. " \
+		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. " \
 		read -n 1 -s -r -p "  --- Press any key to reboot VPS ---"
 		else :
 	fi
 	
-	
-	# lists the garbage leftover after installation
-	# ls $INSTALLDIR | tee -a "$LOGFILE"
 fi
  }
 
@@ -492,7 +497,6 @@ function restart_server() {
 }
 
 # This is where the script actually starts
-
 
 setup_environment
 # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " "
