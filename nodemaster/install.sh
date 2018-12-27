@@ -3,7 +3,8 @@
 # Set Variables
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-
+# set mnode daemon name from project.env
+MNODE_DAEMOND=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
@@ -118,8 +119,8 @@ function check_distro() {
 function install_packages() {
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
-if [ "$dEXIST" = ${CODENAME}d ] ; then
+dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
+if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
 else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
 

@@ -64,6 +64,15 @@ sleep 5
 			fi
 		done
 	fi
+	
+# set mnode daemon name from project.env
+MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
+cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
+cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+echo -e "Setting MNODE_DAEMON to $MNODE_DAEMON \n" | tee -a "$LOGFILE"
 
 # set BLOCKEXP to nodevalet project coin
 BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
@@ -494,9 +503,9 @@ rm -r $EXTRACTDIR
 rm -f $TARBALL
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${PROJECT}d`
+dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 
-if [ "$dEXIST" = "${PROJECT}d" ]
+if [ "$dEXIST" = "${MNODE_DAEMON}" ]
 then echo -e "Binaries for ${PROJECTt} were downloaded and installed."   | tee -a "$LOGFILE"
 else echo -e "Binaries for ${PROJECTt} could not be downloaded."  | tee -a "$LOGFILE"
 fi
