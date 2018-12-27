@@ -181,9 +181,9 @@ set donation percentage
 # create or assign onlynet from project.env
 echo -e "Looking for ONLYNET in project.env"  | tee -a "$LOGFILE"
 ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-	if [ -n $ONLYNET ]
+sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
+	if [ "$ONLYNET" > 0 ]
 	then echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-	sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
 	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	echo -e "Setting ONLYNET to $ONLYNET d/t instructions in ${PROJECT}.env" >> $LOGFILE
 	else ONLYNET='6'
