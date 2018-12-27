@@ -8,6 +8,14 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
+# set mnode daemon name from project.env
+MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
+cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+echo -e "Setting MNODE_DAEMON to $MNODE_DAEMON \n" | tee -a "$LOGFILE"
+
 #Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
@@ -117,14 +125,14 @@ function check_project() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${PROJECTt}d is running..." | tee -a "$LOGFILE"
+	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
 		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
-	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${PROJECTt}d is not running..." | tee -a "$LOGFILE"
+	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
 	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
@@ -134,13 +142,13 @@ function check_restore() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " ** ${PROJECTt}d is running...original binaries were restored" | tee -a "$LOGFILE"
+	then echo -e " ** ${MNODE_DAEMON} is running...original binaries were restored" | tee -a "$LOGFILE"
 	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	reboot
 	exit
-	else echo -e " Restoring the original binaries failed, ${PROJECTt}d is not running... " | tee -a "$LOGFILE"
+	else echo -e " Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
 	echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord." | tee -a "$LOGFILE"
 	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
