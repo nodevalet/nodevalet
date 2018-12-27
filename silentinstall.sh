@@ -47,7 +47,7 @@ sleep 5
 	touch $INFODIR/fullauto.info
 	echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
 	echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
-	echo -e "vpscoin.info found, setting project name to $PROJECT"  | tee -a "$LOGFILE"
+	echo -e "vpscoin.info found, setting project name to $PROJECTt"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
 		while :; do
@@ -64,6 +64,10 @@ sleep 5
 			fi
 		done
 	fi
+
+# set BLOCKEXP to nodevalet project coin
+BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
+echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
 
 # read or assign number of masternodes to install
 	if [ -e $INFODIR/vpsnumber.info ]
@@ -215,9 +219,9 @@ function silent_harden() {
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
-	echo -e "Installing jq package" | tee -a "$LOGFILE"
-	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq | tee -a "$LOGFILE"
-	echo -e "Inserting random joke because Chuck Norris told me to\n" | tee -a "$LOGFILE"
+	echo -e "Installing jq and jp2a packages" | tee -a "$LOGFILE"
+	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a | tee -a "$LOGFILE"
+	echo -e "Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
 	curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -339,10 +343,6 @@ do
 #		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
 #	fi
 	
-# set BLOCKEXP to nodevalet project coin
-BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
-echo -e " Block Explorer set to : $BLOCKEXP" >> "$LOGFILE"
-	
 	# Check for presence of txid and, if present, use it for txid/txidx
 	if [ -e $INFODIR/vpsmntxdata.info ]
 		then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
@@ -455,7 +455,7 @@ fi
 
 function install_binaries() {
 #check for binaries and install if found   
-echo -e "\nInstalling binaries"  | tee -a "$LOGFILE"
+echo -e "\nInstalling $PROJECTt binaries"  | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 	# Pull GITAPI_URL from $PROJECT.env
 	GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
