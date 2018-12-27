@@ -181,10 +181,9 @@ set donation percentage
 # create or assign onlynet from project.env
 ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
+ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	if [ "$ONLYNET" > 0 ]
-	then echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
+	then echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
 	else ONLYNET='6'
 	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" | tee -a "$LOGFILE"
 	fi
