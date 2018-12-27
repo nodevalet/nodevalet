@@ -83,11 +83,6 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	systemctl stop ${PROJECT}*
 	git clone $GIT_URL
 	cd $PROJECT
-	fallocate -l 2G /swapfile
-	chmod 600 /swapfile
-	mkswap /swapfile
-	swapon /swapfile
-	echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 	./autogen.sh
 	./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz"
 	make
