@@ -84,7 +84,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	git clone $GIT_URL
 	cd $PROJECT
 	
-	# this will compile wallet using directions from project.compile if it exists, if not fall back on generic process
+	# this will compile wallet using directions from project.compile if it exists, if not use generic process
 	if [ -s $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile ]
 	then echo -e " ${PROJECT}.compile found, building wallet from source instructions \n"  | tee -a "$LOGFILE"
 	bash $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile
