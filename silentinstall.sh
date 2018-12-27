@@ -79,7 +79,7 @@ echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
 		while :; do
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
-		then echo -e "Number of masternodes set to $MNS."  | tee -a "$LOGFILE"
+		then echo -e "Number of masternodes set to $MNS. \n"  | tee -a "$LOGFILE"
 		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
@@ -184,6 +184,7 @@ ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 	echo "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
 	sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
 	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+	echo -e "Setting ONLYNET to $ONLYNET d/t instructions in ${PROJECT}.env" >> $LOGFILE
 	else ONLYNET=6
 	echo -e "Setting ONLYNET to $ONLYNET d/t no reference in ${PROJECT}.env" >> $LOGFILE
 	fi
