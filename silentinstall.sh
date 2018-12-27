@@ -438,7 +438,7 @@ echo -e "\n"  >> "$LOGFILE"
 	
 	if [ ! -s $INFODIR/fullauto.info ]
 		then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-		update-rc.d postinstall_api.sh defaults
+		update-rc.d postinstall_api.sh defaults  2>/dev/null
 		echo -e " Please copy the above file and paste it into the masternode.conf "
 		echo -e " file on your local wallet. Then reboot the local wallet. Next, type "
 		echo -e " 'reboot' to reboot this VPS and begin syncing the blockchain. Once "
@@ -495,7 +495,7 @@ fi
 function restart_server() {
 	echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
 	cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-	update-rc.d postinstall_api.sh defaults
+	update-rc.d postinstall_api.sh defaults  2>/dev/null
 	shutdown -r now "Server is going down for upgrade."
 }
 
