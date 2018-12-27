@@ -83,10 +83,18 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	systemctl stop ${PROJECT}*
 	git clone $GIT_URL
 	cd $PROJECT
+	
+	# this will compile wallet using directions from project.compile if it exists, if not fall back on generic process
+	if [ -s $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile ]
+	then echo -e "${PROJECT}.compile found, building wallet from source instructions"  | tee -a "$LOGFILE"
+	bash $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile
+	else echo -e "${PROJECT}.compile not found, building wallet from generic instructions"  | tee -a "$LOGFILE"
 	./autogen.sh
 	./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz"
 	make
 	make install
+	fi
+	
 	cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")"
 	cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/temp/$PROJECT
