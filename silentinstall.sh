@@ -200,7 +200,8 @@ function add_cron() {
 	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
 	echo -e "Add crontab to check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -   | tee -a "$LOGFILE"
+	# (crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # clear daemon debug.log every week
 	echo -e "Add crontab to clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
