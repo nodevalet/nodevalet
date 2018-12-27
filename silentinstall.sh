@@ -45,7 +45,7 @@ sleep 5
 	PROJECTl=${PROJECT,,}
 	PROJECTt=${PROJECTl~}
 	touch $INFODIR/fullauto.info
-	echo -e "This script was invoked by Node Valet and is on full-auto" >> $LOGFILE
+	echo -e "This script was invoked by Node Valet and is on full-auto" | tee -a "$LOGFILE"
 	echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
 	echo -e "vpscoin.info found, setting project name to $PROJECTt"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
@@ -72,7 +72,7 @@ echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
 # read or assign number of masternodes to install
 	if [ -e $INFODIR/vpsnumber.info ]
 	then MNS=$(<$INFODIR/vpsnumber.info)
-	echo -e "vpsnumber.info found, setting number of masternodes to $MNS"  | tee -a "$LOGFILE"
+	echo -e "vpsnumber.info found, setting number of masternodes to $MNS" | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
 	else echo -e "Please enter the number of masternodes to install : "
@@ -184,9 +184,9 @@ sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
 	if [ "$ONLYNET" > 0 ]
 	then echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
 	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
+	echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
 	else ONLYNET='6'
-	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
+	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" | tee -a "$LOGFILE"
 	fi
 	
 # enable softwrap so masternode.conf file can be easily copied
