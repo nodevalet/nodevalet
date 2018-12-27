@@ -243,7 +243,7 @@ function install_mns() {
 		echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
 		# echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
 		# sudo git clone https://github.com/heliumchain/vps.git && cd vps
-		echo -e "Launching Nodemaster using bash install.sh -p $PROJECT" | tee -a "$LOGFILE"
+		echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c $MNS | tee -a "$LOGFILE"
 		sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
 		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
