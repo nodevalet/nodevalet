@@ -154,7 +154,6 @@ set donation percentage
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
 	echo -e "vpssshport.info found, setting SSHPORT to $SSHPORT"  | tee -a "$LOGFILE"
 	else
-	
 		while :; do
 		printf "${cyan}"
 		read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
@@ -169,7 +168,6 @@ set donation percentage
 		echo -e "vpssshport.info not found, so user entered $SSHPORT for SSH port" >> "$LOGFILE"
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
-	
 	fi
 
 # create or assign mnprefix
@@ -180,9 +178,18 @@ set donation percentage
 	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
 	fi
 	
+# create or assign onlynet from project.env
+ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+	if [ -n $ONLYNET ] ; then 
+	echo "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
+	sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
+	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+	else ONLYNET=6
+	echo -e "Setting ONLYNET to $ONLYNET d/t no reference in ${PROJECT}.env" >> $LOGFILE
+	fi
+	
 # enable softwrap so masternode.conf file can be easily copied
 sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
-
 }
 
 function add_cron() {
@@ -191,23 +198,23 @@ function add_cron() {
 	chmod 0700 $INSTALLDIR/autoupdate/*.sh
 	chmod 0700 $INSTALLDIR/maintenance/*.sh
 # reboot logic for status feedback
-	echo -e "Add crontab to run post install script upon reboot"  | tee -a "$LOGFILE"
+	echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
 # make sure all daemon are running
-	echo -e "Add crontab to make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
+	echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check that for stuck blocks and restart masternode if it is stuck
-	echo -e "Add crontab to check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
+	echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for updates that require a reboot and reboot if necessary
-	echo -e "Add crontab to reboot if required to install updates every ten hours"  | tee -a "$LOGFILE"
+	echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
 # automatically check for wallet updates every 1 day
-	echo -e "Add crontab to check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
+	echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -   | tee -a "$LOGFILE"
 	# (crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
 # clear daemon debug.log every week
-	echo -e "Add crontab to clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
+	echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
 }
 
@@ -236,7 +243,7 @@ function install_mns() {
 		# echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
 		# sudo git clone https://github.com/heliumchain/vps.git && cd vps
 		echo -e "Launching Nodemaster using bash install.sh -p $PROJECT" | tee -a "$LOGFILE"
-		sudo bash install.sh -n 6 -p $PROJECT -c $MNS
+		sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
 		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 		sleep 1
@@ -431,6 +438,7 @@ rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --f
 rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
 rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
 rm $INSTALLDIR/temp/${PROJECT}Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+rm $INSTALLDIR/temp/ONLYNET --force
 
 echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
