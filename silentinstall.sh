@@ -475,7 +475,7 @@ cd $INSTALLDIR/temp
 	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
 	else
-	echo -e "Cannot download binaries; no $GITAPI_URL was detected." | tee -a "$LOGFILE"
+	echo -e "Cannot download binaries; no GITAPI_URL was detected." | tee -a "$LOGFILE"
 	fi
 	
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
