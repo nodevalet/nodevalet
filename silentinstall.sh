@@ -149,6 +149,17 @@ set donation percentage
 	echo -e "No donation address was detected." | tee -a "$LOGFILE"
 	fi
 
+# create or assign onlynet from project.env
+ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
+sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
+ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+	if [ "$ONLYNET" > 0 ]
+	then echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env \n" | tee -a "$LOGFILE"
+	else ONLYNET='6'
+	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env \n" | tee -a "$LOGFILE"
+	fi
+
 # create or assign customssh
 	if [ -s $INFODIR/vpssshport.info ]
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
@@ -176,16 +187,6 @@ set donation percentage
 	echo -e "vpsmnprefix.info found, will pull masternode aliases from that"  | tee -a "$LOGFILE"
 	else MNPREFIX=`hostname`
 	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
-	fi
-	
-# create or assign onlynet from project.env
-ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
-ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	if [ "$ONLYNET" > 0 ]
-	then echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
-	else ONLYNET='6'
-	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" | tee -a "$LOGFILE"
 	fi
 	
 # enable softwrap so masternode.conf file can be easily copied
