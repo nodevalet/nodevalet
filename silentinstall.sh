@@ -179,15 +179,14 @@ set donation percentage
 	fi
 	
 # create or assign onlynet from project.env
-echo -e "Looking for ONLYNET in project.env"  | tee -a "$LOGFILE"
 ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
 	if [ "$ONLYNET" > 0 ]
 	then echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
 	ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	echo -e "Setting ONLYNET to $ONLYNET d/t instructions in ${PROJECT}.env" >> $LOGFILE
+	echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
 	else ONLYNET='6'
-	echo -e "Setting ONLYNET to $ONLYNET d/t no reference in ${PROJECT}.env" >> $LOGFILE
+	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
 	fi
 	
 # enable softwrap so masternode.conf file can be easily copied
