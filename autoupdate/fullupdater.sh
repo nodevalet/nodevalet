@@ -63,7 +63,7 @@ fi
 function update_from_source() {
 #check for updates and build from source if installing binaries failed. 
 
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function \n" | tee -a "$LOGFILE"
+echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 rm -r -f $PROJECT*
 
@@ -86,9 +86,9 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	
 	# this will compile wallet using directions from project.compile if it exists, if not fall back on generic process
 	if [ -s $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile ]
-	then echo -e "${PROJECT}.compile found, building wallet from source instructions"  | tee -a "$LOGFILE"
+	then echo -e " ${PROJECT}.compile found, building wallet from source instructions \n"  | tee -a "$LOGFILE"
 	bash $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.compile
-	else echo -e "${PROJECT}.compile not found, building wallet from generic instructions"  | tee -a "$LOGFILE"
+	else echo -e " ${PROJECT}.compile not found, building wallet from generic instructions \n"  | tee -a "$LOGFILE"
 	./autogen.sh
 	./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz"
 	make
