@@ -3,6 +3,7 @@
 # Set Variables
 LOGFILE='/var/tmp/nodevalet/log/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
+PROJECT=`cat $INFODIR/vpscoin.info`
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
@@ -31,7 +32,7 @@ while [ $SECONDS -lt $end ]; do
     
 	rm -rf $INSTALLDIR/getinfo_n1
 	touch $INSTALLDIR/getinfo_n1
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
+	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
 	clear
     
     # if  masternode not running, echo masternode not running and break
@@ -60,11 +61,11 @@ echo -e "All done."
 }
 
 function sync_check() {
-CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
+CNT=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockcount`
 # echo -e "CNT is set to $CNT"
-HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
+HASH=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockhash ${CNT}`
 #echo -e "HASH is set to $HASH"
-TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE1=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblock ${HASH} | grep '"time"'`
 TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 # echo -e "TIMELINE is set to $TIMELINE"
