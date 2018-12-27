@@ -25,6 +25,7 @@ function update_binaries() {
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
 cd $INSTALLDIR/temp
+rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 
@@ -64,6 +65,7 @@ function update_from_source() {
 
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function \n" | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
+rm -r -f $PROJECT*
 
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
@@ -81,6 +83,11 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	systemctl stop ${PROJECT}*
 	git clone $GIT_URL
 	cd $PROJECT
+	fallocate -l 2G /swapfile
+	chmod 600 /swapfile
+	mkswap /swapfile
+	swapon /swapfile
+	echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 	./autogen.sh
 	./configure --disable-dependency-tracking --enable-tests=no --without-gui --without-miniupnpc --with-incompatible-bdb CFLAGS="-march=native" LIBS="-lcurl -lssl -lcrypto -lz"
 	make
