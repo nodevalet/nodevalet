@@ -88,7 +88,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	make
 	make install
 	cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")"
-	cp $INSTALLDIR/$PROJECT/temp/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
+	cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/temp/$PROJECT
 	cd $INSTALLDIR/temp
 	echo -e " Starting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
