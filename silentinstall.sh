@@ -136,6 +136,7 @@ set donation percentage
 # set donation address front project.env
 	cd $INSTALLDIR/nodemaster/config/$PROJECT
 	curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
+	echo -e "\n"
 	DONATION_ADDRESS=`grep ^DONATION $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 	cd $INSTALLDIR
 	if [ -n $DONATION_ADDRESS ] ; then 
