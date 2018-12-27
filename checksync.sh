@@ -3,6 +3,7 @@
 # Set Variables
 LOGFILE='/var/tmp/nodevalet/log/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 
 # set hostname variable to the name planted by API installation script
