@@ -119,7 +119,7 @@ echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
   				fi
 			done	
 		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
-		echo -e "Masternode $i address is: $MNADDP.\n"  | tee -a "$LOGFILE"
+		echo -e "  --> Masternode $i address is: $MNADDP\n"  | tee -a "$LOGFILE"
 		done
 	fi
 
@@ -165,15 +165,15 @@ echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
 sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
 ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	if [ "$ONLYNET" > 0 ]
-	then echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env \n" | tee -a "$LOGFILE"
+	then echo -e "  --> Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env \n" | tee -a "$LOGFILE"
 	else ONLYNET='6'
-	echo -e "Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env \n" | tee -a "$LOGFILE"
+	echo -e "  --> Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env \n" | tee -a "$LOGFILE"
 	fi
 
 # create or assign customssh
 	if [ -s $INFODIR/vpssshport.info ]
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
-	echo -e "vpssshport.info found, setting SSHPORT to $SSHPORT"  | tee -a "$LOGFILE"
+	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info"  | tee -a "$LOGFILE"
 	else
 		while :; do
 		printf "${cyan}"
@@ -186,7 +186,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 			printf "${nocolor}"
 		fi
 		done
-		echo -e "vpssshport.info not found, so user entered $SSHPORT for SSH port" >> "$LOGFILE"
+		echo -e "  --> User entered $SSHPORT for use as a custom SSH port" >> "$LOGFILE"
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
@@ -196,7 +196,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	then :
 	echo -e "vpsmnprefix.info found, will pull masternode aliases from that"  | tee -a "$LOGFILE"
 	else MNPREFIX=`hostname`
-	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX)"  | tee -a "$LOGFILE"
+	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX) \n"  | tee -a "$LOGFILE"
 	fi
 	
 # enable softwrap so masternode.conf file can be easily copied
@@ -218,14 +218,14 @@ echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  
 	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
 echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -
-echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
+echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 }
 
 function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
-	then echo -e "System seems to already be hardened, skipping this part" | tee -a "$LOGFILE"
-	else echo -e "System is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
+	then echo -e "System seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
+	else echo -e "System is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
@@ -486,7 +486,7 @@ cd $INSTALLDIR/temp
 	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
 	else
-	echo -e "Cannot download binaries; no GITAPI_URL was detected." | tee -a "$LOGFILE"
+	echo -e "Cannot download binaries; no GITAPI_URL was detected. \n" | tee -a "$LOGFILE"
 	fi
 	
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
@@ -508,8 +508,8 @@ rm -f $TARBALL
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 
 if [ "$dEXIST" = "${MNODE_DAEMON}" ]
-then echo -e "Binaries for ${PROJECTt} were downloaded and installed."   | tee -a "$LOGFILE"
-else echo -e "Binaries for ${PROJECTt} could not be downloaded."  | tee -a "$LOGFILE"
+then echo -e "Binaries for ${PROJECTt} were downloaded and installed. \n"   | tee -a "$LOGFILE"
+else echo -e "Binaries for ${PROJECTt} could not be downloaded. \n"  | tee -a "$LOGFILE"
 fi
 }
 
