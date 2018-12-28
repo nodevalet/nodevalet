@@ -14,7 +14,7 @@ MNS=`cat $INFODIR/vpsnumber.info`
 
 TOTAL=`ps aux | grep -i "$PROJECT" | wc -l`
 CUR_DAEMON=`expr $TOTAL - 1`
-EXP_DAEMON=`cat /var/temp/nodevalet/info/vpsnumber.info`
+EXP_DAEMON=`cat $INFODIR/vpsnumber.info`
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running makerun.sh" | tee -a "$LOGFILE"
