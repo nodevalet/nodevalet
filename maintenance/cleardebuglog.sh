@@ -1,7 +1,7 @@
 #!/bin/bash
-# clearlog.sh
 # Clear debug.log every other day
 # Add the following to the crontab (i.e. crontab -e)
+# (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 
 INSTALLDIR='/var/temp/nodevalet'
 PROJECT=`cat $INSTALLDIR/info/vpscoin.info`
