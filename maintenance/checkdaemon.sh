@@ -1,16 +1,17 @@
 #!/bin/bash
-# checkdaemon.sh
-# Make sure the daemon is not stuck.
+# Make sure the daemon is not stuck and restart it if it is.
 # Add the following to the crontab (i.e. crontab -e)
+# (crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
-LOGFILE='$INSTALLDIR/logs/checkdaemon.log'
+LOGFILE='$INSTALLDIR/logs/maintenance.log'
 
 if [ -e "$INSTALLDIR/temp/updating ]
-	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
+	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
+	echo -e "It looks like I'm installing other updates; skipping reboot check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
