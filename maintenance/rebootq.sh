@@ -1,13 +1,14 @@
 #!/bin/bash
 # Check if reboot is required, and if so, reboot
 # Add the following to the crontab (i.e. crontab -e)
-# (crontab -l ; echo "0 0 12 * * ? /root/code-red/maintenance/rebootq.sh") | crontab - 
+# (crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
 
 INSTALLDIR='/var/tmp/nodevalet'
-LOGFILE='/var/tmp/nodevalet/logs/update-reboot.log'
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 
 if [ -e $INSTALLDIR/temp/updating ]
-	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
+	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running rebootq.sh" | tee -a "$LOGFILE"
+	echo -e "It looks like I'm installing other updates; skipping reboot check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
@@ -25,7 +26,7 @@ sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 echo -e "`cat ${INSTALLDIR}/temp/REBOOTREQ`" | tee -a "$LOGFILE"
 
 rm $INSTALLDIR/temp/REBOOTREQ
-echo -e "Server will restart in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
+echo -e "Server will reboot in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
 shutdown -r +5 "Server will restart in 5 minutes to complete required updates"
 
 else
