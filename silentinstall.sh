@@ -253,7 +253,7 @@ function install_mns() {
 		# if IPv4 only, need to sub in IP address here
 		
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
-		sleep 1
+		sleep 3
 		
 		# check if $PROJECTd was built correctly and started
 		ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
