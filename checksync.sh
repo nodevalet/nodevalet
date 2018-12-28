@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Set Variables
-LOGFILE='/root/installtemp/silentinstall.log'
-INSTALLDIR='/root/installtemp'
+LOGFILE='/var/tmp/nodevalet/log/silentinstall.log'
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+PROJECT=`cat $INFODIR/vpscoin.info`
 
 # set hostname variable to the name planted by API installation script
-	if [ -e /root/installtemp/vpshostname.info ]
-	then HNAME=$(</root/installtemp/vpshostname.info)
+	if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
+	then HNAME=$(</var/tmp/nodevalet/info/vpshostname.info)
 	else HNAME=`hostname`
 	fi
 # read or assign number of masternodes to install
-	if [ -e /root/installtemp/vpsnumber.info ]
-	then MNS=$(</root/installtemp/vpsnumber.info)
+	if [ -e $INSTALLDIR/info/vpsnumber.info ]
+	then MNS=$(<$INSTALLDIR/info/vpsnumber.info)
 	else MNS=5
 	fi
 
@@ -31,7 +33,7 @@ while [ $SECONDS -lt $end ]; do
     
 	rm -rf $INSTALLDIR/getinfo_n1
 	touch $INSTALLDIR/getinfo_n1
-	/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
+	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
 	clear
     
     # if  masternode not running, echo masternode not running and break
@@ -60,11 +62,11 @@ echo -e "All done."
 }
 
 function sync_check() {
-CNT=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockcount`
+CNT=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockcount`
 # echo -e "CNT is set to $CNT"
-HASH=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblockhash ${CNT}`
+HASH=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockhash ${CNT}`
 #echo -e "HASH is set to $HASH"
-TIMELINE1=`/usr/local/bin/helium-cli -conf=/etc/masternodes/helium_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE1=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblock ${HASH} | grep '"time"'`
 TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 # echo -e "TIMELINE is set to $TIMELINE"

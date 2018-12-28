@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # Set Variables
-INSTALLDIR='/root/installtemp'
-LOGFILE='/root/installtemp/silentinstall.log'
+INSTALLDIR='/var/tmp/nodevalet'
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+# set mnode daemon name from project.env
+MNODE_DAEMOND=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 
-
+# This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
 #  ████╗  ██║██╔═══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
 #  ██╔██╗ ██║██║   ██║██║  ██║█████╗  ██╔████╔██║███████║███████╗   ██║   █████╗  ██████╔╝
@@ -33,8 +35,8 @@ declare -r DATE_STAMP="$(date +%y-%m-%d-%s)"
 declare -r SCRIPTPATH="$(cd $(dirname ${BASH_SOURCE[0]}) > /dev/null; pwd -P)"
 declare -r MASTERPATH="$(dirname "${SCRIPTPATH}")"
 declare -r SCRIPT_VERSION="v0.9.9"
-declare -r SCRIPT_LOGFILE="/root/installtemp/silentinstall.log"
-# declare -r SCRIPT_LOGFILE="/root/installtemp/nodemaster_${DATE_STAMP}_out.log"
+declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/silentinstall.log"
+# declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/nodemaster_${DATE_STAMP}_out.log"
 declare -r IPV4_DOC_LINK="https://www.vultr.com/docs/add-secondary-ipv4-address"
 declare -r DO_NET_CONF="/etc/network/interfaces.d/50-cloud-init.cfg"
 declare -r NETWORK_BASE_TAG="$(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od -x -A n | sed -e 's/^[[:space:]]*//g')"
@@ -42,17 +44,14 @@ declare -r NETWORK_BASE_TAG="$(dd if=/dev/urandom bs=2 count=1 2>/dev/null | od 
 function showbanner() {
 echo $(tput bold)$(tput setaf 2)
 cat << "EOF"
- ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
- ████╗  ██║██╔═══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
- ██╔██╗ ██║██║   ██║██║  ██║█████╗  ██╔████╔██║███████║███████╗   ██║   █████╗  ██████╔╝
- ██║╚██╗██║██║   ██║██║  ██║██╔══╝  ██║╚██╔╝██║██╔══██║╚════██║   ██║   ██╔══╝  ██╔══██╗
- ██║ ╚████║╚██████╔╝██████╔╝███████╗██║ ╚═╝ ██║██║  ██║███████║   ██║   ███████╗██║  ██║
- ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-                                                             ╚╗ @marsmensch 2016-2018 ╔╝
+███╗   ██╗ ██████╗ ██████╗ ███████╗██╗   ██╗ █████╗ ██╗     ███████╗████████╗
+████╗  ██║██╔═══██╗██╔══██╗██╔════╝██║   ██║██╔══██╗██║     ██╔════╝╚══██╔══╝
+██╔██╗ ██║██║   ██║██║  ██║█████╗  ██║   ██║███████║██║     █████╗     ██║   
+██║╚██╗██║██║   ██║██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██║██║     ██╔══╝     ██║   
+██║ ╚████║╚██████╔╝██████╔╝███████╗ ╚████╔╝ ██║  ██║███████╗███████╗   ██║   
+╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝ 
 EOF
-echo "$(tput sgr0)$(tput setaf 3)Have fun, this is crypto after all!$(tput sgr0)"
-echo "$(tput setaf 6)Donations (BTC): 33ENWZ9RCYBG7nv6ac8KxBUSuQX64Hx3x3"
-echo "Questions: marsmensch@protonmail.com$(tput sgr0)"
+echo "$(tput sgr0)$(tput setaf 3)Home of the 5 minute masternode installations!$(tput sgr0)"
 }
 
 # /*
@@ -120,8 +119,8 @@ function check_distro() {
 function install_packages() {
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${CODENAME}d`
-if [ "$dEXIST" = ${CODENAME}d ] ; then
+dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
+if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
 else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
 
@@ -137,16 +136,6 @@ else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages"
     pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
 fi
 
-# add custom logo to VPS login
-rm -r /etc/update-motd.d/
-mkdir /etc/update-motd.d/
-touch /etc/update-motd.d/00-header ; touch /etc/update-motd.d/10-sysinfo ; touch /etc/update-motd.d/90-footer
-chmod +x /etc/update-motd.d/*
-rm /etc/motd.dynamic
-cat motdcustom/00-header > /etc/update-motd.d/00-header
-cat motdcustom/10-sysinfo > /etc/update-motd.d/10-sysinfo
-cat motdcustom/90-footer > /etc/update-motd.d/90-footer
-systemctl restart sshd
         
     # only for 18.04 // openssl
     if [[ "${VERSION_ID}" == "18.04" ]] ; then

@@ -103,12 +103,14 @@ printf "${nocolor}"
 clear
 
 # Set Vars
-LOGFILE='/root/installtemp/vps-harden.log'
+LOGFILE='/var/tmp/nodevalet/logs/vps-harden.log'
 SSHDFILE='/etc/ssh/sshd_config'
 PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
-INSTALLDIR='/root/installtemp'
-HNAME=$(<$INSTALLDIR/vpshostname.info)
-PROJECT=`cat $INSTALLDIR/vpscoin.info`
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+
+HNAME=$(<$INFODIR/vpshostname.info)
+PROJECT=`cat $INFODIR/vpscoin.info`
 }
 
 function begin_log() {
@@ -200,7 +202,7 @@ printf "${white}"
 	printf "${cyan}"
 	figlet System Upgrade | tee -a "$LOGFILE"
 	printf "${yellow}"
-	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages..."}' && echo -e " "
+	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " "
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
@@ -406,11 +408,11 @@ printf "${nocolor}"
 	while :; do
 	printf "${cyan}"
 	# check for SSHPORT and set variable or use 22 as default		
-	if [ -s /root/installtemp/vpssshport.info ]
-	then SSHPORT=$(</root/installtemp/vpssshport.info)
-	echo -e "Detected /root/installtemp/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	if [ -s $INFODIR/vpssshport.info ]
+	then SSHPORT=$(<$INFODIR/vpssshport.info)
+	echo -e "Detected $INFODIR/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	else SSHPORT=22
-	echo -e "/root/installtemp/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
+	echo -e "$INFODIR/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
 	fi
 		# read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
@@ -961,7 +963,8 @@ echo -e " information along with a login banner prohibiting unauthorized"
 echo -e " access.  All modifications are strictly cosmetic."
 echo -e "\n"
 	printf "${cyan}"
-	read -p " Would you like to enhance your MOTD & login banner? y/n  " MOTDP
+	MOTDP="yes"
+	# read -p " Would you like to enhance your MOTD & login banner? y/n  " MOTDP
 	printf "${nocolor}"
 	while [ "${MOTDP,,}" != "yes" ] && [ "${MOTDP,,}" != "no" ] && [ "${MOTDP,,}" != "y" ] && [ "${MOTDP,,}" != "n" ]; do
 	echo -e "\n"
@@ -1168,14 +1171,14 @@ favored_packages
 # crypto_packages
 # add_user
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Now Hardening Server Security ..."}' && echo -e " "
+curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " "
 collect_sshd
 prompt_rootlogin
 disable_passauth
 ufw_config
 server_hardening
 # ksplice_install
-# motd_install
+motd_install
 restart_sshd
 install_complete
 
