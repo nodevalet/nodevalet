@@ -9,10 +9,19 @@ INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
 
+# set mnode daemon name from project.env
+MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
+cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
+cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+
+
 # add logging to check if cron is working as planned
 # echo -e "`date +%m.%d.%Y_%H:%M:%S` : Executing makerun.sh (every 5 minutes, cron) \n"  | tee -a "$LOGFILE"
 
-TOTAL=`ps aux | grep -i "$PROJECT" | wc -l`
+TOTAL=`ps aux | grep -i "$MNODE_DAEMON" | wc -l`
 CUR_DAEMON=`expr $TOTAL - 1`
 EXP_DAEMON=`cat $INFODIR/vpsnumber.info`
 
