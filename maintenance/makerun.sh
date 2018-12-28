@@ -1,8 +1,9 @@
 #!/bin/bash
-#compare nr. of running nodes to number of installed nodes. If different restart daemon
+# Compare number of running nodes to number of installed nodes; restart daemon if different
 # Add the following to the crontab (i.e. crontab -e)
+# (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
 
-LOGFILE='/var/tmp/nodevalet/logs/makerun.log'
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
@@ -15,13 +16,13 @@ TOTAL=`ps aux | grep -i "$PROJECT" | wc -l`
 CUR_DAEMON=`expr $TOTAL - 1`
 EXP_DAEMON=`cat /var/temp/nodevalet/info/vpsnumber.info`
 
-if [ -e "$INSTALLDIR/temp/updating ]
-	then echo "Looks like I'm installing updates, I'll try again later."  | tee -a "$LOGFILE"
+if [ -e $INSTALLDIR/temp/updating ]
+	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running makerun.sh" | tee -a "$LOGFILE"
+	echo -e "It looks like I'm installing other updates; skipping make run.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
   then echo -e " `date +%m.%d.%Y_%H:%M:%S` : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
-  cd /usr/local/bin
-  ./activate_masternodes_"$PROJECT"
+  bash /usr/local/bin/activate_masternodes_"$PROJECT"
 fi
