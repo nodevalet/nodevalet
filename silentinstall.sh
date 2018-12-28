@@ -546,8 +546,6 @@ function restart_server() {
 setup_environment
 # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " "
 
-add_cron
-
 # moved curl update commands into get-hard.sh to provide better detail
 silent_harden
 
@@ -556,6 +554,8 @@ install_binaries
 
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating '"$MNS"' '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 install_mns
+
+add_cron
 
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$MNS"' '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 get_genkeys
