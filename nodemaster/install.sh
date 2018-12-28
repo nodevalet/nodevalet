@@ -507,7 +507,7 @@ function source_config() {
             echo "$(tput bold)$(tput setaf 2) => ${count} ${project} masternode(s) in version ${release} $(tput sgr0)"
         fi
         echo ""
-        if [ "$update" -eq 0 ]; then
+        if [ "$update" -eq 0 ]; then :
             # only needed if fresh installation
         fi
         echo "Stay tuned!"
