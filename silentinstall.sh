@@ -204,35 +204,27 @@ sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 }
 
 function add_cron() {
-	echo -e "Adding crontabs"  | tee -a "$LOGFILE"
-	chmod 0700 $INSTALLDIR/*.sh
-	chmod 0700 $INSTALLDIR/autoupdate/*.sh
-	chmod 0700 $INSTALLDIR/maintenance/*.sh
-# reboot logic for status feedback
-	echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab -   | tee -a "$LOGFILE"
-# make sure all daemon are running
-	echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -   | tee -a "$LOGFILE"
-# automatically check that for stuck blocks and restart masternode if it is stuck
-	echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -   | tee -a "$LOGFILE"
-# automatically check for updates that require a reboot and reboot if necessary
-	echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -   | tee -a "$LOGFILE"
-# automatically check for wallet updates every 1 day
-	echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -   | tee -a "$LOGFILE"
-	# (crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/autoupdate.sh") | crontab -   | tee -a "$LOGFILE"
-# clear daemon debug.log every week
-	echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab - | tee -a "$LOGFILE"
+echo -e "Adding crontabs"  | tee -a "$LOGFILE"
+chmod 0700 $INSTALLDIR/*.sh
+chmod 0700 $INSTALLDIR/autoupdate/*.sh
+chmod 0700 $INSTALLDIR/maintenance/*.sh
+echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab -
+echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
+echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -
+echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 }
 
 function silent_harden() {
-	# modify get-hard.sh to add a file when complete, and check for that instead of server-hardening.log
 	if [ -e /var/log/server_hardening.log ]
-	then echo -e "System seems to already be hard, skipping this part" | tee -a "$LOGFILE"
+	then echo -e "System seems to already be hardened, skipping this part" | tee -a "$LOGFILE"
 	else echo -e "System is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
@@ -285,7 +277,7 @@ function get_genkeys() {
 # Do not break any pre-existing masternodes
 if [ -s $INSTALLDIR/temp/mnsexist ]
 then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
-echo -e "Reporting ${PROJECT}d build failure to mother" | tee -a "$LOGFILE"
+echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
 curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}'
 		exit
 else
@@ -318,7 +310,6 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 for ((i=1;i<=$MNS;i++)); 
 do
-
 	# get or iterate mnprefixes
 	if [ -s $INFODIR/vpsmnprefix.info ] ; then
 		echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
@@ -363,14 +354,14 @@ do
 	
 	# Pull BLOCKEXP from $PROJECT.env
 	# THIS code rendered obsolete when we incorporated our our block explorers
-#	BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-#	if [ -n $BLOCKEX ] 
-#		then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-#		sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-#		BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-#		# echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
-#		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
-#	fi
+	#	BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+	#	if [ -n $BLOCKEX ] 
+	#		then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
+	#		sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
+	#		BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+	#		# echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+	#		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+	#	fi
 	
 	# Check for presence of txid and, if present, use it for txid/txidx
 	if [ -e $INFODIR/vpsmntxdata.info ]
@@ -462,6 +453,7 @@ rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
 rm $INSTALLDIR/temp/${PROJECT}Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
 rm $INSTALLDIR/temp/ONLYNET --force
 
+clear
 echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
 cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 echo -e "\n"  >> "$LOGFILE"
@@ -478,8 +470,7 @@ echo -e "\n"  >> "$LOGFILE"
 		echo -e " where you replace MN1 with the alias of your masternode. This is due "
 		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
 		read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
-		else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
-	fi
+		else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ; fi
 fi
  }
 
