@@ -51,7 +51,7 @@ cat << "EOF"
 ██║ ╚████║╚██████╔╝██████╔╝███████╗ ╚████╔╝ ██║  ██║███████╗███████╗   ██║   
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝ 
 EOF
-echo "$(tput sgr0)$(tput setaf 3)Home of the 5 minute masternode installations!$(tput sgr0)"
+echo "$(tput sgr0)$(tput setaf 3)                Home of the 5 minute masternode installations!$(tput sgr0)"
 }
 
 # /*
@@ -278,7 +278,7 @@ function validate_netchoice() {
     # generate the required ipv6 config
     if [ "${net}" -eq 4 ]; then
         IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
-        echo "IPv4 address generation needs to be done manually atm!"  &>> ${SCRIPT_LOGFILE}
+        # echo "IPv4 address generation needs to be done manually atm!"  &>> ${SCRIPT_LOGFILE}
 	IPV4ADDR=`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
     fi	# end ifneteq4
 
@@ -506,12 +506,10 @@ function source_config() {
             echo "I am going to install and configure:"
             echo "$(tput bold)$(tput setaf 2) => ${count} ${project} masternode(s) in version ${release} $(tput sgr0)"
         fi
-        echo ""
         if [ "$update" -eq 0 ]; then :
             # only needed if fresh installation
         fi
         echo "Stay tuned!"
-        echo ""
         # show a hint for MANUAL IPv4 configuration
         if [ "${net}" -eq 4 ]; then
             NETWORK_TYPE=4
@@ -532,7 +530,7 @@ function source_config() {
         echo "A logfile for this run can be found at the following location:"
         echo "${SCRIPT_LOGFILE}"
         echo ""
-        echo "*******************************************************************************"
+        echo -e "********************************************************************************\n"
         sleep 5
 
         # main routine
