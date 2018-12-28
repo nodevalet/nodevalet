@@ -497,21 +497,18 @@ function source_config() {
             fi
         fi
 
-        echo "************************* Installation Plan *****************************************"
+        echo "************************* Installation Plan ************************************"
         echo ""
         if [ "$update" -eq 1 ]; then
             echo "I am going to update your existing "
             echo "$(tput bold)$(tput setaf 2) => ${project} masternode(s) in version ${release} $(tput sgr0)"
         else
-            echo "I am going to install and configure "
+            echo "I am going to install and configure:"
             echo "$(tput bold)$(tput setaf 2) => ${count} ${project} masternode(s) in version ${release} $(tput sgr0)"
         fi
-        echo "for you now."
         echo ""
         if [ "$update" -eq 0 ]; then
             # only needed if fresh installation
-            echo "You have to add your masternode private key to the individual config files afterwards"
-            echo ""
         fi
         echo "Stay tuned!"
         echo ""
@@ -519,11 +516,9 @@ function source_config() {
         if [ "${net}" -eq 4 ]; then
             NETWORK_TYPE=4
             echo "WARNING:"
-            echo "You selected IPv4 for networking but there is no automatic workflow for this part."
-            echo "This means you will have some mamual work to do to after this configuration run."
+            echo "You selected IPv4 but Nodemaster had no automatic workflow for that part."
+            echo "Fortunately, Node Valet has, for the most part, taken care of this for you."
             echo ""
-            echo "See the following link for instructions how to add multiple ipv4 addresses on vultr:"
-            echo "${IPV4_DOC_LINK}"
         fi
         # sentinel setup
         if [ "$sentinel" -eq 1 ]; then
@@ -537,7 +532,7 @@ function source_config() {
         echo "A logfile for this run can be found at the following location:"
         echo "${SCRIPT_LOGFILE}"
         echo ""
-        echo "*************************************************************************************"
+        echo "*******************************************************************************"
         sleep 5
 
         # main routine
