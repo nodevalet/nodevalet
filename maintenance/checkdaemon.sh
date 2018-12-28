@@ -11,7 +11,7 @@ LOGFILE='$INSTALLDIR/logs/maintenance.log'
 
 if [ -e "$INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm installing other updates; skipping reboot check.\n"  | tee -a "$LOGFILE"
+	echo -e "It looks like I'm installing other updates; skipping daemon check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
