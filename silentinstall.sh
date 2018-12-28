@@ -68,7 +68,7 @@ sleep 5
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
@@ -162,7 +162,7 @@ set donation percentage
 # create or assign onlynet from project.env
 ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET >> log 2>&1
+sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
 ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	if [ "$ONLYNET" > 0 ]
 	then echo -e "Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env \n" | tee -a "$LOGFILE"
@@ -354,7 +354,7 @@ do
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
 	
 	# remove "bind=" from mnipaddresses
-	sed -i "s/bind=//" $INSTALLDIR/temp/mnipaddresses >> log 2>&1
+	sed -i "s/bind=//" $INSTALLDIR/temp/mnipaddresses 2>&1
 	
 	# the next line produces the IP addresses for this masternode
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
