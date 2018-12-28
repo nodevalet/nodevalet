@@ -299,10 +299,8 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	for ((i=1;i<=$MNS;i++)); 
 	do
 	
-	
 		for ((P=1;P<=30;P++)); 
 		do
-	
 	
 	# create masternode genkeys (smart is special "smartnodes")
 	if [ "${PROJECT,,}" = "smart" ] ; then
@@ -316,12 +314,17 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	# check if GENKEY file is empty; if so stop script and report error
 	if [ ! -s $INSTALLDIR/temp/GENKEY$i ]
 	then echo -e "Problem creating masternode $i. Could not obtain masternode genkey" | tee -a "$LOGFILE"
-	# curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not obtain masternode genkey."}' && echo -e " "
-	echo -e "Pausing for 2 seconds then trying again..." | tee -a "$LOGFILE"
+	echo -e " --> Pausing for 2 seconds then trying again... loop $P" | tee -a "$LOGFILE"
 	sleep 2
 	else break
 	fi
 	
+	if [ ! -s $INSTALLDIR/temp/GENKEY$i ] && [ "${P}" = "30" ]
+	then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not obtain masternode genkey."}' && echo -e " "
+	echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
+	echo -e "I tried for 60 seconds but something isn't working correctly.\n" | tee -a "$LOGFILE"
+	exit
+	fi
 		done
 	
 	done
