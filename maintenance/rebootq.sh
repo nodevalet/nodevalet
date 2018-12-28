@@ -11,13 +11,12 @@ if [ -e $INSTALLDIR/temp/updating ]
 	exit
 fi
 
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : Checking if system requires a reboot" | tee -a "$LOGFILE"
-
 # write which packages require it
 cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
 if grep -q "restart required" "$INSTALLDIR/temp/REBOOTREQ"
-then echo -e "`date +%m.%d.%Y_%H:%M:%S` : These updates require a reboot:" | tee -a "$LOGFILE"
+then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Checking if system requires a reboot" | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : These updates require a reboot:" | tee -a "$LOGFILE"
 
 # this sed removes the line "*** System restart required ***" from the REBOOTREQ
 sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
@@ -30,7 +29,7 @@ echo -e "Server will restart in 5 minutes to complete required updates \n" | tee
 shutdown -r +5 "Server will restart in 5 minutes to complete required updates"
 
 else
-echo -e "No reboot is required at this time\n" | tee -a "$LOGFILE"
+echo -e "No reboot is required at this time\n"
 rm $INSTALLDIR/temp/REBOOTREQ
 fi
 
