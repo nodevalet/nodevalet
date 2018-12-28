@@ -306,10 +306,14 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 	for ((i=1;i<=$MNS;i++)); 
 	do
-	# create masternode genkeys
-	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys
+	# create masternode genkeys (smart is special "smartnodes")
+	if [ "${PROJECT,,}" = "smart" ] ; then
+	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys ; else
+	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" >> $INSTALLDIR/temp/GENKEY$i
-	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+	if [ "${PROJECT,,}" = "smart" ] ; then
+	echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; else
+	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
 	done
 
 for ((i=1;i<=$MNS;i++)); 
@@ -333,14 +337,18 @@ do
 	
 	# assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
 	GENKEYVAR=`cat $INSTALLDIR/temp/MNPRIVKEY$i`
-	
-	# this is an alternative text that also works GENKEYVAR=$(</var/temp/nodevalet/temp/MNPRIVKEY$i)
 
-	# insert new genkey into project_n$i.conf files
+	# insert new genkey into project_n$i.conf files (special case for smartnodes)
+	if [ "${PROJECT,,}" = "smart" ] ; then	
+	sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
+	masternodeprivkeyafter=`grep ^smartnodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+	echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
+	echo -e " $masternodeprivkeyafter" >> $LOGFILE ; else
 	sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
 	masternodeprivkeyafter=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
 	echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
 	echo -e " $masternodeprivkeyafter" >> $LOGFILE
+	fi
 	
 	# create file with IP addresses
 	sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
