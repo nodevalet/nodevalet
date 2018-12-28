@@ -298,6 +298,12 @@ EOT
 echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
 	for ((i=1;i<=$MNS;i++)); 
 	do
+	
+	
+		for ((P=1;P<=30;P++)); 
+		do
+	
+	
 	# create masternode genkeys (smart is special "smartnodes")
 	if [ "${PROJECT,,}" = "smart" ] ; then
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys ; else
@@ -308,11 +314,15 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
 	
 	# check if GENKEY file is empty; if so stop script and report error
-	if [ -s $INSTALLDIR/temp/GENKEY$i ]
+	if [ ! -s $INSTALLDIR/temp/GENKEY$i ]
 	then echo -e "Problem creating masternode $i. Could not obtain masternode genkey" | tee -a "$LOGFILE"
-	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not obtain masternode genkey."}' && echo -e " "
-	exit
+	# curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not obtain masternode genkey."}' && echo -e " "
+	echo -e "Pausing for 2 seconds then trying again..." | tee -a "$LOGFILE"
+	sleep 2
+	else break
 	fi
+	
+		done
 	
 	done
 
