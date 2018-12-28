@@ -313,7 +313,7 @@ function create_mn_configuration() {
                 echo "running sed on file ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf"                                &>> ${SCRIPT_LOGFILE}
                 
 	# insert IPv6 address or IPv4 address
-	if [ ${net} -e 4 ]; then
+	if [ "${net}" = "4" ]; then
 	sed -e "s/XXX_GIT_PROJECT_XXX/${CODENAME}/" -e "s/XXX_NUM_XXY/${NUM}]/" -e "s/XXX_NUM_XXX/${NUM}/" -e "s/XXX_PASS_XXX/${PASS}/" -e "s/XXX_IPV6_INT_BASE_XXX/[${IPV6_INT_BASE}/" -e "s/XXX_NETWORK_BASE_TAG_XXX/${NETWORK_BASE_TAG}/" -e "s/XXX_MNODE_INBOUND_PORT_XXX/${MNODE_INBOUND_PORT}/" -i ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf
 	# swap in IPV4 address
 	sed -i "s/^bind=.*/bind=${IPV4ADDR}:${MNODE_INBOUND_PORT}/" ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf
