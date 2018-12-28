@@ -256,22 +256,25 @@ function install_mns() {
 		echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c $MNS | tee -a "$LOGFILE"
 		sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
 		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
+		
+		# if IPv4 only, need to sub in IP address here
+		
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
 		sleep 1
 		
 		# check if $PROJECTd was built correctly and started
-		ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
+		ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
 		cat $INSTALLDIR/temp/${PROJECT}Ds >> $LOGFILE
 		if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-		then echo -e "It looks like VPS install script completed and ${PROJECT}d is running... " | tee -a "$LOGFILE"
+		then echo -e "It looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
 		# report back to mother
-		echo -e "Reporting ${PROJECT}d build success to mother" | tee -a "$LOGFILE"
-		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$PROJECTt"'d has started ..."}' && echo -e " "
-		else echo -e "It looks like VPS install script failed, ${PROJECT}d is not running... " | tee -a "$LOGFILE"
-		echo -e "Aborting installation, can't install masternodes without ${PROJECT}d" | tee -a "$LOGFILE"
+		echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE"
+		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " "
+		else echo -e "It looks like VPS install script failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
+		echo -e "Aborting installation, can't install masternodes without ${MNODE_DAEMON}" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
-		echo -e "Reporting ${PROJECT}d build failure to mother" | tee -a "$LOGFILE"
-		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$PROJECTt"'d failed to build or start"}' && echo -e " "
+		echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
+		curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start"}' && echo -e " "
 		exit
 		fi
 	fi
