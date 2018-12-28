@@ -310,16 +310,16 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	if [ "${PROJECT,,}" = "smart" ] ; then
 	echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; else
 	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
-	
+	KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 	# check if GENKEY file is empty; if so stop script and report error
-	if [ ! -s $INSTALLDIR/temp/GENKEY$i ]
+	if [ ${#KEYXIST} = "0" ]
 	then echo -e "Problem creating masternode $i. Could not obtain masternode genkey" | tee -a "$LOGFILE"
 	echo -e " --> Pausing for 2 seconds then trying again... loop $P" | tee -a "$LOGFILE"
 	sleep 2
 	else break
 	fi
 	
-	if [ ! -s $INSTALLDIR/temp/GENKEY$i ] && [ "${P}" = "30" ]
+	if [ ${#KEYXIST} = "0" ] && [ "${P}" = "30" ]
 	then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not obtain masternode genkey."}' && echo -e " "
 	echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
 	echo -e "I tried for 60 seconds but something isn't working correctly.\n" | tee -a "$LOGFILE"
