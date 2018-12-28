@@ -21,6 +21,7 @@ touch $INSTALLDIR/logs/silentinstall.log
 sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 
 # Create Log File and Begin
+clear
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
