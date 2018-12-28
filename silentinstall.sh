@@ -16,7 +16,7 @@ INFODIR='/var/tmp/nvtemp'
 mkdir $INFODIR
 mkdir $INSTALLDIR/logs
 mkdir $INSTALLDIR/temp
-touch $INSTALLDIR/logs/checkdaemon.log
+touch $INSTALLDIR/logs/maintenance.log
 touch $INSTALLDIR/logs/silentinstall.log
 sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 
