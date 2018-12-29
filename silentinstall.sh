@@ -249,11 +249,8 @@ function install_mns() {
 		echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c $MNS | tee -a "$LOGFILE"
 		sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
 		echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
-		
-		# if IPv4 only, need to sub in IP address here
-		
 		activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
-		sleep 3
+		# sleep 1
 		
 		# check if $PROJECTd was built correctly and started
 		ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
