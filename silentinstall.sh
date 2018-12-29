@@ -153,13 +153,13 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	echo -e " You may also add extra addresses even if you have not yet funded"
 	echo -e " them, and the script will still create the masternode instance"
 	echo -e " which you can later activate from your local wallet."
-	echo -e " Please double check your addresses for accuracy.\n"
+	echo -e " Please double check your addresses for accuracy."
 	touch $INFODIR/vpsmnaddress.info
 		for ((i=1;i<=$MNS;i++)); 
 		do 
 			while :; do
 			printf "${cyan}"
-			echo -e " Please enter the ${PROJECT}t address for masternode #$i"
+			echo -e "\n Please enter the $PROJECTt address for masternode #$i"
 			read -p "  --> " MNADDP
 				echo -e "You entered the address: ${MNADDP} "
 				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
