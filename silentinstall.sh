@@ -54,7 +54,6 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 			else echo -e " --> $PROJECT is not supported, try again."
 			fi
 		done
-		echo -e " \n"
 	fi
 
 # set hostname variable to the name planted by install script
@@ -99,6 +98,7 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 		else echo -e " --> $MNS is not a number between 1 and 50, try again."
 		fi
 		done
+		echo -e " \n"
 	fi
 
 # create or assign mnprefix
@@ -125,10 +125,11 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
 	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
 	else
-		while :; do
 		printf "${cyan}"
-		read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
-		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
+		echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+		while :; do
+		read -p "  --> " MNS
+		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
 		elif [ $SSHPORT = 22 ]; then break
 		else printf "${lightred}"
@@ -136,7 +137,6 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		printf "${nocolor}"
 		fi
 		done
-		echo -e " \n"
 		echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
@@ -159,7 +159,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		do 
 			while :; do
 			printf "${cyan}"
-			echo -e " Please enter the masternode address for masternode #$i"
+			echo -e " Please enter the ${PROJECT}t address for masternode #$i"
 			read -p "  --> " MNADDP
 				echo -e "You entered the address: ${MNADDP} "
 				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
