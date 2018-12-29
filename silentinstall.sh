@@ -328,10 +328,10 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	fi
 		done
 	# remove blank spaces from GENKEYs
-	echo -e "1 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
-	cat $INSTALLDIR/temp/GENKEY$i | tr -d '[:BLANK:]' > $INSTALLDIR/temp/GENKEYt$i
-	cat $INSTALLDIR/temp/GENKEYt$i > $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/GENKEYt$i
-	echo -e "2 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
+	# echo -e "1 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
+	# cat $INSTALLDIR/temp/GENKEY$i | tr -d "[:BLANK:]"' > $INSTALLDIR/temp/GENKEYt$i
+	# cat $INSTALLDIR/temp/GENKEYt$i > $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/GENKEYt$i
+	# echo -e "2 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
 	done
 
 for ((i=1;i<=$MNS;i++)); 
