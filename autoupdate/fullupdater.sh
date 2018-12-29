@@ -8,9 +8,10 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
-# always download latest version of $PROJECT.env
+# always download latest version of $PROJECT.env and .compile
 cd $INSTALLDIR/nodemaster/config/$PROJECT
 curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
+curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.compile
 
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
