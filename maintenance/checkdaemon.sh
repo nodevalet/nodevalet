@@ -5,7 +5,7 @@
 # (crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 
 INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='var/tmp/nvtemp'
+INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
 LOGFILE='$INSTALLDIR/logs/maintenance.log'
@@ -27,29 +27,29 @@ touch $INSTALLDIR/temp/updating
 
 for ((i=1;i<=$MNS;i++));
 do
-echo -e " Checking for stuck blocks on masternode "$PROJECT"_n${i}"
+echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
 previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
-currentBlock=$(/usr/local/bin/"$MNODE_DAEMON"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
-/usr/local/bin/"$MNODE_DAEMON"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
+/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 if [ "$previousBlock$" == "$currentBlock$" ]; then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
-        systemctl stop "$PROJECT"_n${i}
+        systemctl stop ${PROJECT}_n${i}
         sleep 10
-        systemctl start "$PROJECT"_n${i}
+        systemctl start ${PROJECT}_n${i}
 	
 	# wait 10 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
 	sleep 600
-	echo -e " Checking if restarting solved the problem on masternode "$PROJECT"_n${i}"
+	echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 	previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
-	currentBlock=$(/usr/local/bin/"$MNODE_DAEMON"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
-	/usr/local/bin/"$MNODE_DAEMON"-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+	currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
+	/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 		if [ "$previousBlock$" == "$currentBlock$" ]; then
 		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't cause chain to resume syncing" | tee -a "$LOGFILE"
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
 		sudo systemctl stop ${PROJECT}_n${i}
-		sudo /usr/local/bin/"$MNODE_DAEMON"-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
+		sudo /usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
 		sleep 5
 		cd /var/lib/masternodes/${PROJECT}${i}
 		sudo rm -rf !("wallet.dat"|"masternode.conf")
