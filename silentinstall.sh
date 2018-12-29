@@ -37,8 +37,9 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 	touch $INFODIR/fullauto.info
 	echo -e " Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
 	echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
-	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found"  | tee -a "$LOGFILE"
-	else echo -e "Please check the readme for a list supported coins."
+	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
+	else echo -e " Please choose from one of the following supported coins to install:"
+	     echo -e "    helium | condominium | smart (smartcash) \n"
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
@@ -48,21 +49,22 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			PROJECTl=${PROJECT,,}
 			PROJECTt=${PROJECTl~}
-			echo -e " Setting Project Name to $PROJECTt : user provided input"  | tee -a "$LOGFILE"
+			echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE
 			break
 			else echo -e " --> $PROJECT is not supported, try again."
 			fi
 		done
+		echo -e " \n"
 	fi
 
 # set hostname variable to the name planted by install script
 	if [ -e $INFODIR/vpshostname.info ]
 	then HNAME=$(<$INFODIR/vpshostname.info)
-	echo -e " Setting Hostname to $HNAME : vpshostname.info found"  | tee -a "$LOGFILE"
+	echo -e " Setting Hostname to $HNAME : vpshostname.info found" >> $LOGFILE
 	else HNAME=`hostname`
 	touch $INFODIR/vpshostname.info
 	echo -e "$HNAME" > $INFODIR/vpshostname.info
-	echo -e " Setting Hostname to $HNAME : read from server hostname"  | tee -a "$LOGFILE"
+	echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
 	fi
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' 2>/dev/null && echo -e " " ; fi
 sleep 6
@@ -74,7 +76,7 @@ sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-echo -e " Setting masternode-daemon to $MNODE_DAEMON" | tee -a "$LOGFILE"
+echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
 
 # set BLOCKEXP to nodevalet project coin
 BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
@@ -83,14 +85,14 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 # read or assign number of masternodes to install
 	if [ -e $INFODIR/vpsnumber.info ]
 	then MNS=$(<$INFODIR/vpsnumber.info)
-	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" | tee -a "$LOGFILE"
+	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
-	else echo -e "Please enter the number of masternodes to install : "
+	else echo -e " Please enter the number of masternodes to install : "
 		while :; do
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
-		then echo -e " Setting number of masternodes to $MNS : user provided input" | tee -a "$LOGFILE"
+		then echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
 		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
@@ -102,9 +104,9 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 # create or assign mnprefix
 	if [ -s $INFODIR/vpsmnprefix.info ]
 	then :
-	echo -e " Setting masternode aliases from vpsmnprefix.info file" | tee -a "$LOGFILE"
+	echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
 	else MNPREFIX=`hostname`
-	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found"  | tee -a "$LOGFILE"
+	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found" >> $LOGFILE
 	fi
 
 # create or assign onlynet from project.env
@@ -113,15 +115,15 @@ echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
 sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
 ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	if [ "$ONLYNET" > 0 ]
-	then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
+	then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
 	else ONLYNET='6'
-	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" | tee -a "$LOGFILE"
+	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
 	fi
 
 # create or assign customssh
 	if [ -s $INFODIR/vpssshport.info ]
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
-	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n"  | tee -a "$LOGFILE"
+	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
 	else
 		while :; do
 		printf "${cyan}"
@@ -130,11 +132,12 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
 		elif [ $SSHPORT = 22 ]; then break
 		else printf "${lightred}"
-			echo -e " --> That number is out of range, try again. \n"
-			printf "${nocolor}"
+		echo -e " --> That number is out of range, try again. \n"
+		printf "${nocolor}"
 		fi
 		done
-		echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> "$LOGFILE"
+		echo -e " \n"
+		echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
@@ -144,28 +147,33 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
 	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e " Manually gathering masternode addresses from user" >> $LOGFILE 2>&1
-	echo -e " Please double check your addresses for accuracy."
-	echo -e " In your local wallet, generate the addresses and then paste them below. \n"
+	echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
+	echo -e " On your local wallet, generate the masternode addresses and send"
+	echo -e " your collateral transactions for masternodes you want to start now."
+	echo -e " You may also add extra addresses even if you have not yet funded"
+	echo -e " them, and the script will still create the masternode instance"
+	echo -e " which you can later activate from your local wallet."
+	echo -e " Please double check your addresses for accuracy.\n"
 	touch $INFODIR/vpsmnaddress.info
 		for ((i=1;i<=$MNS;i++)); 
 		do 
 			while :; do
 			printf "${cyan}"
-			echo -e " Please enter the masternode address for masternode #$i :"
+			echo -e " Please enter the masternode address for masternode #$i"
 			read -p "  --> " MNADDP
-				echo -e "You entered: ${MNADDP}. Is this correct? y/n"
-				read -p "  --> " VERIFY
+				echo -e "You entered the address: ${MNADDP} "
+				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
 				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
 				then printf "${cyan}" ; break
   				fi
 			done	
 		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
-		echo -e "  --> Masternode $i address is: $MNADDP\n"  | tee -a "$LOGFILE"
+		echo -e "  --> Masternode $i address is: $MNADDP\n" >> $LOGFILE
+		echo -e " \n"
 		done
 	fi
 
-echo -e " I am about to install $MNS $PROJECTt masternodes on this VPS." | tee -a "$LOGFILE"
+echo -e " I am about to install $MNS $PROJECTt masternodes on this VPS." >> $LOGFILE
 echo -e "\n"
 
 set donation percentage
