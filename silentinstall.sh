@@ -173,7 +173,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		done
 	fi
 
-echo -e " I am about to install $MNS $PROJECTt masternodes on this VPS." >> $LOGFILE
+echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS." >> $LOGFILE
 echo -e "\n"
 
 set donation percentage
@@ -214,7 +214,7 @@ sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 }
 
 function add_cron() {
-echo -e "Adding crontabs"  | tee -a "$LOGFILE"
+echo -e "\n Adding crontabs"  | tee -a "$LOGFILE"
 chmod 0700 $INSTALLDIR/*.sh
 chmod 0700 $INSTALLDIR/autoupdate/*.sh
 chmod 0700 $INSTALLDIR/maintenance/*.sh
@@ -234,8 +234,8 @@ echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LO
 
 function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
-	then echo -e " This system seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
-	else echo -e " This system is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
+	then echo -e " This server seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
+	else echo -e " This server is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
@@ -438,6 +438,7 @@ do
 
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
+echo -e " \n" | tee -a "$LOGFILE"
 
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
@@ -503,7 +504,7 @@ fi
 
 function install_binaries() {
 #check for binaries and install if found   
-echo -e "\nInstalling $PROJECTt binaries"  | tee -a "$LOGFILE"
+echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 	# Pull GITAPI_URL from $PROJECT.env
 	GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
@@ -511,7 +512,7 @@ cd $INSTALLDIR/temp
 	echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 	sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
-	echo -e "GIT_URL set to $GITAPI_URL" | tee -a "$LOGFILE"
+	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 	else
 	echo -e "Cannot download binaries; no GITAPI_URL was detected. \n" | tee -a "$LOGFILE"
 	fi
@@ -525,11 +526,11 @@ curl -s $GITAPI_URL \
       | cut -d '"' -f 4 \
       | wget -qi -   | tee -a "$LOGFILE"
 TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
-tar -xzf $TARBALL
+tar -xzf $TARBALL 2>&1
 EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
 cp -r $EXTRACTDIR/bin/. /usr/local/bin/
-rm -r $EXTRACTDIR
-rm -f $TARBALL
+rm -r $EXTRACTDIR --force
+rm -f $TARBALL --force
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
