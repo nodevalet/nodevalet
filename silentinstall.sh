@@ -306,11 +306,12 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	if [ "${PROJECT,,}" = "smart" ] ; then
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys ; else
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
-	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" >> $INSTALLDIR/temp/GENKEY$i
+	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 	if [ "${PROJECT,,}" = "smart" ] ; then
 	echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; else
 	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
 	KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
+
 	# check if GENKEY file is empty; if so stop script and report error
 	if [ ${#KEYXIST} = "0" ]
 	then echo -e "Problem creating masternode $i. Could not obtain masternode genkey" | tee -a "$LOGFILE"
@@ -326,7 +327,11 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 	exit
 	fi
 		done
-	
+	# remove blank spaces from GENKEYs
+	echo -e "1 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
+	cat $INSTALLDIR/temp/GENKEY$i | tr -d '[:BLANK:]' > $INSTALLDIR/temp/GENKEYt$i
+	cat $INSTALLDIR/temp/GENKEYt$i > $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/GENKEYt$i
+	echo -e "2 At this point file GENKEY$i is `cat $INSTALLDIR/temp/GENKEY$i`" | tee -a "$LOGFILE"
 	done
 
 for ((i=1;i<=$MNS;i++)); 
