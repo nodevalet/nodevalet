@@ -141,6 +141,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
+	echo -e " \n"
 
 # read or collect masternode addresses
 	if [ -e $INFODIR/vpsmnaddress.info ]
