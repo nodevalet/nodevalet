@@ -265,10 +265,9 @@ function install_mns() {
 		ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
 		cat $INSTALLDIR/temp/${PROJECT}Ds >> $LOGFILE
 		if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-		then echo -e "It looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
+		then echo -e "\nIt looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
 		# report back to mother
-		echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE"
-		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+		if [ -e $INFODIR/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
 		else echo -e "It looks like VPS install script failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
 		echo -e "Aborting installation, can't install masternodes without ${MNODE_DAEMON}" | tee -a "$LOGFILE"
 		# report error, exit script maybe or see if it can self-correct
@@ -289,7 +288,7 @@ if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/st
 		exit
 else
    		# Create a file containing all masternode genkeys
-   		echo -e "Saving genkey(s) to $INSTALLDIR/temp/genkeys \n"  | tee -a "$LOGFILE"
+   		# echo -e "Saving genkey(s) to $INSTALLDIR/temp/genkeys \n"  | tee -a "$LOGFILE"
    		touch $INSTALLDIR/temp/genkeys
 
 # create initial masternode.conf file and populate with notes
@@ -303,11 +302,9 @@ EOT
 echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
 
 for ((i=1;i<=$MNS;i++)); 
-do
-	
+do	
 		for ((P=1;P<=30;P++)); 
 		do
-	
 	# create masternode genkeys (smart is special "smartnodes")
 	if [ "${PROJECT,,}" = "smart" ] ; then
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys ; else
@@ -434,8 +431,8 @@ do
 	# fi	
 	
 # declutter ; take out trash
-# rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-# rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/${PROJECT}Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
+rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/${PROJECT}Ds --force ; rm $INSTALLDIR/temp/DELIMETER
 
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
@@ -452,7 +449,7 @@ echo -e " \n" | tee -a "$LOGFILE"
 	# echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
 	# fi
 
-	echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE"
+	if [ -e $INFODIR/fullauto.info ] ; then echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE" ; fi
 	# convert masternode.conf to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/temp/complete
 
@@ -474,13 +471,13 @@ cat <<EOT >> $INSTALLDIR/masternode.conf
 EOT
 
 # round 2: cleanup and declutter
-echo -e "Cleaning up clutter and taking out trash \n" | tee -a "$LOGFILE"
-# rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-# rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-# rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-# rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-# rm $INSTALLDIR/temp/${PROJECT}Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-# rm $INSTALLDIR/temp/ONLYNET --force
+echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
+rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
+rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
+rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
+rm $INSTALLDIR/temp/${PROJECT}Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+rm $INSTALLDIR/temp/ONLYNET --force
 
 clear
 echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
