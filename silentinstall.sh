@@ -35,9 +35,9 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 	PROJECTl=${PROJECT,,}
 	PROJECTt=${PROJECTl~}
 	touch $INFODIR/fullauto.info
-	echo -e " This script was invoked by Node Valet and is on full-auto\n" | tee -a "$LOGFILE"
-	echo -e " This script was invoked by Node Valet and is on full-auto\n" >> $INFODIR/fullauto.info
-	echo -e " Setting project name to $PROJECTt : vpscoin.info found"  | tee -a "$LOGFILE"
+	echo -e " Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
+	echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
+	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
 		while :; do
@@ -48,7 +48,7 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			PROJECTl=${PROJECT,,}
 			PROJECTt=${PROJECTl~}
-			echo -e " Setting project name to $PROJECTt : user provided input"  | tee -a "$LOGFILE"
+			echo -e " Setting Project Name to $PROJECTt : user provided input"  | tee -a "$LOGFILE"
 			break
 			else echo -e " --> $PROJECT is not supported, try again."
 			fi
@@ -102,9 +102,41 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 # create or assign mnprefix
 	if [ -s $INFODIR/vpsmnprefix.info ]
 	then :
-	echo -e " Setting masternode aliases from vpsmnprefix.info file \n" | tee -a "$LOGFILE"
+	echo -e " Setting masternode aliases from vpsmnprefix.info file" | tee -a "$LOGFILE"
 	else MNPREFIX=`hostname`
-	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found\n"  | tee -a "$LOGFILE"
+	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found"  | tee -a "$LOGFILE"
+	fi
+
+# create or assign onlynet from project.env
+ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
+sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
+ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+	if [ "$ONLYNET" > 0 ]
+	then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" | tee -a "$LOGFILE"
+	else ONLYNET='6'
+	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" | tee -a "$LOGFILE"
+	fi
+
+# create or assign customssh
+	if [ -s $INFODIR/vpssshport.info ]
+	then SSHPORT=$(<$INFODIR/vpssshport.info)
+	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n"  | tee -a "$LOGFILE"
+	else
+		while :; do
+		printf "${cyan}"
+		read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
+		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
+		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
+		elif [ $SSHPORT = 22 ]; then break
+		else printf "${lightred}"
+			echo -e " --> That number is out of range, try again. \n"
+			printf "${nocolor}"
+		fi
+		done
+		echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> "$LOGFILE"
+		touch $INFODIR/vpssshport.info
+		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
 
 # read or collect masternode addresses
@@ -133,7 +165,7 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 		done
 	fi
 
-echo -e " OK. I am going to install $MNS $PROJECT masternodes on this VPS." | tee -a "$LOGFILE"
+echo -e " I am about to install $MNS $PROJECTt masternodes on this VPS." | tee -a "$LOGFILE"
 echo -e "\n"
 
 set donation percentage
@@ -169,38 +201,6 @@ set donation percentage
 	echo -e "No donation address was detected." | tee -a "$LOGFILE"
 	fi
 
-# create or assign onlynet from project.env
-ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
-ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	if [ "$ONLYNET" > 0 ]
-	then echo -e "  --> Setting default network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env \n" | tee -a "$LOGFILE"
-	else ONLYNET='6'
-	echo -e "  --> Setting default network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env \n" | tee -a "$LOGFILE"
-	fi
-
-# create or assign customssh
-	if [ -s $INFODIR/vpssshport.info ]
-	then SSHPORT=$(<$INFODIR/vpssshport.info)
-	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info"  | tee -a "$LOGFILE"
-	else
-		while :; do
-		printf "${cyan}"
-		read -p " Enter a custom port for SSH between 11000 and 65535 or use 22: " SSHPORT
-		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number. \n";printf "${nocolor}";continue; }
-		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
-		elif [ $SSHPORT = 22 ]; then break
-		else printf "${lightred}"
-			echo -e " --> That number is out of range, try again. \n"
-			printf "${nocolor}"
-		fi
-		done
-		echo -e "  --> User entered $SSHPORT for use as a custom SSH port" >> "$LOGFILE"
-		touch $INFODIR/vpssshport.info
-		echo "$SSHPORT" >> $INFODIR/vpssshport.info
-	fi
-
 # enable softwrap so masternode.conf file can be easily copied
 sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 }
@@ -226,8 +226,8 @@ echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LO
 
 function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
-	then echo -e "This system seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
-	else echo -e "This system is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
+	then echo -e " This system seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
+	else echo -e " This system is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
