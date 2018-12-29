@@ -202,7 +202,7 @@ printf "${white}"
 	printf "${cyan}"
 	figlet System Upgrade | tee -a "$LOGFILE"
 	printf "${yellow}"
-	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " "
+	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " " ; fi
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
@@ -1161,17 +1161,17 @@ setup_environment
 display_banner
 begin_log
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space ..."}' && echo -e " " ; fi
 create_swap
 sleep 4
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server Software ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server Software ..."}' && echo -e " " ; fi
 update_upgrade
 favored_packages
 # crypto_packages
 # add_user
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " " ; fi
 collect_sshd
 prompt_rootlogin
 disable_passauth
