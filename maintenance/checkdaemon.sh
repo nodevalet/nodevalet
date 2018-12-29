@@ -29,7 +29,7 @@ for ((i=1;i<=$MNS;i++));
 do
 echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
 previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
-currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/"$PROJECT"_n${i}.conf getblockcount)
+currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
 /usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 if [ "$previousBlock$" == "$currentBlock$" ]; then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
