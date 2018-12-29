@@ -173,7 +173,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		done
 	fi
 
-echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS." >> $LOGFILE
+echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
 echo -e "\n"
 
 set donation percentage
@@ -512,7 +512,7 @@ cd $INSTALLDIR/temp
 	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 	else
-	echo -e "Cannot download binaries; no GITAPI_URL was detected. \n" | tee -a "$LOGFILE"
+	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
 	fi
 	
 # GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
@@ -534,8 +534,8 @@ rm -f $TARBALL --force
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 
 if [ "$dEXIST" = "${MNODE_DAEMON}" ]
-then echo -e "Binaries for ${PROJECTt} were downloaded and installed. \n"   | tee -a "$LOGFILE"
-else echo -e "Binaries for ${PROJECTt} could not be downloaded. \n"  | tee -a "$LOGFILE"
+then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
 fi
 }
 
