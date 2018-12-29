@@ -88,7 +88,7 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
-	else echo -e " Please enter the number of masternodes to install : "
+	else echo -e "\n Please enter the number of masternodes to install : "
 		while :; do
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
@@ -126,7 +126,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
 	else
 		printf "${cyan}"
-		echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+		echo -e "\n Enter a custom port for SSH between 11000 and 65535 or use 22 : "
 		while :; do
 		read -p "  --> " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
@@ -141,13 +141,12 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
-	echo -e " \n"
 
 # read or collect masternode addresses
 	if [ -e $INFODIR/vpsmnaddress.info ]
 	then :
 	# create a subroutine here to check memory and size MNS appropriately
-	else echo -e " Before we can begin, we need to collect $MNS masternode addresses."
+	else echo -e "\n Before we can begin, we need to collect $MNS masternode addresses."
 	echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
 	echo -e " On your local wallet, generate the masternode addresses and send"
 	echo -e " your collateral transactions for masternodes you want to start now."
