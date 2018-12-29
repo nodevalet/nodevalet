@@ -22,49 +22,50 @@ sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 
 # Create Log File and Begin
 clear
-echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
+echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
-echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e "-------- AKcryptoGUY's Node Valet Script ----------- " | tee -a "$LOGFILE"
-echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
+echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+echo -e " -------- AKcryptoGUY's NodeValet Script ------------ " | tee -a "$LOGFILE"
+echo -e " -------------Masternodes Made Easy------------------ " | tee -a "$LOGFILE"
+echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 
-# set hostname variable to the name planted by install script
-	if [ -e $INFODIR/vpshostname.info ]
-	then HNAME=$(<$INFODIR/vpshostname.info)
-	echo -e "vpshostname.info found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
-	else HNAME=`hostname`
-	touch $INFODIR/vpshostname.info
-	echo -e "$HNAME" > $INFODIR/vpshostname.info
-	echo -e "vpshostname.info not found, setting HNAME to $HNAME"  | tee -a "$LOGFILE"
-	fi
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is now online and reporting installation status ..."}' 2>/dev/null && echo -e " "
-sleep 5
-	
-# set project name
+# read or set project name
 	if [ -s $INFODIR/vpscoin.info ]
 	then PROJECT=`cat $INFODIR/vpscoin.info`
 	PROJECTl=${PROJECT,,}
 	PROJECTt=${PROJECTl~}
 	touch $INFODIR/fullauto.info
-	echo -e "This script was invoked by Node Valet and is on full-auto" | tee -a "$LOGFILE"
-	echo -e "This script was invoked by Node Valet and is on full-auto" >> $INFODIR/fullauto.info
-	echo -e "vpscoin.info found, setting project name to $PROJECTt"  | tee -a "$LOGFILE"
+	echo -e " This script was invoked by Node Valet and is on full-auto\n" | tee -a "$LOGFILE"
+	echo -e " This script was invoked by Node Valet and is on full-auto\n" >> $INFODIR/fullauto.info
+	echo -e " Setting project name to $PROJECTt : vpscoin.info found"  | tee -a "$LOGFILE"
 	else echo -e "Please check the readme for a list supported coins."
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
 			if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
-			then echo -e "Project name set to ${PROJECT}."  | tee -a "$LOGFILE"
-			touch $INFODIR/vpscoin.info
+			then touch $INFODIR/vpscoin.info
 			echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
 			PROJECT=`cat $INFODIR/vpscoin.info`
 			PROJECTl=${PROJECT,,}
 			PROJECTt=${PROJECTl~}
+			echo -e " Setting project name to $PROJECTt : user provided input"  | tee -a "$LOGFILE"
 			break
-			else echo -e " --> $PROJECT is not supported, try again."  | tee -a "$LOGFILE"
+			else echo -e " --> $PROJECT is not supported, try again."
 			fi
 		done
 	fi
+
+# set hostname variable to the name planted by install script
+	if [ -e $INFODIR/vpshostname.info ]
+	then HNAME=$(<$INFODIR/vpshostname.info)
+	echo -e " Setting Hostname to $HNAME : vpshostname.info found"  | tee -a "$LOGFILE"
+	else HNAME=`hostname`
+	touch $INFODIR/vpshostname.info
+	echo -e "$HNAME" > $INFODIR/vpshostname.info
+	echo -e " Setting Hostname to $HNAME : read from server hostname"  | tee -a "$LOGFILE"
+	fi
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' 2>/dev/null && echo -e " " ; fi
+sleep 6
 	
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
@@ -73,29 +74,37 @@ sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-echo -e "Setting MNODE_DAEMON to $MNODE_DAEMON \n" | tee -a "$LOGFILE"
+echo -e " Setting masternode-daemon to $MNODE_DAEMON" | tee -a "$LOGFILE"
 
 # set BLOCKEXP to nodevalet project coin
 BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
-echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
+# echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
 
 # read or assign number of masternodes to install
 	if [ -e $INFODIR/vpsnumber.info ]
 	then MNS=$(<$INFODIR/vpsnumber.info)
-	echo -e "vpsnumber.info found, setting number of masternodes to $MNS" | tee -a "$LOGFILE"
+	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" | tee -a "$LOGFILE"
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
 	else echo -e "Please enter the number of masternodes to install : "
 		while :; do
 		read -p "  --> " MNS
 		if (($MNS >= 1 && $MNS <= 50))
-		then echo -e "Number of masternodes set to $MNS. \n"  | tee -a "$LOGFILE"
+		then echo -e " Setting number of masternodes to $MNS : user provided input" | tee -a "$LOGFILE"
 		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
-		else echo -e " --> $MNS is not a number between 1 and 50, try again."  | tee -a "$LOGFILE"
+		else echo -e " --> $MNS is not a number between 1 and 50, try again."
 		fi
 		done
+	fi
+
+# create or assign mnprefix
+	if [ -s $INFODIR/vpsmnprefix.info ]
+	then :
+	echo -e " Setting masternode aliases from vpsmnprefix.info file \n" | tee -a "$LOGFILE"
+	else MNPREFIX=`hostname`
+	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found\n"  | tee -a "$LOGFILE"
 	fi
 
 # read or collect masternode addresses
@@ -192,14 +201,6 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
 
-# create or assign mnprefix
-	if [ -s $INFODIR/vpsmnprefix.info ]
-	then :
-	echo -e "vpsmnprefix.info found, will pull masternode aliases from that"  | tee -a "$LOGFILE"
-	else MNPREFIX=`hostname`
-	echo -e "vpsmnprefix.info not found, will generate aliases from hostname ($MNPREFIX) \n"  | tee -a "$LOGFILE"
-	fi
-	
 # enable softwrap so masternode.conf file can be easily copied
 sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 }
@@ -225,8 +226,8 @@ echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LO
 
 function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
-	then echo -e "System seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
-	else echo -e "System is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
+	then echo -e "This system seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
+	else echo -e "This system is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
