@@ -433,6 +433,7 @@ do
 # declutter ; take out trash
 rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
 rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/${PROJECT}Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+rm $INSTALLDIR/0 --force 
 
 echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
