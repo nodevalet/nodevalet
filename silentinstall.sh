@@ -54,7 +54,7 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 			else echo -e " --> $PROJECT is not supported, try again."
 			fi
 		done
-		echo -e " \n"
+		# echo -e " \n"
 	fi
 
 # set hostname variable to the name planted by install script
