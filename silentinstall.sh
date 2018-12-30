@@ -96,7 +96,7 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
-		else echo -e " --> $MNS is not a number between 1 and 50, try again."
+		else echo -e "\n --> $MNS is not a number between 1 and 50, try again."
 		fi
 		done
 	fi
@@ -133,7 +133,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
 		elif [ $SSHPORT = 22 ]; then break
 		else printf "${lightred}"
-		echo -e " --> That number is out of range, try again. \n"
+		echo -e "\n --> That number is out of range, try again. \n"
 		printf "${nocolor}"
 		fi
 		done
