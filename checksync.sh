@@ -30,8 +30,7 @@ function check_blocksync() {
 end=$((SECONDS+7200))
 
 while [ $SECONDS -lt $end ]; do
-    echo -e "Time $SECONDS"
-    
+    # echo -e "Time $SECONDS"
 	rm -rf $INSTALLDIR/getinfo_n1
 	touch $INSTALLDIR/getinfo_n1
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
@@ -39,7 +38,7 @@ while [ $SECONDS -lt $end ]; do
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    echo -e "\n  --> Masternode Sync Status <-- \n"
+    echo -e "\n         --> Masternode Sync Status <-- \n"
     echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
     echo -e "$BLOCKS is the current number of blocks"
     
