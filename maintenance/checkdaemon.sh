@@ -28,6 +28,7 @@ if [ -e "$INSTALLDIR/temp/updating" ]
 fi
 touch $INSTALLDIR/temp/updating
 
+echo -e "\n"
 for ((i=1;i<=$MNS;i++));
 do
 echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
