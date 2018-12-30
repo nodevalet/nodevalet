@@ -583,9 +583,9 @@ then
 	printf "${cyan}"
         
 	# read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
-	if [ -n "/root/.ssh/authorized_keys" ]
-	# changing this to no for now because it was locking users out; need to find out why
-	then PASSLOGIN='no'
+	# this will automatically disable passwordauthentication if root rsa keys are found
+	if [ -s "/root/.ssh/authorized_keys" ]
+	then PASSLOGIN='yes'
 	else PASSLOGIN='no'
 	fi
 		
