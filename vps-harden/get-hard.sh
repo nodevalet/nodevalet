@@ -583,7 +583,10 @@ then
 	printf "${cyan}"
         
 	# read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
-	PASSLOGIN="n"
+	if [ -n "/root/.ssh/authorized_keys" ]
+	then PASSLOGIN='yes'
+	else PASSLOGIN='no'
+	fi
 		
 	printf "${nocolor}"
 	while [ "${PASSLOGIN,,}" != "yes" ] && [ "${PASSLOGIN,,}" != "no" ] && [ "${PASSLOGIN,,}" != "y" ] && [ "${PASSLOGIN,,}" != "n" ]; do
@@ -593,11 +596,12 @@ then
 	printf "${nocolor}"
 	done
 	echo -e "\n"	
-        # check if PASSLOGIN is valid
+	
+	# check if PASSLOGIN is valid
         if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]
-        then 	sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/#PasswordAuthentication no/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+        then 	sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                # the above line should disable password authentication altogether
+				
 		# Error Handling
                 if [ $? -eq 0 ]
                 then
@@ -614,10 +618,9 @@ then
 			printf "${nocolor}"
                 fi
         else 
-		sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
+		sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
         fi
+	
 else	
 	printf "${yellow}"
 	echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
