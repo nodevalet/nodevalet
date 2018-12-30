@@ -18,7 +18,6 @@ mkdir $INSTALLDIR/logs
 mkdir $INSTALLDIR/temp
 touch $INSTALLDIR/logs/maintenance.log
 touch $INSTALLDIR/logs/silentinstall.log
-sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
 
 # Create Log File and Begin
 clear
@@ -230,6 +229,14 @@ echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "2 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -
 echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+
+# add system link to common maintenance scripts so they can be accessed more easily
+sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
+sudo ln -s $INSTALLDIR/autoupdate/fullupdater.sh /usr/local/bin/autoupdate
+sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
+sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
+sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
+
 }
 
 function silent_harden() {
