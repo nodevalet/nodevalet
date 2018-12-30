@@ -29,8 +29,8 @@ for ((i=1;i<=$MNS;i++));
 do
 echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
 previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
-currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
-/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
+/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 if [ "$previousBlock$" == "$currentBlock$" ]; then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
@@ -42,14 +42,14 @@ if [ "$previousBlock$" == "$currentBlock$" ]; then
 	sleep 600
 	echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 	previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
-	currentBlock=$(/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
-	/usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+	currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
+	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 		if [ "$previousBlock$" == "$currentBlock$" ]; then
 		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't cause chain to resume syncing" | tee -a "$LOGFILE"
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
 		sudo systemctl stop ${PROJECT}_n${i}
-		sudo /usr/local/bin/${MNODE_DAEMON}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
+		sudo /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
 		sleep 5
 		cd /var/lib/masternodes/${PROJECT}${i}
 		sudo rm -rf !("wallet.dat"|"masternode.conf")
