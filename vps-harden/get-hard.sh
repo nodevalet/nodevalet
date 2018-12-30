@@ -584,7 +584,8 @@ then
         
 	# read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
 	if [ -n "/root/.ssh/authorized_keys" ]
-	then PASSLOGIN='yes'
+	# changing this to no for now because it was locking users out; need to find out why
+	then PASSLOGIN='no'
 	else PASSLOGIN='no'
 	fi
 		
