@@ -69,10 +69,6 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		activate_masternodes_$PROJECT
 		sleep 2
 		check_project
-			echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
-			activate_masternodes_$PROJECT
-			sleep 2
-			check_project
 else echo -e " No new version is detected \n"
 exit
 fi
