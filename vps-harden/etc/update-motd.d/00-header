@@ -3,6 +3,8 @@
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
 MNS=`cat $INFODIR/vpsnumber.info`
 LOGFILE='/var/tmp/nodevalet/logs/checkdaemon.log'
 
@@ -17,9 +19,9 @@ LOGFILE='/var/tmp/nodevalet/logs/checkdaemon.log'
 
 color1='\033[1;31m'  # light red
 color2='\033[0;31m'  # red
-color3='\033[1;32m'  # light green
+color3='\033[1;34m'  # light blue
 color4='\033[0;33m'  # green
-color5='\033[1;34m'  # light blue
+color5='\033[0;32m'  # light green
 color6='\033[0;34m'  # blue
 color7='\033[1;35m'  # light purple
 color8='\033[0;35m'  # purple
@@ -36,17 +38,18 @@ total=`ps aux | grep -i ${PROJECT}d | wc -l`
 nodes=`expr $total - 1`
 
 # AKcryptoGUY's mod
-printf " ${color5} dddhoooooosdddddddhoooooosddd ${color1}  You've logged into a $PROJECT Masternode.${nocolor}\n"
-printf " ${color5} dddy      odddddddy      oddd ${color9}  No currency is stored on this server.${nocolor}\n"
-printf " ${color5} dddy      odddddddy      oddd ${nocolor}\n"
-printf " ${color5} dddy      odddddddy      oddd ${color13}  ------ General Information ------\n"
-printf " ${color5} dddy      odddddddy      oddd ${color11}\n"
-printf " ${color5} dddy       +++++++       oddd ${color11}  Hostname: $(hostname)\n"
-printf " ${color5} dddy                     oddd ${color11}  Version: `lsb_release -s -d`${nocolor}\n"
-printf " ${color5} dddy                     oddd ${color11}  `uname -srmo`${nocolor}\n"
-printf " ${color5} dddy      odddddddy      oddd ${color11}\n"
-printf " ${color5} dddh+     odddddddy      oddd ${color11}  Masternodes on this server: $nodes\n"
-printf " ${color5} ddddddyso+odddddddy      oddd ${color11}  External IP: `ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'` \n"
-printf " ${color5} ddddddddddddddddddy      oddd ${nocolor}\n"
-printf " ${color5} ddddddddddddddddddy      oddd ${color13}  `date +"%A, %e %B %Y, %r"`${nocolor}\n"
-printf " ${color5} ddddddddddddddddddddhh   hddd ${color1}  * Uptime: `/usr/bin/uptime -p` *${nocolor}\n"
+printf " ${color5} █████████████████████████████${color1}  You've logged into a `echo "${PROJECT}"` Masternode.${nocolor}\n"
+printf " ${color5} █                           █${color9}  No currency is stored on this server.${nocolor}\n"
+printf " ${color5} █ ${color12}   ███╗   ██╗██╗   ██╗  ${color5}  █${nocolor}\n"
+printf " ${color5} █ ${color12}   ████╗  ██║██║   ██║  ${color5}  █${color14}  -------- General Information --------\n"
+printf " ${color5} █ ${color12}   ██╔██╗ ██║██║   ██║  ${color5}  █${color11}\n"
+printf " ${color5} █ ${color12}   ██║╚██╗██║╚██╗ ██╔╝  ${color5}  █${color11}  Hostname:${color12} $(hostname)\n"
+printf " ${color5} █ ${color12}   ██║ ╚████║ ╚████╔╝   ${color5}  █${color11}  Version: `lsb_release -s -d`${nocolor}\n"
+printf " ${color5} █ ${color12}   ╚═╝  ╚═══╝  ╚═══╝    ${color5}  █${color11}  `uname -srmo`${nocolor}\n"
+printf " ${color5} █                           █${color11}\n"
+printf " ${color5} █ ${color14}  --> NodeValet.io <-- ${color5}   █${color11}  Masternodes on this server: ${color7} --> ${nodes} <--${nocolor}\n"
+printf " ${color5} █ ${color14}Your only choice for five${color5} █${color11}  External IP: ${color12}`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'` \n"
+printf " ${color5} █  ${color14}minute masternode setup${color5}  █${nocolor}\n"
+printf " ${color5} █                           █${color14}  `date +"%A, %e %B %Y, %r"`${nocolor}\n"
+printf " ${color5} █████████████████████████████${color1}  * Uptime: `/usr/bin/uptime -p` *${nocolor}\n"
+
