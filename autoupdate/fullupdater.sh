@@ -39,7 +39,7 @@ GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
 GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
 sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
-GITSTRINGL=$(<$INSTALLDIR/temp/GITSTRING)
+GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
 
 function update_binaries() {
 #check for updates and install binaries if necessary
