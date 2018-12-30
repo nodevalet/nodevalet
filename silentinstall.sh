@@ -223,11 +223,11 @@ echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
 echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
 echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
+	(crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+	(crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
 echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "0 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -
+	(crontab -l ; echo "2 */12 * * * $INSTALLDIR/autoupdate/fullupdater.sh") | crontab -
 echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 }
