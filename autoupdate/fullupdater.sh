@@ -61,7 +61,6 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
 		rm /usr/local/bin/${PROJECT}*
-cd bin
 curl -s $GITAPI_URL \
                 | grep browser_download_url \
                 | grep $GITSTRING \
