@@ -27,7 +27,7 @@ if [ -e $INSTALLDIR/temp/vpsvaletreboot.txt ]; then
 
 # Add a sequence to interpret the reply as success or fail $?
 rm $INSTALLDIR/temp/vpsvaletreboot.txt
-crontab -l | grep -v '$INSTALLDIR/maintenance/postinstall_api.sh'  | crontab -
+crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
 else :
 fi
