@@ -35,7 +35,7 @@ total=`ps aux | grep -i ${PROJECT}d | wc -l`
 nodes=`expr $total - 1`
 
 # AKcryptoGUY's mod
-printf " ${color5} █████████████████████████████${color1}  You've logged into a `echo "${PROJECT}"` Masternode.${nocolor}\n"
+printf " ${color5} █████████████████████████████${color1}  You've logged into a `echo "${PROJECT}"` Masternode${nocolor}\n"
 printf " ${color5} █                           █${color9}  No currency is stored on this server.${nocolor}\n"
 printf " ${color5} █ ${color12}   ███╗   ██╗██╗   ██╗  ${color5}  █${nocolor}\n"
 printf " ${color5} █ ${color12}   ████╗  ██║██║   ██║  ${color5}  █${color14}  -------- General Information --------\n"
