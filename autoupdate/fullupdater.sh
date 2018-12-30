@@ -10,7 +10,9 @@ PROJECTt=${PROJECTl~}
 
 # always download latest version of $PROJECT.env and .compile
 cd $INSTALLDIR/nodemaster/config/$PROJECT
+echo -e " \n`date +%m.%d.%Y_%H:%M:%S` : Downloading current $PROJECT.env"
 curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
+echo -e " \n`date +%m.%d.%Y_%H:%M:%S` : Downloading current $PROJECT.compile"
 curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.compile
 
 # set mnode daemon name from project.env
