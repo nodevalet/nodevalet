@@ -21,8 +21,7 @@ MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-echo -e "\n  --> Masternode Sync Status <-- \n"
-echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
+
 }
 
 function check_blocksync() {
@@ -40,7 +39,8 @@ while [ $SECONDS -lt $end ]; do
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    echo -e "\n"
+    echo -e "\n  --> Masternode Sync Status <-- \n"
+    echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
     echo -e "$BLOCKS is the current number of blocks"
     
     if (($BLOCKS <= 1 )) ; then echo "Masternode is not syncing" ; break
