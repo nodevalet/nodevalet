@@ -10,6 +10,9 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 
+# extglob was necessary to make rm -- ! possible
+shopt -s extglob
+
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
@@ -52,7 +55,7 @@ if [ "$previousBlock$" == "$currentBlock$" ]; then
 		sudo /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
 		sleep 5
 		cd /var/lib/masternodes/${PROJECT}${i}
-		sudo rm -rf !("wallet.dat"|"masternode.conf")
+		sudo rm -- !("wallet.dat"|"masternode.conf")
 		sleep 5
 		sudo systemctl enable ${PROJECT}_n${i}
 		sudo systemctl start ${PROJECT}_n${i}
@@ -66,4 +69,4 @@ fi
 
 done
 
-rm -f $INSTALLDIR/temp/updating
+rm $INSTALLDIR/temp/updating
