@@ -18,7 +18,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INSTALLDIR/temp/MNODE_DAEMON1
 
-if [ -e $INSTALLDIR/temp/updating ]
+if [ -e "$INSTALLDIR/temp/updating" ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
 	echo -e "It looks like I'm installing other updates; skipping daemon check.\n"  | tee -a "$LOGFILE"
 	exit
