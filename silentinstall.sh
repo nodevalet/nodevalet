@@ -214,7 +214,7 @@ sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 }
 
 function add_cron() {
-echo -e "\n Adding crontabs"  | tee -a "$LOGFILE"
+echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Adding crontabs"  | tee -a "$LOGFILE"
 chmod 0700 $INSTALLDIR/*.sh
 chmod 0700 $INSTALLDIR/autoupdate/*.sh
 chmod 0700 $INSTALLDIR/maintenance/*.sh
