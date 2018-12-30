@@ -8,7 +8,7 @@ INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNS=`cat $INFODIR/vpsnumber.info`
-LOGFILE='$INSTALLDIR/logs/maintenance.log'
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
