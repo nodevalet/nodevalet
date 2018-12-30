@@ -541,6 +541,7 @@ fi
 }
 
 function restart_server() {
+	echo -e " \n"
 	echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
 	cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
 	update-rc.d postinstall_api.sh defaults  2>/dev/null
