@@ -34,11 +34,18 @@ echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
 sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
 
+# Pull GITSTRING from $PROJECT.env
+
+GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
+sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
+GITSTRINGL=$(<$INSTALLDIR/temp/GITSTRING)
+
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
-cd $INSTALLDIR/temp
+cd $INSTALLDIR/temp/bin
 rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
@@ -54,21 +61,31 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
 		rm /usr/local/bin/${PROJECT}*
-		curl -s $GITAPI_URL \
-		| grep browser_download_url \
-  		| grep x86_64-linux-gnu.tar.gz \
-  		| cut -d '"' -f 4 \
-  		| wget -qi -
-	TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
-	EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
-		tar -xzf $TARBALL
-		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
-		rm -r $EXTRACTDIR
-		rm -f $TARBALL
-		echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
-		activate_masternodes_$PROJECT
-		sleep 2
-		check_project
+cd bin
+curl -s $GITAPI_URL \
+                | grep browser_download_url \
+                | grep $GITSTRING \
+                | cut -d '"' -f 4 \
+                | wget -qi -
+TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+        if [[ $TARBALL == *.gz ]]
+                then tar -xzf $TARBALL
+                    else apt-get install unzip -y
+                       unzip $TARBALL
+        fi
+rm -f $TARBALL
+cd  "$(\ls -1dt ./*/ | head -n 1)"
+mv ./*/* .
+cp $PROJECT* '/usr/local/bin'
+cd ..
+rm -r -f *
+cd
+cd /usr/local/bin
+chmod 700 $PROJECT*
+			echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
+			activate_masternodes_$PROJECT
+			sleep 2
+			check_project
 else echo -e " No new version is detected \n"
 exit
 fi
