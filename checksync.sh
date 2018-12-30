@@ -21,7 +21,8 @@ MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
+echo -e "\n  --> Masternode Sync Status <-- \n"
+echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
 }
 
 function check_blocksync() {
