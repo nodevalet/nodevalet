@@ -236,6 +236,8 @@ sudo ln -s $INSTALLDIR/autoupdate/fullupdater.sh /usr/local/bin/autoupdate
 sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
 sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
 sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
+sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
+sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
 
 }
 
