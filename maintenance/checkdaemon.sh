@@ -69,4 +69,4 @@ fi
 
 done
 
-rm $INSTALLDIR/temp/updating
+rm -f $INSTALLDIR/temp/updating
