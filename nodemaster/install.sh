@@ -5,8 +5,6 @@ INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 # set mnode daemon name from project.env
 MNODE_DAEMOND=$(<$INSTALLDIR/temp/MNODE_DAEMON)
-INFODIR='/var/tmp/nvtemp'
-HNAME=$(<$INFODIR/vpshostname.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
@@ -124,8 +122,7 @@ function install_packages() {
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
 if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
-else echo -e "Did not find binaries for ${CODENAME} so downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
-if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Installing crypto pkgs because binaries couldn't be located ..."}' && echo -e " " ; fi
+else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
 
     # development and build packages
     # these are common on all cryptos
@@ -137,8 +134,6 @@ if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/st
     libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
     libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
     pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
-
-if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$PROJECTt"' wallet from source ..."}' && echo -e " " ; fi
 fi
 
         
@@ -365,15 +360,12 @@ function create_systemd_configuration() {
 			[Unit]
 			Description=${CODENAME} distributed currency daemon
 			After=network.target
-
 			[Service]
 			User=${MNODE_USER}
 			Group=${MNODE_USER}
-
 			Type=forking
 			PIDFile=${MNODE_DATA_BASE}/${CODENAME}${NUM}/${CODENAME}.pid
 			ExecStart=${MNODE_DAEMON} -daemon -pid=${MNODE_DATA_BASE}/${CODENAME}${NUM}/${CODENAME}.pid -conf=${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf -datadir=${MNODE_DATA_BASE}/${CODENAME}${NUM}
-
 			Restart=always
 			RestartSec=5
 			PrivateTmp=true
@@ -381,7 +373,6 @@ function create_systemd_configuration() {
 			TimeoutStartSec=5s
 			StartLimitInterval=120s
 			StartLimitBurst=15
-
 			[Install]
 			WantedBy=multi-user.target
 		EOF
