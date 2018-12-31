@@ -146,7 +146,8 @@ function check_project() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
+	then 	echo -e "\n"
+		echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
 		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
