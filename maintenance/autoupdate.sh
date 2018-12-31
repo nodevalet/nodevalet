@@ -69,8 +69,7 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
                 TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
                         if [[ $TARBALL == *.gz ]]
                         then tar -xzf $TARBALL
-                        else apt-get -o=Acquire::ForceIPv4=true install unzip -y
-                        unzip $TARBALL
+                        else unzip $TARBALL
                 	fi
 		rm -f $TARBALL
         	cd  "$(\ls -1dt ./*/ | head -n 1)"
