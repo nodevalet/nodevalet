@@ -248,8 +248,9 @@ function silent_harden() {
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
-	echo -e "Installing jq and jp2a packages" | tee -a "$LOGFILE"
-	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a | tee -a "$LOGFILE"
+	echo -e "Installing jq and jp2a and unzip packages" | tee -a "$LOGFILE"
+	apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip | tee -a "$LOGFILE"
+	
 	echo -e "Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
 	curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
@@ -541,8 +542,7 @@ TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" 
 
         if [[ $TARBALL == *.gz ]]
 	then tar -xzf $TARBALL
-	else apt-get -o=Acquire::ForceIPv4=true install unzip -y
-	unzip $TARBALL
+	else unzip $TARBALL
 	fi
 rm -f $TARBALL
 cd  "$(\ls -1dt ./*/ | head -n 1)"
