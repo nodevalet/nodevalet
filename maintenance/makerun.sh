@@ -27,7 +27,7 @@ EXP_DAEMON=`cat $INFODIR/vpsnumber.info`
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running makerun.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm installing other updates; skipping make run.\n"  | tee -a "$LOGFILE"
+	echo -e "It looks like I'm busy with something else; skipping make run.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
