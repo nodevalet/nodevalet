@@ -232,15 +232,15 @@ echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LO
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 
 # add system link to common maintenance scripts so they can be accessed more easily
-sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
+sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
 sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
 sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
 sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
 sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
 sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
-# sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
 sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
 sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
+# sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
 }
 
 function silent_harden() {
