@@ -511,9 +511,9 @@ fi
  }
 
 function install_binaries() {
-#check for binaries and install if found   
+#check for binaries and install if found
 echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
-cd $INSTALLDIR/temp
+
 	# Pull GITAPI_URL from $PROJECT.env
 	GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 	if [ -n $GIT_API ] ; then 
@@ -521,24 +521,42 @@ cd $INSTALLDIR/temp
 	sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
+	
+# Try and install Binaries now	
+# Pull GITSTRING from $PROJECT.env
+GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
+sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
+GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
+
+mkdir $INSTALLDIR/temp/bin
+cd $INSTALLDIR/temp/bin
+
+curl -s $GITAPI_URL \
+       	| grep browser_download_url \
+	| grep $GITSTRING \
+	| cut -d '"' -f 4 \
+	| wget -qi -
+TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+
+        if [[ $TARBALL == *.gz ]]
+	then tar -xzf $TARBALL
+	else apt-get -o=Acquire::ForceIPv4=true install unzip -y
+	unzip $TARBALL
+	fi
+rm -f $TARBALL
+cd  "$(\ls -1dt ./*/ | head -n 1)"
+find . -mindepth 2 -type f -print -exec mv {} . \;
+cp ${PROJECT}* '/usr/local/bin'
+cd ..
+rm -r -f *
+cd
+cd /usr/local/bin
+chmod 777 ${PROJECT}*
+	
 	else
 	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
 	fi
-	
-# GITAPI_URL="https://api.github.com/repos/heliumchain/helium/releases/latest"
-curl -s $GITAPI_URL \
-      | grep tag_name > currentversion   | tee -a "$LOGFILE"
-curl -s $GITAPI_URL \
-      | grep browser_download_url \
-      | grep x86_64-linux-gnu.tar.gz \
-      | cut -d '"' -f 4 \
-      | wget -qi -   | tee -a "$LOGFILE"
-TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
-tar -xzf $TARBALL 2>&1
-EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
-cp -r $EXTRACTDIR/bin/. /usr/local/bin/
-rm -r $EXTRACTDIR --force
-rm -f $TARBALL --force
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
