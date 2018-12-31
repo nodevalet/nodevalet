@@ -599,8 +599,13 @@ then
 	echo -e "\n"	
 	
 	# check if PASSLOGIN is valid
-        if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]
-        then 	sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+        if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]   
+		then 	sed -i "s/PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/# PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+	
+	then 	sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+	
                 # the above line should disable password authentication altogether
 				
 		# Error Handling
@@ -619,7 +624,9 @@ then
 			printf "${nocolor}"
                 fi
         else 
-		sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+		sed -i "s/PasswordAuthentication.*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication.*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+                sed -i "s/# PasswordAuthentication.*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
         fi
 	
 else	
@@ -629,7 +636,7 @@ else
 	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 	printf "${nocolor}"
 fi
-	PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
+	PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
 	printf "${lightgreen}"
 	echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : PASSWORD AUTHENTICATION COMPLETE " | tee -a "$LOGFILE"
