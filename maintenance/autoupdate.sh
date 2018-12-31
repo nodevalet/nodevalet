@@ -40,6 +40,13 @@ echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
 sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
 GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
 
+if [ -e $INSTALLDIR/temp/updating ]
+	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
+	echo -e "It looks like I'm busy with something else; skipping autoupdate.\n"  | tee -a "$LOGFILE"
+	exit
+fi
+
+
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
