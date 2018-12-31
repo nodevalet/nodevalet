@@ -604,8 +604,6 @@ then
                 sed -i "s/#PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
                 sed -i "s/# PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
 	
-	then 	sed -i "s/.*PasswordAuthentication.*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-	
                 # the above line should disable password authentication altogether
 				
 		# Error Handling
