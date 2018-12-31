@@ -23,7 +23,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INST
 
 if [ -e "$INSTALLDIR/temp/updating" ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm installing other updates; skipping daemon check.\n"  | tee -a "$LOGFILE"
+	echo -e "It looks like I'm currently running tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 touch $INSTALLDIR/temp/updating
@@ -31,6 +31,11 @@ touch $INSTALLDIR/temp/updating
 echo -e "\n"
 for ((i=1;i<=$MNS;i++));
 do
+
+if [ ! -e "$INSTALLDIR/temp/blockcount${i}/" ]
+then echo '1' > $INSTALLDIR/temp/blockcount${i}
+fi
+
 echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
 previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
 currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
