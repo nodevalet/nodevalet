@@ -232,7 +232,7 @@ echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LO
 
 # add system link to common maintenance scripts so they can be accessed more easily
 sudo ln -s $INSTALLDIR/checksync.sh /usr/local/bin/checksync
-sudo ln -s $INSTALLDIR/autoupdate/fullupdater.sh /usr/local/bin/autoupdate
+sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
 sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
 sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
 sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
