@@ -23,7 +23,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INST
 
 if [ -e "$INSTALLDIR/temp/updating" ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm currently running tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
+	echo -e "It looks like I'm currently running other tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 touch $INSTALLDIR/temp/updating
@@ -45,7 +45,7 @@ then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         systemctl stop ${PROJECT}_n${i}
-        sleep 10
+        sleep 5
         systemctl start ${PROJECT}_n${i}
 	
 for ((T=1;T<=10;T++)); 
@@ -74,10 +74,9 @@ if [ ! "$FIXED" == "yes" ]; then
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
 		sudo systemctl stop ${PROJECT}_n${i}
-		sudo /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
 		sleep 5
 		cd /var/lib/masternodes/${PROJECT}${i}
-		sudo rm -- !("wallet.dat"|"masternode.conf")
+		sudo rm -rf !("wallet.dat"|"masternode.conf")
 		sleep 5
 		sudo systemctl enable ${PROJECT}_n${i}
 		sudo systemctl start ${PROJECT}_n${i}
