@@ -32,7 +32,7 @@ echo -e "\n"
 for ((i=1;i<=$MNS;i++));
 do
 
-if [ ! -e "$INSTALLDIR/temp/blockcount${i}/" ]
+if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
 then echo '1' > $INSTALLDIR/temp/blockcount${i}
 fi
 
