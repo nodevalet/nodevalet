@@ -28,7 +28,7 @@ echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
 
-# Pull GIT_URL from $PROJECT.env
+# Pull GIT URL from $PROJECT.env
 GIT_URL=`grep ^GIT_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
 sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
@@ -39,25 +39,16 @@ GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.e
 echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
 sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
 GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
-GITAPI_URL=https://api.github.com/repos/heliumchain/helium/releases/latest
-
-
-#### TESTING ####
-echo -e "This is GITAPI_URL $GITAPI_URL"
-echo -e "This is GITSTRING $GITSTRING"
-sleep 5
-
-#### TESTING ####
 
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
-cd $INSTALLDIR/temp
+mkdir $INSTALLDIR/temp/bin
+cd $INSTALLDIR/temp/bin
 rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
-
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
@@ -65,23 +56,33 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
-		mkdir /usr/local/bin/backup mkdir 2>/dev/null
+		mkdir /usr/local/bin/backup 
+		mkdir 2>/dev/null
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
 		rm /usr/local/bin/${PROJECT}*
-	curl -s $GITAPI_URL \
-		| grep browser_download_url \
-  		| grep x86_64-linux-gnu.tar.gz \
-  		| cut -d '"' -f 4 \
-  		| wget -qi -
-	TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
-	EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
-		tar -xzf $TARBALL
-		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
-		rm -r $EXTRACTDIR
+		curl -s $GITAPI_URL \
+                        | grep browser_download_url \
+                        | grep $GITSTRING \
+                        | cut -d '"' -f 4 \
+                        | wget -qi -
+                TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+                        if [[ $TARBALL == *.gz ]]
+                        then tar -xzf $TARBALL
+                        else apt-get -o=Acquire::ForceIPv4=true install unzip -y
+                        unzip $TARBALL
+                	fi
 		rm -f $TARBALL
+        	cd  "$(\ls -1dt ./*/ | head -n 1)"
+       		find . -mindepth 2 -type f -print -exec mv {} . \;
+		cp ${PROJECT}* '/usr/local/bin'
+       		cd ..
+       		rm -r -f *
+		cd
+		cd /usr/local/bin
+		chmod 777 ${PROJECT}*
 		echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
-		activate_masternodes_$PROJECT
+		activate_masternodes_${PROJECT}
 		sleep 2
 		check_project
 else echo -e " No new version is detected \n"
