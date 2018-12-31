@@ -78,6 +78,9 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 		cp ${PROJECT}* '/usr/local/bin'
        		cd ..
        		rm -r -f *
+		cd
+		cd /usr/local/bin
+		chmod 777 ${PROJECT}*
 		echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
 		activate_masternodes_${PROJECT}
 		sleep 2
