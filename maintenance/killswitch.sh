@@ -25,5 +25,5 @@ systemctl stop ${PROJECT}_n${i}
 
 done
 
-echo -e " --> All masternodes have been stopped and disabled"
+echo -e "\n --> All masternodes have been stopped and disabled"
 echo -e " To start them again, use command 'activate_masternodes_${PROJECT}' \n"
