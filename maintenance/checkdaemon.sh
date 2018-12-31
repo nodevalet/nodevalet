@@ -35,21 +35,33 @@ echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
 previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
 currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
 /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
-if [ "$previousBlock$" == "$currentBlock$" ]; then
+if [ "$previousBlock$" == "$currentBlock$" ]
+then
 	echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         systemctl stop ${PROJECT}_n${i}
         sleep 10
         systemctl start ${PROJECT}_n${i}
 	
-	# wait 10 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
-	sleep 600
+for ((T=1;T<=10;T++)); 
+do 
+	# wait 5 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
+	sleep 300
 	echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 	previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
 	currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 		if [ "$previousBlock$" == "$currentBlock$" ]; then
-		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't cause chain to resume syncing" | tee -a "$LOGFILE"
+		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
+		echo -e " I have restarted the MN $T time(s) so far and it did not help. \n" | tee -a "$LOGFILE"   
+		
+		else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"   
+		echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"   
+		exit
+		fi
+done	
+
+	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
 		sudo systemctl stop ${PROJECT}_n${i}
@@ -60,9 +72,6 @@ if [ "$previousBlock$" == "$currentBlock$" ]; then
 		sleep 5
 		sudo systemctl enable ${PROJECT}_n${i}
 		sudo systemctl start ${PROJECT}_n${i}
-		else echo -e " Previous block is $previousBlock and current block is $currentBlock."
-		echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n"
-		fi
 	
 else echo -e " Previous block is $previousBlock and current block is $currentBlock."
 echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
