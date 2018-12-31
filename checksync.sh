@@ -6,6 +6,8 @@ INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
@@ -38,7 +40,8 @@ while [ $SECONDS -lt $end ]; do
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    echo -e "\n         --> Masternode Sync Status <-- \n"
+    echo -e "\n    --> $PROJECTt Masternode Sync Status <-- \n"
+
     echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
     echo -e "$BLOCKS is the current number of blocks"
     
