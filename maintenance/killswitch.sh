@@ -19,13 +19,11 @@ for ((i=1;i<=$MNS;i++));
 do
 
 echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Stopping and disabling masternode ${PROJECT}_n${i}"
-MNSTATUS=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf masternode status`
-echo -e "$MNSTATUS"
 
 systemctl disable ${PROJECT}_n${i}
 systemctl stop ${PROJECT}_n${i}
-/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf stop
 
 done
 
-echo -e "\n"
+echo -e " --> All masternodes have been stopped and disabled"
+echo -e " To start them again, use command 'activate_masternodes_${PROJECT}' \n"
