@@ -57,10 +57,14 @@ do
 		
 		else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"   
 		echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"   
-		exit
+		FIXED="yes"
+		break
 		fi
 done	
 
+if [ ! "$FIXED" == "yes" ]; then
+
+	unset $FIXED
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
@@ -72,6 +76,10 @@ done
 		sleep 5
 		sudo systemctl enable ${PROJECT}_n${i}
 		sudo systemctl start ${PROJECT}_n${i}
+		
+	else unset $FIXED
+	echo " Glad to see that worked, exiting loop for this MN "
+	fi
 	
 else echo -e " Previous block is $previousBlock and current block is $currentBlock."
 echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
@@ -79,4 +87,5 @@ fi
 
 done
 
+echo " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
