@@ -119,6 +119,37 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
 	fi
 
+# read or collect masternode addresses
+	if [ -e $INFODIR/vpsmnaddress.info ]
+	then :
+	# create a subroutine here to check memory and size MNS appropriately
+	else echo -e "\n Before we can begin, we need to collect $MNS masternode addresses."
+	echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
+	echo -e " On your local wallet, generate the masternode addresses and send"
+	echo -e " your collateral transactions for masternodes you want to start"
+	echo -e " now. You may also add extra addresses even if you have not yet"
+	echo -e " funded them, and the script will still create the masternode"
+	echo -e " instance which you can later activate from your local wallet."
+	echo -e "   ! ! Please double check your addresses for accuracy ! !"
+	touch $INFODIR/vpsmnaddress.info
+		for ((i=1;i<=$MNS;i++)); 
+		do 
+			while :; do
+			printf "${cyan}"
+			echo -e "\n Please enter the $PROJECTt address for masternode #$i"
+			read -p "  --> " MNADDP
+				echo -e "You entered the address: ${MNADDP} "
+				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+				then printf "${cyan}" ; break
+  				fi
+			done	
+		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
+		echo -e "  --> Masternode $i address is: $MNADDP\n" >> $LOGFILE
+		echo -e " \n"
+		done
+	fi
+
 # create or assign customssh
 	if [ -s $INFODIR/vpssshport.info ]
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
@@ -140,37 +171,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		touch $INFODIR/vpssshport.info
 		echo "$SSHPORT" >> $INFODIR/vpssshport.info
 	fi
-
-# read or collect masternode addresses
-	if [ -e $INFODIR/vpsmnaddress.info ]
-	then :
-	# create a subroutine here to check memory and size MNS appropriately
-	else echo -e "\n Before we can begin, we need to collect $MNS masternode addresses."
-	echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
-	echo -e " On your local wallet, generate the masternode addresses and send"
-	echo -e " your collateral transactions for masternodes you want to start now."
-	echo -e " You may also add extra addresses even if you have not yet funded"
-	echo -e " them, and the script will still create the masternode instance"
-	echo -e " which you can later activate from your local wallet."
-	echo -e " Please double check your addresses for accuracy."
-	touch $INFODIR/vpsmnaddress.info
-		for ((i=1;i<=$MNS;i++)); 
-		do 
-			while :; do
-			printf "${cyan}"
-			echo -e "\n Please enter the $PROJECTt address for masternode #$i"
-			read -p "  --> " MNADDP
-				echo -e "You entered the address: ${MNADDP} "
-				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-				then printf "${cyan}" ; break
-  				fi
-			done	
-		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
-		echo -e "  --> Masternode $i address is: $MNADDP\n" >> $LOGFILE
-		echo -e " \n"
-		done
-	fi
+	echo -e " \n"
 
 echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
 echo -e "\n"
@@ -218,7 +219,7 @@ chmod 0700 $INSTALLDIR/*.sh
 chmod 0700 $INSTALLDIR/autoupdate/*.sh
 chmod 0700 $INSTALLDIR/maintenance/*.sh
 echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab -
+	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
 echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
 echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
@@ -240,7 +241,6 @@ sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
 # sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
 sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
 sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
-
 }
 
 function silent_harden() {
@@ -454,14 +454,6 @@ echo -e " \n" | tee -a "$LOGFILE"
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
 
-	# Log whether or not a donation has been entered into masternode.conf
-	# if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-	# echo -e "User chose to donate $DONATE % to $DONATEADDR"  | tee -a "$LOGFILE"
-	# else 
-	# echo -e "User chose not to donate, and that's ok. We'll survive."  | tee -a "$LOGFILE"
-	# echo -e "DONATE is set to $(DONATE). DONATEADDR is set to $DONATEADDR"  | tee -a "$LOGFILE"
-	# fi
-
 	if [ -e $INFODIR/fullauto.info ] ; then echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE" ; fi
 	# convert masternode.conf to one delineated line separated using | and ||
 	echo "complete" > $INSTALLDIR/temp/complete
@@ -497,19 +489,19 @@ echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee
 cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 echo -e "\n"  >> "$LOGFILE"
 	
-	if [ ! -s $INFODIR/fullauto.info ]
-		then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-		update-rc.d postinstall_api.sh defaults  2>/dev/null
-		echo -e " Please copy the above file and paste it into the masternode.conf "
-		echo -e " file on your local wallet. Then reboot the local wallet. Next, type "
-		echo -e " 'reboot' to reboot this VPS and begin syncing the blockchain. Once "
-		echo -e " your local wallet has restarted, you may click Start Missing to start "
-		echo -e " your new masternodes. If starting any masternodes fails, you may need "
-		echo -e " to start them from debug console using 'startmasternode alias 0 MN1' "
-		echo -e " where you replace MN1 with the alias of your masternode. This is due "
-		echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
-		read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
-		else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ; fi
+   if [ ! -s $INFODIR/fullauto.info ]
+	then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
+	update-rc.d postinstall_api.sh defaults  2>/dev/null
+	echo -e " Please copy the above file and paste it into the masternode.conf "
+	echo -e " file on your local wallet. Then reboot the local wallet. Next, type "
+	echo -e " 'reboot' to reboot this VPS and begin syncing the blockchain. Once "
+	echo -e " your local wallet has restarted, you may click Start Missing to start "
+	echo -e " your new masternodes. If starting any masternodes fails, you may need "
+	echo -e " to start them from debug console using 'startmasternode alias 0 MN1' "
+	echo -e " where you replace MN1 with the alias of your masternode. This is due "
+	echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
+	read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
+	else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ; fi
 fi
  }
 
