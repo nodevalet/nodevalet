@@ -92,5 +92,5 @@ fi
 
 done
 
-echo " Unsetting -update flag \n"
+# echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
