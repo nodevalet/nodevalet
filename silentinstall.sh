@@ -564,7 +564,8 @@ dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 if [ "$dEXIST" = "${MNODE_DAEMON}" ]
 then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
 curl -s $GITAPI_URL \
-      | grep tag_name > currentversion
+      | grep tag_name > $INSTALLDIR/temp/currentversion
+     
 else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
 fi
 }
