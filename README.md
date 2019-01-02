@@ -17,7 +17,7 @@ Part of NodeValet runs on an adapted version of [marsmensch' Nodemaster script.]
 - No logging. We don't save as much as a cookie. Not retaining info means there is nothing there to be hacked.
 - Automatically generated masternode.conf, copy paste ready.
 - Automatic server hardening. Your VPS will be more secure than most.
-- Automated maintenance. Your VPS will continuously monitor the status of your Masternode. And if something goes wrong, fix it.
+- Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's github twice a day, and when it sees an update, install it.
 
 # Guides
@@ -38,14 +38,14 @@ NodeValet keeps its files in  `/var/tmp/nodevalet` and its logs in `/var/tmp/nod
 
 We've added a few small scripts to make the most common commands a lot easier. You can just enter these on the command line:
 
-`checksync` will return the syncing status of all masternodes.
-`autoupdate` will run the autoupdate script and check for a new version (rather than wait for the scheduled check)
-`checkdaemon` will check if all masternodes are correctly synced
-`makerun` checks if all installed masternodes are running
-`rebootq` checks if recent system updates require a reboot and reboots if necessary
-`getinfo` returns the `getinfo` of all masternodes
-`killswitch` turns off all masternodes
-`masternodestatus` returns the `masternodestatus` of every installed masternode.
+`checksync` will return the syncing status of all masternodes.  
+`autoupdate` will run the autoupdate script and check for a new version (rather than wait for the scheduled check)  
+`checkdaemon` will check if all masternodes are correctly synced  
+`makerun` checks if all installed masternodes are running  
+`rebootq` checks if recent system updates require a reboot and reboots if necessary  
+`getinfo` returns the `getinfo` of all masternodes  
+`killswitch` turns off all masternodes  
+`masternodestatus` returns the `masternodestatus` of every installed masternode.  
 
 We'll be adding a couple more in the future so stay tuned!
 

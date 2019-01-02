@@ -38,7 +38,8 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 	echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
 	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
 	else echo -e " Please choose from one of the following supported coins to install:"
-	     echo -e "    helium | condominium | smart (smartcash) \n"
+	     # echo -e "    helium | condominium | smart (smartcash) \n"
+	     echo -e "    helium | condominium \n"
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
