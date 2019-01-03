@@ -51,8 +51,12 @@ then
 for ((T=1;T<=10;T++)); 
 do 
 	# wait 5 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
+	echo -e " Pausing for 5 minutes to let instance start and resume syncing"
+	echo -e " It is not recommended that you cancel or interrupt or you will"
+	echo -e " be left in maintenance mode and will have to delete the file :"
+	echo -e " $INSTALLDIR/temp/updating before other scriptlets will work."
 	sleep 300
-	echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
+		echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 	previousBlock=`cat $INSTALLDIR/temp/blockcount${i}`
 	currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
