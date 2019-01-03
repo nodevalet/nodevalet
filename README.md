@@ -42,11 +42,11 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `autoupdate` will run the autoupdate script and check for a new version. (rather than wait for the scheduled check)  
 `checkdaemon` will check if all masternodes are correctly synced.  
 `makerun` checks if all installed masternodes are running.  
-`rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)
-`getinfo` returns the `getinfo` of all masternodes.  
-`killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on.
-`masternodestatus` returns the `masternodestatus` of every installed masternode.  
-`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.
+`rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)   
+`getinfo` returns a summarized `getinfo` of all masternodes.  
+`killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on.  
+`masternodestatus` returns the `masternodestatus` of every installed masternode.    
+`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.  
 
 We'll be adding a couple more in the future so stay tuned!
 
