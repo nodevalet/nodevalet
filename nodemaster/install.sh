@@ -125,7 +125,7 @@ dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
 if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
 else echo -e "Did not find binaries for ${CODENAME} so downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
-if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Installing crypto packages because the binaries were not downloaded ..."}' && echo -e " " ; fi
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now Installing crypto packages because the binaries could not be downloaded ..."}' && echo -e " " ; fi
     # development and build packages
     # these are common on all cryptos
     echo "* Package installation!"
@@ -136,7 +136,7 @@ if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/st
     libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
     libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
     pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
-if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$PROJECTt"' from source...this step could take 20 to 40 minutes so take a break ..."}' && echo -e " " ; fi
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$PROJECTt"' from source ... this process could take 20 to 40 minutes so you may take a break if needed ..."}' && echo -e " " ; fi
 fi
         
     # only for 18.04 // openssl
