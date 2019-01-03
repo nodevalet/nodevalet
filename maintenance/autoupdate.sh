@@ -42,8 +42,8 @@ GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm busy with something else; skipping autoupdate.\n"  | tee -a "$LOGFILE"
-	exit
+		echo -e "Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+		rm -f $INSTALLDIR/temp/updating
 fi
 
 
@@ -160,6 +160,7 @@ function check_project() {
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
+	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
 	exit
 	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
 	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
@@ -175,6 +176,7 @@ function check_restore() {
 	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
+	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
 	reboot
 	exit
 	else echo -e " Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
@@ -182,6 +184,7 @@ function check_restore() {
 	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
+	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
 	reboot
 	fi
 }
