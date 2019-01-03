@@ -42,8 +42,8 @@ GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm busy with something else; skipping autoupdate.\n"  | tee -a "$LOGFILE"
-	exit
+		echo -e "Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+		rm -f $INSTALLDIR/temp/updating
 fi
 
 
@@ -182,6 +182,7 @@ function check_restore() {
 	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
+	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
 	reboot
 	fi
 }
