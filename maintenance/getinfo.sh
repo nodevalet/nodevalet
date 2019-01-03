@@ -30,7 +30,7 @@ do
 echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Displaying select 'getinfo' from ${PROJECT}_n${i}"
 MNSTATUS=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getinfo`
 echo -e "$MNSTATUS" > MNSTATUS
-sed '/walletversion\|blocks\|connections/!d' MNSTATUS > MNSTATUS2
+sed '/version\|blocks\|connections/!d' MNSTATUS > MNSTATUS2
 cat MNSTATUS2
 
 done
