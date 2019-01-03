@@ -46,6 +46,7 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `getinfo` returns the `getinfo` of all masternodes  
 `killswitch` turns off all masternodes  
 `masternodestatus` returns the `masternodestatus` of every installed masternode.  
+`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync
 
 We'll be adding a couple more in the future so stay tuned!
 
