@@ -48,7 +48,7 @@ then
         sleep 5
         systemctl start ${PROJECT}_n${i}
 	
-for ((T=1;T<=10;T++)); 
+for ((T=1;T<=9;T++)); 
 do 
 	# wait 5 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
 	echo -e " Pausing for 5 minutes to let instance start and resume syncing"
@@ -83,7 +83,7 @@ if [ ! "$FIXED" == "yes" ]; then
 		sudo rm -rf !("wallet.dat"|"masternode.conf")
 		sleep 5
 		sudo systemctl enable ${PROJECT}_n${i}
-		sudo systemctl start ${PROJECT}_n${i}
+		sudo systemctl start ${PROJECT}_n${i}		
 		
 	else unset $FIXED
 	echo " Glad to see that worked, exiting loop for this MN "
