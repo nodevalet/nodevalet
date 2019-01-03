@@ -227,8 +227,8 @@ echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
-echo -e "  --> Check for wallet updates every 12 hours"  | tee -a "$LOGFILE"
-	(crontab -l ; echo "2 */12 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
+echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
+	(crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
 echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
 
@@ -562,6 +562,7 @@ curl -s $GITAPI_URL \
       | grep tag_name > $INSTALLDIR/temp/currentversion
      
 else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+touch $INSTALLDIR/temp/binaryfail
 fi
 }
 
