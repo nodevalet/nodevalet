@@ -562,7 +562,6 @@ curl -s $GITAPI_URL \
       | grep tag_name > $INSTALLDIR/temp/currentversion
      
 else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-touch $INSTALLDIR/temp/binaryfail
 fi
 }
 
