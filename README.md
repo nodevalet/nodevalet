@@ -2,7 +2,7 @@
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
-NodeValet lets you securily deploy up to 20 Masternodes on a VPS of your choice in a matter of minutes. Fully automated and with the convenience of a hosted solution. Node Valet Masternodes come pre installed with a variety of maintanance scripts that make sure your Masternode is always online, always secure and and it even handles wallet updates by itself.
+NodeValet lets you securily deploy up to 20 Masternodes on a VPS of your choice in a matter of minutes. Fully automated and with the convenience of a hosted solution. Node Valet Masternodes come pre installed with a variety of maintanance scripts that make sure your Masternode is always online, always secure and even handles wallet updates by itself.
 
 Self hosting your Masternode has a number of benefits in that it is way more cost effective and that you retain full control over your Masternode. It can be challenging to set up and maintain Masternodes yourself. By automating the installation, server hardening and maintenance process we give you the benefits of self hosting with the convenience of a hosted solution. Open source and free of charge.
 
