@@ -9,7 +9,7 @@ Self hosting your Masternode has a number of benefits in that it is way more cos
 For now NodeValet supports Helium and Condominium. To try it out please head over to https://nodevalet.io .
 We're working to add a variety of other Masternode coins to the service in the very near future. 
 
-Part of NodeValet runs on an adapted version of [marsmensch' Nodemaster script.](https://github.com/masternodes/vps)
+Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
 
 # Features
 
