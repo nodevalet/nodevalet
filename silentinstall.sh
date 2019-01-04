@@ -151,7 +151,53 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 		done
 	fi
 
-# create or assign customssh
+# query to generate new genkeys or query for user input	
+if [ -e $INFODIR/fullauto.info ]
+	then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
+	else 
+	echo -e "\n You can choose to enter your own masternode genkeys or you can"
+	echo -e " let your masternode's ${MNODE_DAEMON::-1}-cli generate them for you."
+	echo -e " Both are equally secure, but it's faster if your server does it."
+	echo -e " (An example of when you would want to enter them yourself would"
+	echo -e " be if you are trying to migrate running masternodes to this VPS)\n"
+	read -p " Would you like your server to generate these for you? y/n  " GETGENKEYS
+	printf "${nocolor}"
+		
+while [ "${GETGENKEYS,,}" != "yes" ] && [ "${GETGENKEYS,,}" != "no" ] && [ "${GETGENKEYS,,}" != "y" ] && [ "${GETGENKEYS,,}" != "n" ]; do
+printf "${lightred}"
+read -p " --> I don't understand. Enter 'y' for yes or 'n' for no: " GETGENKEYS
+printf "${nocolor}"
+done
+
+        if [ "${GETGENKEYS,,}" = "yes" ] || [ "${GETGENKEYS,,}" = "y" ]
+	then touch $INSTALLDIR/temp/genkeys
+	echo -e " User selected to manually enter genkeys for $MNS masternodes." >> $LOGFILE 2>&1
+	touch $INSTALLDIR/temp/owngenkeys
+		for ((i=1;i<=$MNS;i++)); 
+		do 
+			while :; do
+			printf "${cyan}"
+			echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
+			read -p "  --> " UGENKEY
+				echo -e "You entered the address: ${UGENKEY} "
+				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+				then printf "${cyan}" ; break
+  				fi
+			done	
+		echo "$UGENKEY" $INSTALLDIR/temp/genkeys
+		echo -e "  --> Masternode $i genkey is: $UGENKEY\n" >> $LOGFILE
+		echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
+		echo -e " \n"
+		done
+		echo -e " User selected to manually enter genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
+	else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
+	fi
+fi
+	
+	#########
+	
+	# create or assign customssh
 	if [ -s $INFODIR/vpssshport.info ]
 	then SSHPORT=$(<$INFODIR/vpssshport.info)
 	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
@@ -317,16 +363,16 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 for ((i=1;i<=$MNS;i++)); 
 do	
-		for ((P=1;P<=30;P++)); 
-		do
-	# create masternode genkeys (smart is special "smartnodes")
-	if [ "${PROJECT,,}" = "smart" ] ; then
-	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys ; else
-	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+	for ((P=1;P<=30;P++)); 
+	do
+	# create masternode genkeys (smart is special "smartnodes")	
+	if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
+	elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
+	else /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
-	if [ "${PROJECT,,}" = "smart" ] ; then
-	echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; else
-	echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+	
+	if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+	else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
 	KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
 	# check if GENKEY file is empty; if so stop script and report error
