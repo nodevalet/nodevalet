@@ -20,6 +20,11 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 - Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's github twice a day, and when it sees an update, install it.
 
+**Planned features**
+
+- Full integration with "headless" installation. This will allow you to use our service while bypassing the API requirement.  (tinfoil hat mode)  
+- On demand system updates. This will allow the user to update their NodeValet Masternode with the latest features without compromising server security.
+
 # Guides
 
 A simple guide for installing Helium masternodes with Nodevalet: 
