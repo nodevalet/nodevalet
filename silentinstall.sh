@@ -182,13 +182,14 @@ done
 				echo -e "You entered the address: ${UGENKEY} "
 				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
 				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-				then printf "${cyan}" ; break
+				then printf "${cyan}" 
+				echo -e "$UGENKEY" $INSTALLDIR/temp/genkeys
+				echo -e "  --> Masternode $i genkey is: $UGENKEY\n" >> $LOGFILE
+				echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i			
+				break
   				fi
 			done	
-		echo "$UGENKEY" $INSTALLDIR/temp/genkeys
-		echo -e "  --> Masternode $i genkey is: $UGENKEY\n" >> $LOGFILE
-		echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
-		echo -e " \n"
+
 		done
 		echo -e " User selected to manually enter genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
 	else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
