@@ -27,11 +27,11 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 
 # Guides
 
-A simple guide for installing Helium masternodes with Nodevalet: 
+A simple guide for installing Helium masternodes with NodeValet: 
 
 https://www.heliumlabs.org/v1.0/docs/masternodes-with-nodevalet
 
-A simple guide for installing Condominium masternodes with Nodevalet:
+A simple guide for installing Condominium masternodes with NodeValet:
 
 https://medium.com/@AKcryptoGUY/easy-condominium-masternode-setup-using-nodevalet-io-6b451d8ce87b
 
