@@ -1,4 +1,4 @@
-# NodeValet
+# NodeValet.io
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
