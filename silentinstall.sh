@@ -24,8 +24,8 @@ clear
 echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
 echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
-echo -e " -------- AKcryptoGUY's NodeValet Script ------------ " | tee -a "$LOGFILE"
-echo -e " -------------Masternodes Made Easy------------------ " | tee -a "$LOGFILE"
+echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
+echo -e " ------------Masternodes Made Easier ---------------- " | tee -a "$LOGFILE"
 echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 
 # read or set project name
@@ -195,7 +195,7 @@ set donation percentage
 	
 # set donation address front project.env
 	cd $INSTALLDIR/nodemaster/config/$PROJECT
-	curl -LJO https://raw.githubusercontent.com/akcryptoguy/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
+	curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
 	echo -e "\n"
 	DONATION_ADDRESS=`grep ^DONATION $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 	cd $INSTALLDIR
