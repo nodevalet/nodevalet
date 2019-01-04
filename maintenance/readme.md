@@ -1,1 +1,1 @@
-some basic server/masternode maintenance scripts. adapted from https://github.com/cryptotronxyz/heliumd
+Some basic server/masternode maintenance scripts. Partly adapted from https://github.com/cryptotronxyz/heliumd
