@@ -145,7 +145,7 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
 				then printf "${cyan}" ; break
   				fi
 			done	
-		echo "$MNADDP" >> $INFODIR/vpsmnaddress.info
+		echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
 		echo -e "  --> Masternode $i address is: $MNADDP\n" >> $LOGFILE
 		echo -e " \n"
 		done
@@ -160,7 +160,7 @@ if [ -e $INFODIR/fullauto.info ]
 	echo -e " equally secure, but it's faster if your server does it for you."
 	echo -e " (An example of when you would want to enter them yourself would"
 	echo -e " be if you are trying to migrate running masternodes to this VPS)\n"
-	read -p " Would you like your server to generate these for you? y/n  " GETGENKEYS
+	read -p " Would you like your server to generate genkeys for you? y/n  " GETGENKEYS
 	printf "${nocolor}"
 		
 while [ "${GETGENKEYS,,}" != "yes" ] && [ "${GETGENKEYS,,}" != "no" ] && [ "${GETGENKEYS,,}" != "y" ] && [ "${GETGENKEYS,,}" != "n" ]; do
@@ -177,14 +177,15 @@ done
 		do 
 			while :; do
 			printf "${cyan}"
-			echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
+			echo -e "\n\n Please enter the $PROJECTt genkey for masternode #$i"
 			read -p "  --> " UGENKEY
 				echo -e "You entered the address: ${UGENKEY} "
 				read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
 				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
 				then printf "${cyan}" 
-				echo -e "$UGENKEY" > $INSTALLDIR/temp/genkeys
+				echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
 				echo -e "  --> Masternode $i genkey is: $UGENKEY\n" >> $LOGFILE
+				echo -e " \n"
 				echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i			
 				break
   				fi
@@ -378,7 +379,7 @@ do
 
 	# check if GENKEY file is empty; if so stop script and report error
 	if [ ${#KEYXIST} = "0" ]
-	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey; it is probably still starting up" | tee -a "$LOGFILE"
+	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
 	echo -e " --> Waiting for 2 seconds before trying again... loop $P" | tee -a "$LOGFILE"
 	sleep 2
 	else break
