@@ -26,7 +26,7 @@ i=$1
 
 if [ -z $i ]
 then clear
-        echo -e "\n It seems like you're trying to resync a particular node/"
+        echo -e "\n It seems like you're trying to resync a particular node"
         echo -e "  This may take awhile. Which masternode would you like to resync? \n"
 
 fi
