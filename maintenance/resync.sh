@@ -35,7 +35,7 @@ while :; do
 if [ -z $i ] ; then read -p "  --> " i ; fi
 [[ $i =~ ^[0-9]+$ ]] || {echo -e " --> I only recognize numbers."; continue; }
 if (($i >= 1 && $i <= $MNS)); then break
-else echo -e "\n --> Can't find masternode $i, try again. \n"
+else echo -e "\n --> Can't find masternode $i, try a different number. \n"
 i=""
 fi
 done
