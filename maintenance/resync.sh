@@ -18,7 +18,6 @@ cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INSTALLDIR/temp/MNODE_DAEMON1
 
-
 # read first argument to string $NEWMAX
 i=$1
 
@@ -33,7 +32,7 @@ fi
 
 while :; do
 if [ -z $i ] ; then read -p "  --> " i ; fi
-[[ $i =~ ^[0-9]+$ ]] || {echo -e " --> I only recognize numbers."; continue; }
+[[ $i =~ ^[0-9]+$ ]] || {echo -e " --> I only recognize numbers."; i=""; continue; }
 if (($i >= 1 && $i <= $MNS)); then break
 else echo -e "\n --> Can't find masternode $i, try a different number. \n"
 i=""
