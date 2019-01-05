@@ -29,15 +29,15 @@ then clear
         echo -e "  This may take awhile. Which masternode would you like to resync? \n"
 
 fi
-
 while :; do
 if [ -z $i ] ; then read -p "  --> " i ; fi
-[[ $i =~ ^[0-9]+$ ]] || {echo -e " --> I only recognize numbers."; i=""; continue; }
+[[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> I only recognize numbers, try again..."; i=""; continue; }
 if (($i >= 1 && $i <= $MNS)); then break
-else echo -e "\n --> Can't find masternode $i, try a different number. \n"
+else echo -e "\n --> Can't find masternode $i, try again. \n"
 i=""
 fi
 done
+
 echo -e "\n"
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running resync.sh" | tee -a "$LOGFILE"
 echo -e "User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
