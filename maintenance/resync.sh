@@ -33,13 +33,13 @@ fi
 
 while :; do
 if [ -z $i ] ; then read -p "  --> " i ; fi
-[[ $i =~ ^[0-9]+$ ]] || echo -e " --> I only recognize numbers."; continue; }
+[[ $i =~ ^[0-9]+$ ]] || {echo -e " --> I only recognize numbers."; continue; }
 if (($i >= 1 && $i <= $MNS)); then break
 else echo -e "\n --> Can't find masternode $i, try again. \n"
 i=""
 fi
 done
-
+echo -e "\n"
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running resync.sh" | tee -a "$LOGFILE"
 echo -e "User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
   
@@ -56,7 +56,7 @@ touch $INSTALLDIR/temp/updating
 		echo -e " Restarting masternode."
     sudo systemctl enable ${PROJECT}_n${i}
 		sudo systemctl start ${PROJECT}_n${i}		
-		
+		echo -e " Resync initiated.\n"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
