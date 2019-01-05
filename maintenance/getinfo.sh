@@ -24,19 +24,45 @@ if [ -e "$INSTALLDIR/temp/updating" ]
 	exit
 fi
 
+# read first argument to string
+input=$1
+
+if [ -z $input ] ; then :
+else
+while :; do
+	 
+	if [ -z $input ] ; then read -p "  --> " input ; fi
+	[[ $input =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n I'm sorry; but I only recognize numbers of masternodes on this VPS.\n Which masternode would you like to getinfo on? \n"; input=""; continue; }
+	if (($input >= 1 && $input <= $MNS)); then break
+	else echo -e "\n --> Can't find masternode $input, try again. \n"
+	input=""
+	fi
+done
+
+# Display 'getinfo' for only the masternode named
+echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Displaying select 'getinfo' from ${PROJECT}_n${input}"
+GETINFO=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${input}.conf getinfo`
+echo -e "$GETINFO" > GETINFO
+sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
+cat GETINFO2
+rm -f GETINFO
+rm -f GETINFO2
+echo -e "\n"
+exit
+
+fi
+
+# Display 'getinfo' for all masternodes
 for ((i=1;i<=$MNS;i++));
 do
-
-echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Displaying select 'getinfo' from ${PROJECT}_n${i}"
-MNSTATUS=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getinfo`
-echo -e "$MNSTATUS" > MNSTATUS
-sed '/version\|blocks\|connections/!d' MNSTATUS > MNSTATUS2
-cat MNSTATUS2
-
+	echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Displaying select 'getinfo' from ${PROJECT}_n${i}"
+	GETINFO=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getinfo`
+	echo -e "$GETINFO" > GETINFO
+	sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
+	cat GETINFO2
 done
-rm -f MNSTATUS
-rm -f MNSTATUS2
-
+rm -f GETINFO
+rm -f GETINFO2
 echo -e "\n"
-
+exit
 
