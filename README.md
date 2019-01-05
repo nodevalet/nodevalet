@@ -1,4 +1,4 @@
-# NodeValet
+# NodeValet.io
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
@@ -20,13 +20,18 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 - Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's github twice a day, and when it sees an update, install it.
 
+**Planned features**
+
+- Full integration with "headless" installation. This will allow you to use our service while bypassing the API requirement.  (tinfoil hat mode)  
+- On demand system updates. This will allow the user to update their NodeValet Masternode with the latest features without compromising server security.
+
 # Guides
 
-A simple guide for installing Helium masternodes with Nodevalet: 
+A simple guide for installing Helium masternodes with NodeValet: 
 
 https://www.heliumlabs.org/v1.0/docs/masternodes-with-nodevalet
 
-A simple guide for installing Condominium masternodes with Nodevalet:
+A simple guide for installing Condominium masternodes with NodeValet:
 
 https://medium.com/@AKcryptoGUY/easy-condominium-masternode-setup-using-nodevalet-io-6b451d8ce87b
 
