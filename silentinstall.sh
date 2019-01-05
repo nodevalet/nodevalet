@@ -265,7 +265,6 @@ sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 function add_cron() {
 echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Adding crontabs"  | tee -a "$LOGFILE"
 chmod 0700 $INSTALLDIR/*.sh
-chmod 0700 $INSTALLDIR/autoupdate/*.sh
 chmod 0700 $INSTALLDIR/maintenance/*.sh
 echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
 	(crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
