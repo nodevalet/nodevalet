@@ -26,14 +26,14 @@ i=$1
 
 if [ -z $i ]
 then clear
-        echo -e "\n It seems like you're trying to resync a particular node/"
+        echo -e "\n It seems like you're trying to resync a particular node"
         echo -e "  This may take awhile. Which masternode would you like to resync? \n"
 
 fi
 
 while :; do
 if [ -z $i ] ; then read -p "  --> " i ; fi
-[[ $i =~ ^[0-9]+$ ]] || echo -e " --> I only recognize numbers."; continue; }
+[[ $i =~ ^[0-9]+$ ]] || echo -e " --> I only recognize numbers."; continue;
 if (($i >= 1 && $i <= $MNS)); then break
 else echo -e "\n --> Can't find masternode $i, try again. \n"
 i=""
