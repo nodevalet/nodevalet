@@ -146,9 +146,10 @@ ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
   				fi
 			done	
 		echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-		echo -e "  --> Masternode $i address is: $MNADDP\n" >> $LOGFILE
+		echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
 		echo -e " \n"
 		done
+		echo -e " User manually entered $MNS masternode addresses.\n" >> $LOGFILE 2>&1
 	fi
 
 # query to generate new genkeys or query for user input	
@@ -184,15 +185,14 @@ done
 				if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
 				then printf "${cyan}" 
 				echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
-				echo -e "  --> Masternode $i genkey is: $UGENKEY\n" >> $LOGFILE
+				echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
 				echo -e " \n"
 				echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i			
 				break
   				fi
 			done	
-
 		done
-		echo -e " User selected to manually enter genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
+		echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
 	else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
 	fi
 fi
@@ -496,9 +496,9 @@ rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDI
 rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/${PROJECT}Ds --force ; rm $INSTALLDIR/temp/DELIMETER
 rm $INSTALLDIR/0 --force 
 
-echo -e "Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
+echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
 done
-echo -e " \n" | tee -a "$LOGFILE"
+# echo -e " \n" | tee -a "$LOGFILE"
 
 	# comment out lines that contain "collateral_output_txid tx" in masternode.conf	
 	sed -e '/collateral_output_txid tx/ s/^#*/# /' -i $INSTALLDIR/masternode.conf >> $INSTALLDIR/masternode.conf 2>&1
