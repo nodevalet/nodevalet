@@ -23,7 +23,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INST
 
 if [ -e "$INSTALLDIR/temp/updating" ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running checkdaemon.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm currently running other tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
+	echo -e " It looks like I'm currently running other tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 touch $INSTALLDIR/temp/updating
@@ -61,7 +61,7 @@ do
 	currentBlock=$(/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount)
 	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
 		if [ "$previousBlock$" == "$currentBlock$" ]; then
-		echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
+		echo -e "`date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
 		echo -e " I have restarted the MN $T time(s) so far and it did not help. \n" | tee -a "$LOGFILE"   
 		
 		else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"   
@@ -74,7 +74,7 @@ done
 if [ ! "$FIXED" == "yes" ]; then
 
 	unset $FIXED
-	echo -e " `date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
+	echo -e "`date +%m.%d.%Y_%H:%M:%S` : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
 		echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"   	
 		sudo systemctl disable ${PROJECT}_n${i}
 		sudo systemctl stop ${PROJECT}_n${i}

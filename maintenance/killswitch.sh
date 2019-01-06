@@ -15,6 +15,9 @@ cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INSTALLDIR/temp/MNODE_DAEMON1
 
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running killswitch.sh" >> "$LOGFILE"
+echo -e " User directed server to shut down and disable all masternodes.\n" >> "$LOGFILE"
+
 for ((i=1;i<=$MNS;i++)); 
 do
 

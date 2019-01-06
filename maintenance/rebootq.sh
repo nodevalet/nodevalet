@@ -8,7 +8,7 @@ LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running rebootq.sh" | tee -a "$LOGFILE"
-	echo -e "It looks like I'm busy with other tasks; skipping reboot check.\n"  | tee -a "$LOGFILE"
+	echo -e " It looks like I'm busy with other tasks; skipping reboot check.\n"  | tee -a "$LOGFILE"
 	exit
 fi
 
@@ -17,7 +17,7 @@ cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
 if grep -q "restart required" "$INSTALLDIR/temp/REBOOTREQ"
 then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Checking if system requires a reboot" | tee -a "$LOGFILE"
-echo -e "`date +%m.%d.%Y_%H:%M:%S` : These updates require a reboot:" | tee -a "$LOGFILE"
+echo -e " The following packages require a reboot to install updates:" | tee -a "$LOGFILE"
 
 # this sed removes the line "*** System restart required ***" from the REBOOTREQ
 sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
@@ -26,11 +26,11 @@ sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 echo -e "`cat ${INSTALLDIR}/temp/REBOOTREQ`" | tee -a "$LOGFILE"
 
 rm $INSTALLDIR/temp/REBOOTREQ
-echo -e "Server will reboot in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
-shutdown -r +5 "Server will restart in 5 minutes to complete required updates"
+echo -e " Server will reboot in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
+shutdown -r +5 " Server will restart in 5 minutes to complete required updates"
 
 else
-echo -e "No reboot is required at this time\n"
+echo -e " No reboot is required at this time\n"
 rm $INSTALLDIR/temp/REBOOTREQ
 fi
 
