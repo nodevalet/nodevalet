@@ -19,6 +19,8 @@ HNAME=$(<$INFODIR/vpshostname.info)
 #
 # version 	v0.9.9
 # date    	2018-06-09
+# nodevalet version v1.0.0
+# date		2019-01-06
 #
 # function:	part of the masternode scripts, source the proper config file
 #
@@ -36,7 +38,7 @@ declare -r CRYPTOS=`ls -l config/ | egrep '^d' | awk '{print $9}' | xargs echo -
 declare -r DATE_STAMP="$(date +%y-%m-%d-%s)"
 declare -r SCRIPTPATH="$(cd $(dirname ${BASH_SOURCE[0]}) > /dev/null; pwd -P)"
 declare -r MASTERPATH="$(dirname "${SCRIPTPATH}")"
-declare -r SCRIPT_VERSION="v0.9.9"
+declare -r SCRIPT_VERSION="v1.0.0"
 declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/silentinstall.log"
 # declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/nodemaster_${DATE_STAMP}_out.log"
 declare -r IPV4_DOC_LINK="https://www.vultr.com/docs/add-secondary-ipv4-address"
