@@ -20,7 +20,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INST
 
 if [ -e "$INSTALLDIR/temp/updating" ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running masternodestatus.sh"
-	echo -e "It looks like I'm installing updates; skipping daemon check.\n" 
+	echo -e " It looks like I'm installing updates; skipping daemon check.\n" 
 	exit
 fi
 
