@@ -202,7 +202,7 @@ printf "${white}"
 	printf "${cyan}"
 	figlet System Upgrade | tee -a "$LOGFILE"
 	printf "${yellow}"
-	curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " "
+	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " " ; fi
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
 	echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
@@ -440,6 +440,9 @@ printf "${nocolor}"
 		printf "${nocolor}"
 		clear
 		sed -i "s/$SSHPORTWAS/Port $SSHPORT/" $SSHDFILE >> $LOGFILE 2>&1
+	# create jail.local and replace 'ssh' with custom port or 22
+	cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+	sed -i "s/port.*= ssh/port     = $SSHPORT/" /etc/fail2ban/jail.local
 			# Error Handling
 			if [ $? -eq 0 ]
 	        	then
@@ -583,7 +586,11 @@ then
 	printf "${cyan}"
         
 	# read -p " Would you like to disable password login & require RSA key login? y/n  " PASSLOGIN
-	PASSLOGIN="n"
+	# this will automatically disable passwordauthentication if root rsa keys are found
+	if [ -s "/root/.ssh/authorized_keys" ]
+	then PASSLOGIN='yes'
+	else PASSLOGIN='no'
+	fi
 		
 	printf "${nocolor}"
 	while [ "${PASSLOGIN,,}" != "yes" ] && [ "${PASSLOGIN,,}" != "no" ] && [ "${PASSLOGIN,,}" != "y" ] && [ "${PASSLOGIN,,}" != "n" ]; do
@@ -593,11 +600,14 @@ then
 	printf "${nocolor}"
 	done
 	echo -e "\n"	
-        # check if PASSLOGIN is valid
-        if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]
-        then 	sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
-                sed -i "s/#PasswordAuthentication no/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+	
+	# check if PASSLOGIN is valid
+        if [ "${PASSLOGIN,,}" = "yes" ] || [ "${PASSLOGIN,,}" = "y" ]   
+		then 
+		sed -i "s/PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+                sed -i "s/# PasswordAuthentication .*/PasswordAuthentication no/" $SSHDFILE >> $LOGFILE
+				
 		# Error Handling
                 if [ $? -eq 0 ]
                 then
@@ -614,10 +624,11 @@ then
 			printf "${nocolor}"
                 fi
         else 
-		sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/#PasswordAuthentication no/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
-                sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/" $SSHDFILE | tee -a "$LOGFILE"
+		sed -i "s/PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+                sed -i "s/#PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
+                sed -i "s/# PasswordAuthentication .*/PasswordAuthentication yes/" $SSHDFILE >> $LOGFILE
         fi
+	
 else	
 	printf "${yellow}"
 	echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
@@ -625,7 +636,7 @@ else
 	echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
 	printf "${nocolor}"
 fi
-	PASSWDAUTH=$(sed -n -e '/.*PasswordAuthentication /p' $SSHDFILE)
+	PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
 	printf "${lightgreen}"
 	echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
 	echo -e " `date +%m.%d.%Y_%H:%M:%S` : PASSWORD AUTHENTICATION COMPLETE " | tee -a "$LOGFILE"
@@ -1161,17 +1172,17 @@ setup_environment
 display_banner
 begin_log
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating Swap Space ..."}' && echo -e " " ; fi
 create_swap
 sleep 4
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server Software ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Updating Server Software ..."}' && echo -e " " ; fi
 update_upgrade
 favored_packages
 # crypto_packages
 # add_user
 
-curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " "
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " " ; fi
 collect_sshd
 prompt_rootlogin
 disable_passauth

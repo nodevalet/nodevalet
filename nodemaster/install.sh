@@ -5,6 +5,8 @@ INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 # set mnode daemon name from project.env
 MNODE_DAEMOND=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+INFODIR='/var/tmp/nvtemp'
+HNAME=$(<$INFODIR/vpshostname.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
@@ -17,6 +19,8 @@ MNODE_DAEMOND=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 #
 # version 	v0.9.9
 # date    	2018-06-09
+# nodevalet version v1.0.0
+# date		2019-01-06
 #
 # function:	part of the masternode scripts, source the proper config file
 #
@@ -34,7 +38,7 @@ declare -r CRYPTOS=`ls -l config/ | egrep '^d' | awk '{print $9}' | xargs echo -
 declare -r DATE_STAMP="$(date +%y-%m-%d-%s)"
 declare -r SCRIPTPATH="$(cd $(dirname ${BASH_SOURCE[0]}) > /dev/null; pwd -P)"
 declare -r MASTERPATH="$(dirname "${SCRIPTPATH}")"
-declare -r SCRIPT_VERSION="v0.9.9"
+declare -r SCRIPT_VERSION="v1.0.0"
 declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/silentinstall.log"
 # declare -r SCRIPT_LOGFILE="/var/tmp/nodevalet/logs/nodemaster_${DATE_STAMP}_out.log"
 declare -r IPV4_DOC_LINK="https://www.vultr.com/docs/add-secondary-ipv4-address"
@@ -51,7 +55,7 @@ cat << "EOF"
 ██║ ╚████║╚██████╔╝██████╔╝███████╗ ╚████╔╝ ██║  ██║███████╗███████╗   ██║   
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝ 
 EOF
-echo "$(tput sgr0)$(tput setaf 3)Home of the 5 minute masternode installations!$(tput sgr0)"
+echo "$(tput sgr0)$(tput setaf 3)                Home of the 5 minute masternode installations!$(tput sgr0)"
 }
 
 # /*
@@ -122,8 +126,8 @@ function install_packages() {
 dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
 if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
-else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
-
+else echo -e "Did not find binaries for ${CODENAME} so downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
     # development and build packages
     # these are common on all cryptos
     echo "* Package installation!"
@@ -134,8 +138,8 @@ else echo -e "Did not find binaries for ${CODENAME} downloading crypto packages"
     libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
     libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
     pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
+if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$MNODE_DAEMOND"' from source ... this could take 20 to 40 minutes so you may take a break if needed ..."}' && echo -e " " ; fi
 fi
-
         
     # only for 18.04 // openssl
     if [[ "${VERSION_ID}" == "18.04" ]] ; then
@@ -143,7 +147,6 @@ fi
     fi    
     
 }
-
 #
 # /* no parameters, creates and activates a swapfile since VPS servers often do not have enough RAM for compilation */
 #
@@ -164,12 +167,10 @@ else
     echo "* All good, we have a swap"
 fi
 }
-
 #
 # /* no parameters, creates and activates a dedicated masternode user */
 #
 function create_mn_user() {
-
     # our new mnode unpriv user acc is added
     if id "${MNODE_USER}" >/dev/null 2>&1; then
         echo "user exists already, do nothing" &>> ${SCRIPT_LOGFILE}
@@ -177,14 +178,11 @@ function create_mn_user() {
         echo "Adding new system user ${MNODE_USER}"
         adduser --disabled-password --gecos "" ${MNODE_USER} &>> ${SCRIPT_LOGFILE}
     fi
-
 }
-
 #
 # /* no parameters, creates a masternode data directory (one per masternode)  */
 #
 function create_mn_dirs() {
-
     # individual data dirs for now to avoid problems
     echo "* Creating masternode directories"
     mkdir -p ${MNODE_CONF_BASE}
@@ -194,17 +192,13 @@ function create_mn_dirs() {
              mkdir -p ${MNODE_DATA_BASE}/${CODENAME}${NUM} &>> ${SCRIPT_LOGFILE}
         fi
     done
-
 }
-
 #
 # /* no parameters, creates a sentinel config for a set of masternodes (one per masternode)  */
 #
 function create_sentinel_setup() {
-
 	SENTINEL_BASE=/usr/share/sentinel
 	SENTINEL_ENV=/usr/share/sentinelenv
-
 	# if code directory does not exists, we create it clone the src
 	if [ ! -d ${SENTINEL_BASE} ]; then
 		cd /usr/share                                               &>> ${SCRIPT_LOGFILE}
@@ -221,7 +215,6 @@ function create_sentinel_setup() {
 	# create a globally accessible venv and install sentinel requirements
 	virtualenv --system-site-packages ${SENTINEL_ENV}      &>> ${SCRIPT_LOGFILE}
 	${SENTINEL_ENV}/bin/pip install -r requirements.txt    &>> ${SCRIPT_LOGFILE}
-
     # create one sentinel config file per masternode
 	for NUM in $(seq 1 ${count}); do
 	    if [ ! -f "${SENTINEL_BASE}/${CODENAME}${NUM}_sentinel.conf" ]; then
@@ -232,22 +225,17 @@ function create_sentinel_setup() {
              echo "db_driver=sqlite"                                                 >> ${SENTINEL_BASE}/${CODENAME}${NUM}_sentinel.conf
         fi
     done
-
     export SENTINEL_CONFIG=${SENTINEL_BASE}/${CODENAME}${NUM}_sentinel.conf; cd ${SENTINEL_BASE} && ${SENTINEL_ENV}/bin/python ${SENTINEL_BASE}/bin/sentinel.py
-
-
     echo "$(tput sgr0)$(tput setaf 3)Generated a Sentinel config for you. To activate Sentinel run:$(tput sgr0)"
     echo "$(tput sgr0)$(tput setaf 2)export SENTINEL_CONFIG=${SENTINEL_BASE}/${CODENAME}${NUM}_sentinel.conf; cd ${SENTINEL_BASE} && ${SENTINEL_ENV}/bin/python ${SENTINEL_BASE}/bin/sentinel.py$(tput sgr0)"
     echo ""
     echo "$(tput sgr0)$(tput setaf 2)If it works, add the command as cronjob:  $(tput sgr0)"
     echo "$(tput sgr0)$(tput setaf 2)* * * * * export SENTINEL_CONFIG=${SENTINEL_BASE}/${CODENAME}${NUM}_sentinel.conf; cd ${SENTINEL_BASE} && ${SENTINEL_ENV}/bin/python ${SENTINEL_BASE}/bin/sentinel.py >> /var/log/sentinel/sentinel-cron.log$(tput sgr0) 2>&1"
 }
-
 #
 # /* no parameters, creates a minimal set of firewall rules that allows INBOUND masternode p2p & SSH ports */
 #
 function configure_firewall() {
-
     echo "* Configuring firewall rules"
     # disallow everything except ssh and masternode inbound ports
     ufw default deny                          &>> ${SCRIPT_LOGFILE}
@@ -259,26 +247,21 @@ function configure_firewall() {
     ufw limit OpenSSH	                      &>> ${SCRIPT_LOGFILE}
     ufw --force enable                        &>> ${SCRIPT_LOGFILE}
     echo "* Firewall ufw is active and enabled on system startup"
-
 }
-
 #
 # /* no parameters, checks if the choice of networking matches w/ this VPS installation */
 #
 function validate_netchoice() {
-
     echo "* Validating network rules"
-
     # break here of net isn't 4 or 6
     if [ ${net} -ne 4 ] && [ ${net} -ne 6 ]; then
         echo "invalid NETWORK setting, can only be 4 or 6!"
         exit 1;
     fi
-
     # generate the required ipv6 config
     if [ "${net}" -eq 4 ]; then
         IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
-        echo "IPv4 address generation needs to be done manually atm!"  &>> ${SCRIPT_LOGFILE}
+        # echo "IPv4 address generation needs to be done manually atm!"  &>> ${SCRIPT_LOGFILE}
 	IPV4ADDR=`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
     fi	# end ifneteq4
 
@@ -313,7 +296,7 @@ function create_mn_configuration() {
                 echo "running sed on file ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf"                                &>> ${SCRIPT_LOGFILE}
                 
 	# insert IPv6 address or IPv4 address
-	if [ ${net} -e 4 ]; then
+	if [ "${net}" = "4" ]; then
 	sed -e "s/XXX_GIT_PROJECT_XXX/${CODENAME}/" -e "s/XXX_NUM_XXY/${NUM}]/" -e "s/XXX_NUM_XXX/${NUM}/" -e "s/XXX_PASS_XXX/${PASS}/" -e "s/XXX_IPV6_INT_BASE_XXX/[${IPV6_INT_BASE}/" -e "s/XXX_NETWORK_BASE_TAG_XXX/${NETWORK_BASE_TAG}/" -e "s/XXX_MNODE_INBOUND_PORT_XXX/${MNODE_INBOUND_PORT}/" -i ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf
 	# swap in IPV4 address
 	sed -i "s/^bind=.*/bind=${IPV4ADDR}:${MNODE_INBOUND_PORT}/" ${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf
@@ -360,15 +343,12 @@ function create_systemd_configuration() {
 			[Unit]
 			Description=${CODENAME} distributed currency daemon
 			After=network.target
-
 			[Service]
 			User=${MNODE_USER}
 			Group=${MNODE_USER}
-
 			Type=forking
 			PIDFile=${MNODE_DATA_BASE}/${CODENAME}${NUM}/${CODENAME}.pid
 			ExecStart=${MNODE_DAEMON} -daemon -pid=${MNODE_DATA_BASE}/${CODENAME}${NUM}/${CODENAME}.pid -conf=${MNODE_CONF_BASE}/${CODENAME}_n${NUM}.conf -datadir=${MNODE_DATA_BASE}/${CODENAME}${NUM}
-
 			Restart=always
 			RestartSec=5
 			PrivateTmp=true
@@ -376,7 +356,6 @@ function create_systemd_configuration() {
 			TimeoutStartSec=5s
 			StartLimitInterval=120s
 			StartLimitBurst=15
-
 			[Install]
 			WantedBy=multi-user.target
 		EOF
@@ -497,33 +476,26 @@ function source_config() {
             fi
         fi
 
-        echo "************************* Installation Plan *****************************************"
+        echo "************************* Installation Plan ************************************"
         echo ""
         if [ "$update" -eq 1 ]; then
             echo "I am going to update your existing "
             echo "$(tput bold)$(tput setaf 2) => ${project} masternode(s) in version ${release} $(tput sgr0)"
         else
-            echo "I am going to install and configure "
+            echo "I am going to install and configure:"
             echo "$(tput bold)$(tput setaf 2) => ${count} ${project} masternode(s) in version ${release} $(tput sgr0)"
         fi
-        echo "for you now."
-        echo ""
-        if [ "$update" -eq 0 ]; then
+        if [ "$update" -eq 0 ]; then :
             # only needed if fresh installation
-            echo "You have to add your masternode private key to the individual config files afterwards"
-            echo ""
         fi
         echo "Stay tuned!"
-        echo ""
         # show a hint for MANUAL IPv4 configuration
         if [ "${net}" -eq 4 ]; then
             NETWORK_TYPE=4
             echo "WARNING:"
-            echo "You selected IPv4 for networking but there is no automatic workflow for this part."
-            echo "This means you will have some mamual work to do to after this configuration run."
+            echo "You selected IPv4 but Nodemaster had no automatic workflow for that part."
+            echo "Fortunately, Node Valet has, for the most part, taken care of this for you."
             echo ""
-            echo "See the following link for instructions how to add multiple ipv4 addresses on vultr:"
-            echo "${IPV4_DOC_LINK}"
         fi
         # sentinel setup
         if [ "$sentinel" -eq 1 ]; then
@@ -537,7 +509,7 @@ function source_config() {
         echo "A logfile for this run can be found at the following location:"
         echo "${SCRIPT_LOGFILE}"
         echo ""
-        echo "*************************************************************************************"
+        echo -e "********************************************************************************\n"
         sleep 5
 
         # main routine

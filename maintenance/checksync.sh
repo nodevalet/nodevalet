@@ -5,6 +5,9 @@ LOGFILE='/var/tmp/nodevalet/log/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
 
 # set hostname variable to the name planted by API installation script
 	if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
@@ -20,7 +23,7 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 function get_blocks() {
 # echo "grep "blocks" $INSTALLDIR/getinfo_n1" 
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-echo -e "Masternode 1 is currently synced through block $BLOCKS.\n"
+
 }
 
 function check_blocksync() {
@@ -29,16 +32,17 @@ function check_blocksync() {
 end=$((SECONDS+7200))
 
 while [ $SECONDS -lt $end ]; do
-    echo -e "Time $SECONDS"
-    
+    # echo -e "Time $SECONDS"
 	rm -rf $INSTALLDIR/getinfo_n1
 	touch $INSTALLDIR/getinfo_n1
-	/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
+	/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
 	clear
     
     # if  masternode not running, echo masternode not running and break
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    echo -e "\n"
+    echo -e "\n    --> $PROJECTt Masternode Sync Status <-- \n"
+
+    echo -e " Masternode 1 is currently synced through block $BLOCKS.\n"
     echo -e "$BLOCKS is the current number of blocks"
     
     if (($BLOCKS <= 1 )) ; then echo "Masternode is not syncing" ; break
@@ -62,11 +66,11 @@ echo -e "All done."
 }
 
 function sync_check() {
-CNT=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockcount`
+CNT=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockcount`
 # echo -e "CNT is set to $CNT"
-HASH=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockhash ${CNT}`
+HASH=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblockhash ${CNT}`
 #echo -e "HASH is set to $HASH"
-TIMELINE1=`/usr/local/bin/${PROJECT}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblock ${HASH} | grep '"time"'`
+TIMELINE1=`/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf getblock ${HASH} | grep '"time"'`
 TIMELINE=$(echo $TIMELINE1 | tr -dc '0-9')
 BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
 # echo -e "TIMELINE is set to $TIMELINE"

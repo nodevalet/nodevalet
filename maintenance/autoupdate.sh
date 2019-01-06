@@ -1,6 +1,5 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
-cd /var/tmp/nodevalet/temp
 LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
@@ -16,7 +15,7 @@ cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
 
-#Pull GITAPI_URL from $PROJECT.env
+# Pull GITAPI_URL from $PROJECT.env
 GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
 sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
@@ -28,15 +27,28 @@ echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
 sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
 
+# Pull GITSTRING from $PROJECT.env
+GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
+sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
+GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
+
+if [ -e $INSTALLDIR/temp/updating ]
+	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
+		echo -e "Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+		rm -f $INSTALLDIR/temp/updating
+fi
+
+
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
 echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
-cd $INSTALLDIR/temp
+mkdir $INSTALLDIR/temp/bin
+cd $INSTALLDIR/temp/bin
 rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
-
 if [ "$CURVERSION" != "$NEWVERSION" ]
 then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
@@ -44,23 +56,32 @@ then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tag
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
-		mkdir /usr/local/bin/backup mkdir 2>/dev/null
+		mkdir /usr/local/bin/backup 
+		mkdir 2>/dev/null
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
 		rm /usr/local/bin/${PROJECT}*
 		curl -s $GITAPI_URL \
-		| grep browser_download_url \
-  		| grep x86_64-linux-gnu.tar.gz \
-  		| cut -d '"' -f 4 \
-  		| wget -qi -
-	TARBALL="$(find . -name "*x86_64-linux-gnu.tar.gz")"
-	EXTRACTDIR=${TARBALL%-x86_64-linux-gnu.tar.gz}
-		tar -xzf $TARBALL
-		cp -r $EXTRACTDIR/bin/. /usr/local/bin/
-		rm -r $EXTRACTDIR
+                        | grep browser_download_url \
+                        | grep $GITSTRING \
+                        | cut -d '"' -f 4 \
+                        | wget -qi -
+                TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+                        if [[ $TARBALL == *.gz ]]
+                        then tar -xzf $TARBALL
+                        else unzip $TARBALL
+                	fi
 		rm -f $TARBALL
+        	cd  "$(\ls -1dt ./*/ | head -n 1)"
+       		find . -mindepth 2 -type f -print -exec mv {} . \;
+		cp ${PROJECT}* '/usr/local/bin'
+       		cd ..
+       		rm -r -f *
+		cd
+		cd /usr/local/bin
+		chmod 777 ${PROJECT}*
 		echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
-		activate_masternodes_$PROJECT
+		activate_masternodes_${PROJECT}
 		sleep 2
 		check_project
 else echo -e " No new version is detected \n"
@@ -125,7 +146,8 @@ function check_project() {
 	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
+	then 	echo -e "\n"
+		echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
 		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
@@ -153,6 +175,7 @@ function check_restore() {
 	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
+	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
 	reboot
 	fi
 }
