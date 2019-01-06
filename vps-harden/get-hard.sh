@@ -1119,6 +1119,7 @@ echo -e " --> Root login settings are:" $ROOTLOGINP | tee -a "$LOGFILE"
 	fi
 	printf "${nocolor}"
 printf "${white}"
+PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
 echo " PasswordAuthentication settings:" $PASSWDAUTH | tee -a "$LOGFILE"
 	printf "${lightcyan}"
 	if [ ${FIREWALLP,,} = "yes" ] || [ ${FIREWALLP,,} = "y" ]
@@ -1185,13 +1186,11 @@ favored_packages
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Hardening Server Security ..."}' && echo -e " " ; fi
 collect_sshd
 prompt_rootlogin
-disable_passauth
+# disable_passauth
 ufw_config
 server_hardening
 # ksplice_install
 motd_install
 restart_sshd
 install_complete
-
-
 exit
