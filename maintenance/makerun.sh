@@ -33,5 +33,5 @@ fi
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
   then echo -e "`date +%m.%d.%Y_%H:%M:%S` : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
   bash /usr/local/bin/activate_masternodes_"$PROJECT"
-  else echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
+  else echo -e "\n`date +%m.%d.%Y_%H:%M:%S` : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
 fi
