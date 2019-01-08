@@ -205,6 +205,7 @@ fi
 	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
 	else
 		printf "${cyan}"
+		echo -e " Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
 		echo -e "\n Enter a custom port for SSH between 11000 and 65535 or use 22 : "
 		while :; do
 		read -p "  --> " SSHPORT
