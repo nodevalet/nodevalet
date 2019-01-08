@@ -655,12 +655,14 @@ function prepare_mn_interfaces() {
     # current default is:
     # * ens3 (vultr) w/ a fallback to "eth0" (Hetzner, DO & Linode w/ IPv4 only)
     #
-
-    # check for the default interface status
-    if [ ! -f /sys/class/net/${ETH_INTERFACE}/operstate ]; then
-        echo "Default interface doesn't exist, switching to eth0"
-        export ETH_INTERFACE="eth0"
-    fi
+    
+# check for the default interface status; add additional options
+if [ ! -f /sys/class/net/${ETH_INTERFACE}/operstate ]; then
+echo -e "Default interface ${ETH_INTERFACE} doesn't exist;" | tee -a "$LOGFILE"
+echo -e " --> NodeValet is looking for one that does" | tee -a "$LOGFILE"
+	if [ -f /sys/class/net/eth0/operstate ]; then export ETH_INTERFACE="eth0" ; fi
+	if [ -f /sys/class/net/ens4/operstate ]; then export ETH_INTERFACE="ens4" ; fi
+fi
 
     # check for the nuse case <3
     if [ -f /sys/class/net/ens160/operstate ]; then
