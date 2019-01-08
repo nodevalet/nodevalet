@@ -22,7 +22,7 @@ EOF
 }
 	 
 # ###### SECTIONS ######
-# 1. CREATE SWAP / if no swap exists, create 1 GB swap
+# 1. CREATE SWAP / if no swap exists, create 2 GB swap
 # 2. UPDATE AND UPGRADE / update operating system & pkgs
 # 3. INSTALL FAVORED PACKAGES / useful tools & utilities
 # 4. INSTALL CRYPTO PACKAGES / common crypto packages
@@ -146,7 +146,7 @@ function create_swap() {
 		# sleep 2
 		printf "${nocolor}"
 	else
-	    	fallocate -l 1G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
+	    	fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
 		printf "${lightgreen}"	
 		echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
 		echo -e " `date +%m.%d.%Y_%H:%M:%S` : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
