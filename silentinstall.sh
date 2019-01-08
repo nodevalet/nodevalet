@@ -39,7 +39,7 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
 	else echo -e " Please choose from one of the following supported coins to install:"
 	     # echo -e "    helium | condominium | smart (smartcash) \n"
-	     echo -e "    helium | condominium \n"
+	     echo -e "    helium | condominium | pivx \n"
 		echo -e " In one word, which coin are installing today? "
 		while :; do
 		read -p "  --> " PROJECT
@@ -88,15 +88,18 @@ BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
 	# create a subroutine here to check memory and size MNS appropriately
 	# or prompt user how many they would like to build
-	else echo -e "\n Please enter the number of masternodes to install : "
+	else NODES=`grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}'`
+	MAXNODES=`echo $NODES | awk '{print int($1+0.5)}'`
+	echo -e "\n This server's memory can safely support $MAXNODES masternodes."
+		echo -e " Please enter the number of masternodes to install : "
 		while :; do
 		read -p "  --> " MNS
-		if (($MNS >= 1 && $MNS <= 50))
+		if (($MNS >= 1 && $MNS <= $MAXNODES))
 		then echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
 		touch $INFODIR/vpsnumber.info
 		echo -e "${MNS}" > $INFODIR/vpsnumber.info
 		break
-		else echo -e "\n --> $MNS is not a number between 1 and 50, try again."
+		else echo -e "\n --> $MNS is not a number between 1 and $MAXNODES, try again."
 		fi
 		done
 	fi
@@ -205,7 +208,8 @@ fi
 	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
 	else
 		printf "${cyan}"
-		echo -e "\n Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+		echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
+		echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
 		while :; do
 		read -p "  --> " SSHPORT
 		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
@@ -287,6 +291,8 @@ sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
 sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
 sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
 sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
+sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
+sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
 sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
 sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
 # sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade

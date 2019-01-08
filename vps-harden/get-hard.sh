@@ -22,7 +22,7 @@ EOF
 }
 	 
 # ###### SECTIONS ######
-# 1. CREATE SWAP / if no swap exists, create 1 GB swap
+# 1. CREATE SWAP / if no swap exists, create 2 GB swap
 # 2. UPDATE AND UPGRADE / update operating system & pkgs
 # 3. INSTALL FAVORED PACKAGES / useful tools & utilities
 # 4. INSTALL CRYPTO PACKAGES / common crypto packages
