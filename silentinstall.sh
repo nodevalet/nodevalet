@@ -291,6 +291,8 @@ sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
 sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
 sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
 sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
+sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
+sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
 sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
 sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
 # sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
