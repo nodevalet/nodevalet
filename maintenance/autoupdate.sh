@@ -7,6 +7,12 @@ PROJECT=`cat $INFODIR/vpscoin.info`
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
+#update .gitstring binary search string variable
+
+cd $INSTALLDIR/nodemaster/config/$PROJECT
+echo -e " \n`date +%m.%d.%Y_%H:%M:%S` : Downloading current $PROJECT.gitstring"
+curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.gitstring
+
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
 echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
@@ -28,10 +34,7 @@ sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
 
 # Pull GITSTRING from $PROJECT.env
-GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
-sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
-GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
+GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
