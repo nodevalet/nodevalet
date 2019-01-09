@@ -573,11 +573,8 @@ echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -
 	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 	
 # Try and install Binaries now	
-# Pull GITSTRING from $PROJECT.env
-GITSTRING=`grep ^GITSTRING $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-echo "$GITSTRING" > $INSTALLDIR/temp/GITSTRING
-sed -i "s/GITSTRING=//" $INSTALLDIR/temp/GITSTRING
-GITSTRING=$(<$INSTALLDIR/temp/GITSTRING)
+# Pull GITSTRING from $PROJECT.gitstring
+GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
 
 mkdir $INSTALLDIR/temp/bin
 cd $INSTALLDIR/temp/bin
