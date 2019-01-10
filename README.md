@@ -48,10 +48,12 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `checkdaemon` will check if all masternodes are correctly synced.  
 `makerun` checks if all installed masternodes are running.  
 `rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)   
-`getinfo` returns a summarized `getinfo` of all masternodes.  
+`getinfo 1` returns a summarized `getinfo` of masternode 1, 2, 3 etc. `getinfo` shows all.  
 `killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on.  
 `masternodestatus` returns the `masternodestatus` of every installed masternode.    
-`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.  
+`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.
+`showlog` will display the installation log  
+`showmlog` will display the maintenance log  
 
 We'll be adding a couple more in the future so stay tuned!
 
