@@ -50,7 +50,7 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)   
 `getinfo 1` returns a summarized `getinfo` of masternode 1, 2, 3 etc. `getinfo` shows all.  
 `killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on.  
-`masternodestatus` returns the `masternodestatus` of every installed masternode.    
+`masternodestatus 1`  returns the `masternodestatus` of masternode 1,2,3 etc. `masternodestatus` returns all.    
 `resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.
 `showlog` will display the installation log  
 `showmlog` will display the maintenance log  
