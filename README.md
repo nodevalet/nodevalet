@@ -6,7 +6,7 @@ NodeValet lets you securily deploy up to 20 Masternodes on a VPS of your choice 
 
 Self hosting your Masternode has a number of benefits in that it is way more cost effective and that you retain full control over your Masternode. It can be challenging to set up and maintain Masternodes yourself. By automating the installation, server hardening and maintenance process we give you the benefits of self hosting with the convenience of a hosted solution. Open source and free of charge.
 
-For now NodeValet supports Helium and Condominium. To try it out please head over to https://nodevalet.io .
+For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io .
 We're working to add a variety of other Masternode coins to the service in the very near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
@@ -48,10 +48,12 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `checkdaemon` will check if all masternodes are correctly synced.  
 `makerun` checks if all installed masternodes are running.  
 `rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)   
-`getinfo` returns a summarized `getinfo` of all masternodes.  
+`getinfo 1` returns a summarized `getinfo` of masternode 1, 2, 3 etc. `getinfo` shows all.  
 `killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on.  
-`masternodestatus` returns the `masternodestatus` of every installed masternode.    
-`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.  
+`masternodestatus 1`  returns the `masternodestatus` of masternode 1,2,3 etc. `masternodestatus` returns all.    
+`resync 1` deletes blockchain data for node 1, 2, 3, etc and forces a resync.
+`showlog` will display the installation log  
+`showmlog` will display the maintenance log  
 
 We'll be adding a couple more in the future so stay tuned!
 
