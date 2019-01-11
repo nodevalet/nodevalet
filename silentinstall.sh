@@ -296,7 +296,8 @@ sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternode
 function silent_harden() {
 	if [ -e /var/log/server_hardening.log ]
 	then echo -e " This server seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
-	else echo -e " This server is not yet secure, running VPS Hardening script \n" | tee -a "$LOGFILE"
+	else echo -e " This server is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
+	echo -e " Server hardening log is saved at /var/tmp/nodevalet/logs/vps-harden.log \n" | tee -a "$LOGFILE"
 	cd $INSTALLDIR/vps-harden
 	bash get-hard.sh
 	fi
