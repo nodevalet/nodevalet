@@ -200,32 +200,29 @@ done
 	fi
 fi
 	
-	#########
-	
-	# create or assign customssh
-	if [ -s $INFODIR/vpssshport.info ]
-	then SSHPORT=$(<$INFODIR/vpssshport.info)
-	echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
-	else
-		printf "${cyan}"
-		echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
-		echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
-		while :; do
-		read -p "  --> " SSHPORT
-		[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
-		if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
-		elif [ $SSHPORT = 22 ]; then break
-		else printf "${lightred}"
-		echo -e "\n --> That number is out of range, try again. \n"
-		printf "${nocolor}"
-		fi
-		done
-		echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
-		touch $INFODIR/vpssshport.info
-		echo "$SSHPORT" >> $INFODIR/vpssshport.info
+# create or assign customssh
+if [ -s $INFODIR/vpssshport.info ]
+then SSHPORT=$(<$INFODIR/vpssshport.info)
+echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
+else
+	printf "${cyan}"
+	echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
+	echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+	while :; do
+	read -p "  --> " SSHPORT
+	[[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
+	if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
+	elif [ $SSHPORT = 22 ]; then break
+	else printf "${lightred}"
+	echo -e "\n --> That number is out of range, try again. \n"
+	printf "${nocolor}"
 	fi
-	echo -e " \n"
-
+	done
+	echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
+	touch $INFODIR/vpssshport.info
+	echo "$SSHPORT" >> $INFODIR/vpssshport.info
+fi
+echo -e " \n"
 echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
 echo -e "\n"
 
@@ -244,23 +241,21 @@ set donation percentage
 #		done
 #		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
 #	fi
-	
 # set donation address front project.env
-	cd $INSTALLDIR/nodemaster/config/$PROJECT
-	curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
-	echo -e "\n"
-	DONATION_ADDRESS=`grep ^DONATION $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-	cd $INSTALLDIR
-	if [ -n $DONATION_ADDRESS ] ; then 
-	touch $INFODIR/vpsdonation.info
-	echo "$DONATION_ADDRESS" > $INSTALLDIR/temp/DONATEADDR
-	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/temp/DONATEADDR
-	DONATEADDR=$(<$INSTALLDIR/temp/DONATEADDR)
-	# echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
-	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INFODIR/vpsdonation.info > $INSTALLDIR/temp/DONATION
-	else
-	echo -e "No donation address was detected." | tee -a "$LOGFILE"
-	fi
+#	cd $INSTALLDIR/nodemaster/config/$PROJECT
+#	curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
+#	echo -e "\n"
+#	DONATION_ADDRESS=`grep ^DONATION $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+#	if [ -n $DONATION_ADDRESS ] ; then 
+#	touch $INFODIR/vpsdonation.info
+#	echo "$DONATION_ADDRESS" > $INSTALLDIR/temp/DONATEADDR
+#	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/temp/DONATEADDR
+#	DONATEADDR=$(<$INSTALLDIR/temp/DONATEADDR)
+#	# echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
+#	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INFODIR/vpsdonation.info > $INSTALLDIR/temp/DONATION
+#	else
+#	echo -e "No donation address was detected." | tee -a "$LOGFILE"
+#	fi
 
 # enable softwrap so masternode.conf file can be easily copied
 sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
