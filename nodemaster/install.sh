@@ -125,7 +125,7 @@ function install_packages() {
 # check if binaries already exist, skip installing crypto packages if they aren't needed
 #dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
 #if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
-if [ ! -f ${MNODE_DAEMON} ] ; then
+if [ -f ${MNODE_DAEMON} ] ; then
 echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
 else echo -e "Did not find binaries for ${CODENAME} so downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
