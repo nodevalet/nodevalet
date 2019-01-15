@@ -4,9 +4,9 @@ This is the repository for the https://nodevalet.io Masternode installation serv
 
 NodeValet lets you securily deploy up to 20 Masternodes on a VPS of your choice in a matter of minutes. Fully automated and with the convenience of a hosted solution. Node Valet Masternodes come pre installed with a variety of maintanance scripts that make sure your Masternode is always online, always secure and even handles wallet updates by itself.
 
-Self hosting your Masternode has a number of benefits in that it is way more cost effective and that you retain full control over your Masternode. It can be challenging to set up and maintain Masternodes yourself. By automating the installation, server hardening and maintenance process we give you the benefits of self hosting with the convenience of a hosted solution. Open source and free of charge.
+Self hosting your Masternode has a number of benefits in that it is way more cost effective and that you retain full control over your Masternode. It can be challenging to set up and maintain Masternodes yourself. By automating the installation, server hardening and maintenance process we give you the benefits of self hosting with the convenience of a hosted solution. Open source and free of charge. API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
-For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io .
+For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io.
 We're working to add a variety of other Masternode coins to the service in the very near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
