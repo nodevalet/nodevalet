@@ -226,6 +226,16 @@ echo -e " \n"
 echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
 echo -e "\n"
 
+# Pull BLOCKEXP from $PROJECT.env
+BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+if [ -n $BLOCKEX ] 
+then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
+sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
+BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+echo -e " Block Explorer set to : $BLOCKEXP \n" | tee -a "$LOGFILE"
+else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
+fi
+
 set donation percentage
 #	if [ -e $INFODIR/vpsdonation.info ]
 #	then DONATE=`cat $INFODIR/vpsdonation.info`
@@ -446,17 +456,7 @@ if [ "$PRIVATEIP" != "$PUBLICIP" ]
 then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
 echo -e " Your masternode is on a LAN, replacing $PRIVATEIP with $PUBLICIP " | tee -a "$LOGFILE"
 fi
-	
-# Pull BLOCKEXP from $PROJECT.env
-BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-if [ -n $BLOCKEX ] 
-then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
-else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
-fi
-	
+
 	# Check for presence of txid and, if present, use it for txid/txidx
 	if [ -e $INFODIR/vpsmntxdata.info ]
 		then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
