@@ -40,7 +40,7 @@ done
 
 echo -e "\n"
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running resync.sh" | tee -a "$LOGFILE"
-echo -e "User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
+echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
   
 touch $INSTALLDIR/temp/updating
 
