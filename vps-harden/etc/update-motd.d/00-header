@@ -30,9 +30,9 @@ color13='\033[0;33m'  # brown
 color14='\033[1;33m'  # yellow
 nocolor='\033[0m'    # no color
 
-#nodecount
-total=`ps aux | grep -i ${PROJECT}d | wc -l`
-nodes=`expr $total - 1`
+#nodecount -- problemmatic for masternodes not named exactly right
+# total=`ps aux | grep -i ${PROJECT}d | wc -l`
+# nodes=`expr $total - 1`
 
 # AKcryptoGUY's mod
 printf " ${color5} █████████████████████████████${color1}  You've logged into a `echo "${PROJECT}"` Masternode${nocolor}\n"
