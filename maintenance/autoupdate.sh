@@ -1,6 +1,6 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
-LOGFILE='/var/tmp/nodevalet/logs/autoupdate.log'
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=`cat $INFODIR/vpscoin.info`
@@ -38,22 +38,22 @@ GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running autoupdate.sh" | tee -a "$LOGFILE"
-		echo -e "Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+		echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
 		rm -f $INSTALLDIR/temp/updating
 fi
 
 
 function update_binaries() {
 #check for updates and install binaries if necessary
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
 mkdir $INSTALLDIR/temp/bin
 cd $INSTALLDIR/temp/bin
 rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e " `date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
+then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
@@ -95,7 +95,7 @@ fi
 function update_from_source() {
 #check for updates and build from source if installing binaries failed. 
 
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 rm -r -f $PROJECT*
 
@@ -150,14 +150,14 @@ function check_project() {
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
 	then 	echo -e "\n"
-		echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
+		echo -e "`date +%m.%d.%Y_%H:%M:%S` : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
 		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
 	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	rm -f $INSTALLDIR/temp/updating
 	exit
-	else echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
+	else echo -e "`date +%m.%d.%Y_%H:%M:%S` : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
 	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
 	rm -f $INSTALLDIR/temp/${PROJECT}Ds
 	fi
