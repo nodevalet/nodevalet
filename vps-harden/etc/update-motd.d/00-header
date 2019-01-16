@@ -44,7 +44,7 @@ printf " ${color5} █ ${color12}   ██║╚██╗██║╚██╗ �
 printf " ${color5} █ ${color12}   ██║ ╚████║ ╚████╔╝   ${color5}  █${color11}  Version: `lsb_release -s -d`${nocolor}\n"
 printf " ${color5} █ ${color12}   ╚═╝  ╚═══╝  ╚═══╝    ${color5}  █${color11}  `uname -srmo`${nocolor}\n"
 printf " ${color5} █                           █${color11}\n"
-printf " ${color5} █ ${color14}  --> NodeValet.io <-- ${color5}   █${color11}  Masternodes on this server: ${color7} --> ${nodes} <--${nocolor}\n"
+printf " ${color5} █ ${color14}  --> NodeValet.io <-- ${color5}   █${color11}  Masternodes on this server: ${color7} --> ${MNS} <--${nocolor}\n"
 printf " ${color5} █ ${color14}Your only choice for five${color5} █${color11}  External IP: ${color12}`/usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail` \n"
 printf " ${color5} █  ${color14}minute masternode setup${color5}  █${nocolor}\n"
 printf " ${color5} █                           █${color14}  `date +"%A, %e %B %Y, %r"`${nocolor}\n"
