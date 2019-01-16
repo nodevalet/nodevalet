@@ -438,10 +438,16 @@ do
 	# the next line produces the IP addresses for this masternode
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
 	
-	# obtain txid
+PUBLICIP=`sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
+PRIVATEIP=`sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+
+# to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
+if [ "$PRIVATEIP" != "$PUBLICIP" ]
+then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
+echo -e " Your masternode is on a LAN, replacing $PRIVATEIP with $PUBLICIP " | tee -a "$LOGFILE"
+fi
 	
-	# Pull BLOCKEXP from $PROJECT.env
-	# THIS code rendered obsolete when we incorporated our our block explorers
+# Pull BLOCKEXP from $PROJECT.env
 BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
 if [ -n $BLOCKEX ] 
 then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
