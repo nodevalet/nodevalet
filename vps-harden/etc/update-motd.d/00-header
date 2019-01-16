@@ -45,7 +45,7 @@ printf " ${color5} █ ${color12}   ██║ ╚████║ ╚████
 printf " ${color5} █ ${color12}   ╚═╝  ╚═══╝  ╚═══╝    ${color5}  █${color11}  `uname -srmo`${nocolor}\n"
 printf " ${color5} █                           █${color11}\n"
 printf " ${color5} █ ${color14}  --> NodeValet.io <-- ${color5}   █${color11}  Masternodes on this server: ${color7} --> ${nodes} <--${nocolor}\n"
-printf " ${color5} █ ${color14}Your only choice for five${color5} █${color11}  External IP: ${color12}`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'` \n"
+printf " ${color5} █ ${color14}Your only choice for five${color5} █${color11}  External IP: ${color12}`/usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail` \n"
 printf " ${color5} █  ${color14}minute masternode setup${color5}  █${nocolor}\n"
 printf " ${color5} █                           █${color14}  `date +"%A, %e %B %Y, %r"`${nocolor}\n"
 printf " ${color5} █████████████████████████████${color1}  * Uptime: `/usr/bin/uptime -p` *${nocolor}\n"
