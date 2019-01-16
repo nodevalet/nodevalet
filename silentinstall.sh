@@ -226,6 +226,16 @@ echo -e " \n"
 echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
 echo -e "\n"
 
+# Pull BLOCKEXP from $PROJECT.env
+BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+if [ -n $BLOCKEX ] 
+then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
+sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
+BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+echo -e " Block Explorer set to : $BLOCKEXP \n" | tee -a "$LOGFILE"
+else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
+fi
+
 set donation percentage
 #	if [ -e $INFODIR/vpsdonation.info ]
 #	then DONATE=`cat $INFODIR/vpsdonation.info`
@@ -366,7 +376,7 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 for ((i=1;i<=$MNS;i++)); 
 do	
-	for ((P=1;P<=30;P++)); 
+	for ((P=1;P<=35;P++)); 
 	do
 	# create masternode genkeys (smart is special "smartnodes")	
 	if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
@@ -382,7 +392,7 @@ do
 	if [ ${#KEYXIST} = "0" ]
 	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
 	echo -e " --> Waiting for 2 seconds before trying again... loop $P" | tee -a "$LOGFILE"
-	sleep 2
+	sleep 3
 	else break
 	fi
 	
@@ -438,19 +448,15 @@ do
 	# the next line produces the IP addresses for this masternode
 	echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
 	
-	# obtain txid
-	
-	# Pull BLOCKEXP from $PROJECT.env
-	# THIS code rendered obsolete when we incorporated our our block explorers
-BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-if [ -n $BLOCKEX ] 
-then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
-else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+PUBLICIP=`sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
+PRIVATEIP=`sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+
+# to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
+if [ "$PRIVATEIP" != "$PUBLICIP" ]
+then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
+echo -e " Your masternode is on a LAN, replacing $PRIVATEIP with $PUBLICIP " | tee -a "$LOGFILE"
 fi
-	
+
 	# Check for presence of txid and, if present, use it for txid/txidx
 	if [ -e $INFODIR/vpsmntxdata.info ]
 		then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
