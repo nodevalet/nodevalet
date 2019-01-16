@@ -18,7 +18,7 @@ else cd $INSTALLDIR
 fi
 
 clear
-echo -e "\n This script will now display the NodeValet maintenance log"
-echo -e " **********************************************************\n"
+echo -e "\nThis script will now display the NodeValet maintenance log"
+echo -e "**********************************************************\n"
 cat $LOGFILE
 echo -e "\n"
