@@ -395,7 +395,7 @@ do
 	else break
 	fi
 	
-	if [ ${#KEYXIST} = "0" ] && [ "${P}" = "30" ]
+	if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
 	then echo " " 
 	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkey"}' && echo -e " " ; fi
 	echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
