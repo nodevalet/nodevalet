@@ -95,7 +95,7 @@ fi
 function update_from_source() {
 #check for updates and build from source if installing binaries failed. 
 
-echo -e " `date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
+echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running update_from_source function" | tee -a "$LOGFILE"
 cd $INSTALLDIR/temp
 rm -r -f $PROJECT*
 
