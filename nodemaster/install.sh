@@ -263,7 +263,7 @@ function validate_netchoice() {
     if [ "${net}" -eq 4 ]; then
         IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
         # echo "IPv4 address generation needs to be done manually atm!"  &>> ${SCRIPT_LOGFILE}
-	IPV4ADDR=`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+	IPV4ADDR=`/usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
     fi	# end ifneteq4
 
 }
@@ -495,7 +495,7 @@ function source_config() {
             NETWORK_TYPE=4
             echo "WARNING:"
             echo "You selected IPv4 but Nodemaster had no automatic workflow for that part."
-            echo "Fortunately, Node Valet has, for the most part, taken care of this for you."
+            echo "Fortunately, NodeValet has solved this problem for you."
             echo ""
         fi
         # sentinel setup

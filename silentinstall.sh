@@ -78,8 +78,8 @@ MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
 echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
 
-# set BLOCKEXP to nodevalet project coin
-BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
+# set BLOCKEXP to nodevalet project coin -- disabled when we spilled over onto 2 blockchain servers
+# BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
 # echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
 
 # read or assign number of masternodes to install
@@ -442,14 +442,14 @@ do
 	
 	# Pull BLOCKEXP from $PROJECT.env
 	# THIS code rendered obsolete when we incorporated our our block explorers
-	#	BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-	#	if [ -n $BLOCKEX ] 
-	#		then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-	#		sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-	#		BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-	#		# echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
-	#		else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
-	#	fi
+BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+if [ -n $BLOCKEX ] 
+then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
+sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
+BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+echo -e " Block Explorer set to : $BLOCKEXP" | tee -a "$LOGFILE"
+else echo -e "No block explorer was identified in $PROJECT.env" | tee -a "$LOGFILE"
+fi
 	
 	# Check for presence of txid and, if present, use it for txid/txidx
 	if [ -e $INFODIR/vpsmntxdata.info ]
