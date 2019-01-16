@@ -390,7 +390,7 @@ do
 	# check if GENKEY file is empty; if so stop script and report error
 	if [ ${#KEYXIST} = "0" ]
 	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
-	echo -e " --> Waiting for 2 seconds before trying again... loop $P" | tee -a "$LOGFILE"
+	echo -e " --> Waiting for 3 seconds before trying again... loop $P" | tee -a "$LOGFILE"
 	sleep 3
 	else break
 	fi
@@ -399,7 +399,7 @@ do
 	then echo " " 
 	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkey"}' && echo -e " " ; fi
 	echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
-	echo -e "I tried for 60 seconds but something isn't working correctly.\n" | tee -a "$LOGFILE"
+	echo -e "I tried for 105 seconds but something isn't working correctly.\n" | tee -a "$LOGFILE"
 	exit
 	fi
 		done
