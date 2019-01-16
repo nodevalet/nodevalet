@@ -497,9 +497,7 @@ function source_config() {
         # show a hint for MANUAL IPv4 configuration
         if [ "${net}" -eq 4 ]; then
             NETWORK_TYPE=4
-            echo "WARNING:"
-            echo "You selected IPv4 but Nodemaster had no automatic workflow for that part."
-            echo "Fortunately, NodeValet has solved this problem for you."
+            echo "IPv4 installation detected, fortunately NodeValet can get this done."
             echo ""
         fi
         # sentinel setup

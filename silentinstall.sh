@@ -78,16 +78,25 @@ MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
 echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
 
-# set BLOCKEXP to nodevalet project coin -- disabled when we spilled over onto 2 blockchain servers
-# BLOCKEXP="https://www.nodevalet.io/api/txdata.php?coin=${PROJECT}&address="
-# echo -e " BlockExp set to: $BLOCKEXP" >> "$LOGFILE"
-
+# create or assign onlynet from project.env
+ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
+sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
+ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+	if [ "$ONLYNET" > 0 ]
+	then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
+	else ONLYNET='6'
+	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
+	fi
+	
 # read or assign number of masternodes to install
 	if [ -e $INFODIR/vpsnumber.info ]
 	then MNS=$(<$INFODIR/vpsnumber.info)
 	echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
-	# create a subroutine here to check memory and size MNS appropriately
-	# or prompt user how many they would like to build
+	# check memory and set max MNS appropriately then prompt user how many they would like to build
+	elif [ "$ONLYNET" = 4 ] 
+	then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
+	echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
 	else NODES=`grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}'`
 	MAXNODES=`echo $NODES | awk '{print int($1+0.5)}'`
 	echo -e "\n This server's memory can safely support $MAXNODES masternodes."
@@ -110,17 +119,6 @@ echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
 	echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
 	else MNPREFIX=`hostname`
 	echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found" >> $LOGFILE
-	fi
-
-# create or assign onlynet from project.env
-ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
-echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
-ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-	if [ "$ONLYNET" > 0 ]
-	then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
-	else ONLYNET='6'
-	echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
 	fi
 
 # read or collect masternode addresses
