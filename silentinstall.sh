@@ -366,7 +366,7 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 for ((i=1;i<=$MNS;i++)); 
 do	
-	for ((P=1;P<=30;P++)); 
+	for ((P=1;P<=50;P++)); 
 	do
 	# create masternode genkeys (smart is special "smartnodes")	
 	if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
