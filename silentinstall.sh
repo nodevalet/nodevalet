@@ -376,7 +376,7 @@ echo -e "Creating masternode.conf variables and files for $MNS masternodes" | te
 
 for ((i=1;i<=$MNS;i++)); 
 do	
-	for ((P=1;P<=50;P++)); 
+	for ((P=1;P<=35;P++)); 
 	do
 	# create masternode genkeys (smart is special "smartnodes")	
 	if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
@@ -392,7 +392,7 @@ do
 	if [ ${#KEYXIST} = "0" ]
 	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
 	echo -e " --> Waiting for 2 seconds before trying again... loop $P" | tee -a "$LOGFILE"
-	sleep 2
+	sleep 3
 	else break
 	fi
 	
