@@ -223,7 +223,7 @@ else
 	echo "$SSHPORT" >> $INFODIR/vpssshport.info
 fi
 echo -e " \n"
-echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS" >> $LOGFILE
+echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS \n" >> $LOGFILE
 echo -e "\n"
 
 # Pull BLOCKEXP from $PROJECT.env
@@ -232,7 +232,8 @@ if [ -n $BLOCKEX ]
 then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
 sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
 BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-echo -e " Block Explorer set to : $BLOCKEXP \n" | tee -a "$LOGFILE"
+echo -e " Block Explorer set to :" | tee -a "$LOGFILE"
+echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
 else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
 fi
 
