@@ -47,7 +47,7 @@ function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running update_binaries function"
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate is looking for new $PROJECTt tags"
-mkdir $INSTALLDIR/temp/bin
+if [ ! -d $INSTALLDIR/temp/bin ]; then mkdir $INSTALLDIR/temp/bin ; fi
 cd $INSTALLDIR/temp/bin
 rm -r -f $PROJECT*
 CURVERSION=`cat $INSTALLDIR/temp/currentversion`
@@ -59,7 +59,7 @@ then echo -e "`date +%m.%d.%Y_%H:%M:%S` : Autoupdate detected new $PROJECTt tags
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
 		touch $INSTALLDIR/temp/updating
 		systemctl stop $PROJECT*
-		mkdir /usr/local/bin/backup 
+		if [ ! -d $INSTALLDIR/temp/bin/backup ]; then mkdir $INSTALLDIR/temp/bin/backup ; fi
 		mkdir 2>/dev/null
 		# echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
 		cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
