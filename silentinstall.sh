@@ -395,6 +395,9 @@ do
 	else break
 	fi
 	
+	# add extra pause for wallets that are slow to start
+	if [ "${PROJECT,,}" = "polis" ] ; then sleep 15 ; fi
+	
 	if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
 	then echo " " 
 	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkey"}' && echo -e " " ; fi
