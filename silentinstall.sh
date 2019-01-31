@@ -387,11 +387,14 @@ do
 	else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
 	KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
+	# add extra pause for wallets that are slow to start
+	if [ "${PROJECT,,}" = "polis" ] ; then SLEEPTIME=15 ; else SLEEPTIME=3 ; fi
+	
 	# check if GENKEY file is empty; if so stop script and report error
 	if [ ${#KEYXIST} = "0" ]
 	then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
-	echo -e " --> Waiting for 3 seconds before trying again... loop $P" | tee -a "$LOGFILE"
-	sleep 3
+	echo -e " --> Waiting for $SLEEPTIME seconds before trying again... loop $P" | tee -a "$LOGFILE"
+	sleep $SLEEPTIME
 	else break
 	fi
 	
@@ -399,7 +402,7 @@ do
 	then echo " " 
 	if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkey"}' && echo -e " " ; fi
 	echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
-	echo -e "I tried for 105 seconds but something isn't working correctly.\n" | tee -a "$LOGFILE"
+	echo -e "I waited through 35 loops but something isn't working correctly.\n" | tee -a "$LOGFILE"
 	exit
 	fi
 		done
