@@ -539,6 +539,9 @@ function install_binaries() {
 if [ "${PROJECT,,}" = "bitsend" ]
 then echo -e "Bitsend detected, initiating funky installation process...\n"
 # insert specific steps here
+add-apt-repository -y ppa:bitcoin/bitcoin
+apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
+apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
 fi
 
 #check for binaries and install if found
