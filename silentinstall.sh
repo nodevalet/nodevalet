@@ -235,37 +235,6 @@ echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
 else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
 fi
 
-set donation percentage
-#	if [ -e $INFODIR/vpsdonation.info ]
-#	then DONATE=`cat $INFODIR/vpsdonation.info`
-#	echo -e "vpsdonation.info found, setting DONATE to $DONATE"  | tee -a "$LOGFILE"
-#	else DONATEN=""
-#		while [[ ! $DONATE =~ ^[0-9]+$ ]]; do	
-#		echo -e "Although this script is smart, it didn't write itself. If you"
-#		echo -e "would like to donate a percentage of your masternode rewards"
-#		echo -e "to the developers of this script, please enter a number here,"
-#		echo -e "or enter 0 to not leave a donation.  Recommended donation is 2%.\n"
-#		 read -p "  --> " DONATE
-#		DONATE='0'
-#		done
-#		echo -e "User has chosen to donate ${DONATE}% of your masternode rewards."  | tee -a "$LOGFILE"
-#	fi
-# set donation address front project.env
-#	cd $INSTALLDIR/nodemaster/config/$PROJECT
-#	curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
-#	echo -e "\n"
-#	DONATION_ADDRESS=`grep ^DONATION $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-#	if [ -n $DONATION_ADDRESS ] ; then 
-#	touch $INFODIR/vpsdonation.info
-#	echo "$DONATION_ADDRESS" > $INSTALLDIR/temp/DONATEADDR
-#	sed -i "s/DONATION_ADDRESS=//" $INSTALLDIR/temp/DONATEADDR
-#	DONATEADDR=$(<$INSTALLDIR/temp/DONATEADDR)
-#	# echo -e "Donation address set to $DONATEADDR" | tee -a "$LOGFILE"
-#	paste -d ':' $INSTALLDIR/temp/DONATEADDR $INFODIR/vpsdonation.info > $INSTALLDIR/temp/DONATION
-#	else
-#	echo -e "No donation address was detected." | tee -a "$LOGFILE"
-#	fi
-
 # enable softwrap so masternode.conf file can be easily copied
 sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1	
 }
@@ -322,7 +291,7 @@ function install_mns() {
 	then touch $INSTALLDIR/temp/mnsexist
 	echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
 	echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
-	else
+	else	
 		cd $INSTALLDIR/nodemaster
 		echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
 		# echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
@@ -565,6 +534,16 @@ fi
  }
 
 function install_binaries() {
+
+#make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
+if [ "${PROJECT,,}" = "bitsend" ]
+then echo -e "Bitsend detected, initiating funky installation process...\n"
+# insert specific steps here
+add-apt-repository -y ppa:bitcoin/bitcoin
+apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
+apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
+fi
+
 #check for binaries and install if found
 echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
