@@ -26,8 +26,9 @@ sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 echo -e "`cat ${INSTALLDIR}/temp/REBOOTREQ`" | tee -a "$LOGFILE"
 
 rm $INSTALLDIR/temp/REBOOTREQ
-echo -e " Server will reboot in 5 minutes to complete required updates \n" | tee -a "$LOGFILE"
-shutdown -r +5 " Server will restart in 5 minutes to complete required updates"
+echo -e " Server will reboot immediately to complete required updates \n" | tee -a "$LOGFILE"
+# shutdown -r +5 " Server will restart in 5 minutes to complete required updates"
+sudo reboot
 
 else
 echo -e " No reboot is required at this time\n"
