@@ -665,7 +665,9 @@ echo -e "Default interface ${ETH_INTERFACE} doesn't exist;" | tee -a "$LOGFILE"
 echo -e " --> NodeValet is looking for one that does" | tee -a "$LOGFILE"
 	if [ -f /sys/class/net/eth0/operstate ]; then export ETH_INTERFACE="eth0" ; echo -e "Found a match; we are going to use eth0 instead" | tee -a "$LOGFILE" ; fi
 	if [ -f /sys/class/net/ens4/operstate ]; then export ETH_INTERFACE="ens4" ; echo -e "Found a match; we are going to use ens4 instead" | tee -a "$LOGFILE" ; fi
+	if [ -f /sys/class/net/ens4/operstate ]; then export ETH_INTERFACE="net0" ; echo -e "Found a match; we are going to use net0 instead" | tee -a "$LOGFILE" ; fi
 fi
+
 
     # check for the nuse case <3
     if [ -f /sys/class/net/ens160/operstate ]; then
