@@ -39,7 +39,7 @@ echo -e " ---------------------------------------------------- " | tee -a "$LOGF
 	echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
 	else echo -e " Please choose from one of the following supported coins to install:"
 	     # echo -e "    helium | audax | smart (smartcash) \n"
-	     echo -e "    helium | audax | pivx | phore \n"
+	     echo -e "    helium | audax | pivx | phore"
 		 echo -e "    condominium (even though it sucks) \n"
 		echo -e " In one word, which coin are installing today? "
 		while :; do
