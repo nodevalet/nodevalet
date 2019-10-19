@@ -518,19 +518,22 @@ echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee
 cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
 echo -e "\n"  >> "$LOGFILE"
 	
-   if [ ! -s $INFODIR/fullauto.info ]
+if [ ! -s $INFODIR/fullauto.info ]
 	then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
 	update-rc.d postinstall_api.sh defaults  2>/dev/null
-	echo -e " Please copy the above file and paste it into the masternode.conf "
-	echo -e " file on your local wallet. Then reboot the local wallet. Next, type "
-	echo -e " 'reboot' to reboot this VPS and begin syncing the blockchain. Once "
-	echo -e " your local wallet has restarted, you may click Start Missing to start "
-	echo -e " your new masternodes. If starting any masternodes fails, you may need "
-	echo -e " to start them from debug console using 'startmasternode alias 0 MN1' "
-	echo -e " where you replace MN1 with the alias of your masternode. This is due "
-	echo -e " to a quirk in the wallet that doesn't always recognize IPv6 addresses. "
-	read -n 1 -s -r -p "  --- Please press any key to continue ---" ANYKEY
-	else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ; fi
+	echo -e " Please follow the steps below to complete your masternode setup: "
+	echo -e " 1. Please copy the above file and paste it into the masternode.conf "
+ 	echo -e "    file on your local wallet. (insert txid info to end of each line) "
+	echo -e " 2. Reboot the local wallet: type 'reboot' to reboot this VPS and "
+	echo -e "    begin syncing the blockchain. "
+	echo -e " 3. One the VPS has rebooted successfully, restart your local wallet, "
+	echo -e "    and then you may click Start Missing to start your new masternodes. "
+	echo -e " 4. If starting any masternodes fails, you may need to start them from "
+	echo -e "    debug console using 'startmasternode alias 0 MN1'  where you replace "
+	echo -e "    MN1 with the  alias of your masternode. This is due to a quirk in "
+	echo -e "    the wallet that doesn't always recognize IPv6 addresses. \n"	
+	read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
+	else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ;fi
 fi
  }
 
