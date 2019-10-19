@@ -18,6 +18,8 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INST
 echo -e "`date +%m.%d.%Y_%H:%M:%S` : Running killswitch.sh" >> "$LOGFILE"
 echo -e " User directed server to shut down and disable all masternodes.\n" >> "$LOGFILE"
 
+touch $INSTALLDIR/temp/updating
+
 for ((i=1;i<=$MNS;i++)); 
 do
 
@@ -30,3 +32,5 @@ done
 
 echo -e "\n --> All masternodes have been stopped and disabled"
 echo -e " To start them again, use command 'activate_masternodes_${PROJECT}' \n"
+
+rm -f $INSTALLDIR/temp/updating
