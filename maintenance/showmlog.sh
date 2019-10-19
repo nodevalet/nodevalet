@@ -19,6 +19,7 @@ fi
 
 clear
 echo -e "\nThis script will now display the NodeValet maintenance log"
+echo -e "which is stored at $LOGFILE"
 echo -e "**********************************************************\n"
 cat $LOGFILE
 echo -e "\n"
