@@ -40,9 +40,9 @@ EOF
 # Add to log command and do not display output on screen
 # echo " `date +%d.%m.%Y" "%H:%M:%S` : $MESSAGE" >> $LOGFILE 2>&1
 
-# write to log only, no output on screen # echo  -e "---------------------------------------------------- " >> $LOGFILE 2>&1
-# write to log only, no output on screen # echo  -e "    ** This entry gets written to the log file directly. **" >> $LOGFILE 2>&1
-# write to log only, no output on screen # echo  -e "---------------------------------------------------- \n" >> $LOGFILE 2>&1
+# write log only, no screen output # echo  -e "---------------------------------------------------- " >> $LOGFILE 2>&1
+# write log only, no screen output # echo  -e "    ** This entry gets written to the log file directly. **" >> $LOGFILE 2>&1
+# write log only, no screen output # echo  -e "---------------------------------------------------- \n" >> $LOGFILE 2>&1
 
 function setup_environment() {
     ### add colors ###
@@ -110,14 +110,14 @@ function setup_environment() {
     INFODIR='/var/tmp/nvtemp'
 
     HNAME=$(<$INFODIR/vpshostname.info)
-    PROJECT=`cat $INFODIR/vpscoin.info`
+    PROJECT=$(cat $INFODIR/vpscoin.info)
 }
 
 function begin_log() {
     # Create Log File and Begin
     printf "${lightcyan}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
@@ -133,7 +133,7 @@ function create_swap() {
     # Check for and create swap file if necessary
     printf "${yellow}"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : CHECK FOR AND CREATE SWAP " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : CHECK FOR AND CREATE SWAP " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${white}"
 
@@ -141,7 +141,7 @@ function create_swap() {
     if free | awk '/^Swap:/ {exit !$2}'; then
         printf "${lightred}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : Swap exists- No changes made " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Swap exists- No changes made " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- \n"  | tee -a "$LOGFILE"
         # sleep 2
         printf "${nocolor}"
@@ -149,7 +149,7 @@ function create_swap() {
         fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
         printf "${lightgreen}"
         echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
         echo -e "--> Thanks @Cryptotron for supplying swap code <-- "
         echo -e "-------------------------------------------------- \n" | tee -a "$LOGFILE"
         # sleep 2
@@ -173,7 +173,7 @@ function update_upgrade() {
     printf "                    |_| \n"
     printf "${yellow}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPDATE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INITIATING SYSTEM UPDATE " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${white}"
     # remove grub to prevent interactive user prompt: https://tinyurl.com/y9pu7j5s
@@ -196,7 +196,7 @@ function update_upgrade() {
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install figlet | tee -a "$LOGFILE"
     printf "${lightgreen}"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : SYSTEM UPDATED SUCCESSFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SYSTEM UPDATED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
 
     printf "${cyan}"
@@ -204,7 +204,7 @@ function update_upgrade() {
     printf "${yellow}"
     if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Upgrading Server Packages ..."}' && echo -e " " ; fi
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${white}"
     echo ' # apt-get upgrade -y' | tee -a "$LOGFILE"
@@ -215,7 +215,7 @@ function update_upgrade() {
     apt-get upgrade -y | tee -a "$LOGFILE"
     printf "${lightgreen}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : SYSTEM UPGRADED SUCCESSFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SYSTEM UPGRADED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -230,7 +230,7 @@ function favored_packages() {
     figlet Install Favored | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : INSTALLING FAVORED PACKAGES " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALLING FAVORED PACKAGES " | tee -a "$LOGFILE"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${white}"
     echo ' # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install ' | tee -a "$LOGFILE"
@@ -243,7 +243,7 @@ function favored_packages() {
         update-motd unattended-upgrades secure-delete | tee -a "$LOGFILE"
     printf "${lightgreen}"
     echo -e "----------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : FAVORED INSTALLED SUCCESFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : FAVORED INSTALLED SUCCESFULLY " | tee -a "$LOGFILE"
     echo -e "----------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -258,7 +258,7 @@ function crypto_packages() {
     figlet Install Crypto | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : INSTALLING CRYPTO PACKAGES " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALLING CRYPTO PACKAGES " | tee -a "$LOGFILE"
     echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${white}"
     echo ' # add-apt-repository -yu ppa:bitcoin/bitcoin' | tee -a "$LOGFILE"
@@ -287,7 +287,7 @@ function crypto_packages() {
     clear
     printf "${lightgreen}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : CRYPTO INSTALLED SUCCESFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : CRYPTO INSTALLED SUCCESFULLY " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -302,7 +302,7 @@ function add_user() {
     figlet User Setup | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "----------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : QUERY TO CREATE NON-ROOT USER " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : QUERY TO CREATE NON-ROOT USER " | tee -a "$LOGFILE"
     echo -e "----------------------------------------------------- \n"
     printf "${lightcyan}"
     echo " Conventional wisdom would encourage you to disable root login over SSH"
@@ -343,7 +343,7 @@ function add_user() {
             clear
             printf "${yellow}"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SKIPPING : User Already Exists " | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SKIPPING : User Already Exists " | tee -a "$LOGFILE"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             printf "${nocolor}"
         else
@@ -354,7 +354,7 @@ function add_user() {
             usermod -aG sudo ${UNAME,,} | tee -a "$LOGFILE"
             printf "${lightgreen}"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : '${UNAME,,}' added to SUDO group" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : '${UNAME,,}' added to SUDO group" | tee -a "$LOGFILE"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             # copy SSH keys if they exist
             if [ -n /root/.ssh/authorized_keys ]
@@ -365,9 +365,9 @@ function add_user() {
                 # fix permissions on RSA key
                 chmod 400 /home/${UNAME,,}/.ssh/authorized_keys
                 chown ${UNAME,,}:${UNAME,,} /home/${UNAME,,} -R
-                echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : SSH keys were copied to ${UNAME,,}'s profile" | tee -a "$LOGFILE"
+                echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : SSH keys were copied to ${UNAME,,}'s profile" | tee -a "$LOGFILE"
             else printf "${yellow}"
-                echo " `date +%m.%d.%Y_%H:%M:%S` : RSA keys not present for root, so none were copied." | tee -a "$LOGFILE"
+                echo " $(date +%m.%d.%Y_%H:%M:%S) : RSA keys not present for root, so none were copied." | tee -a "$LOGFILE"
             fi
             clear
         fi
@@ -379,7 +379,7 @@ function add_user() {
     fi
     printf "${lightgreen}"
     echo -e "---------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : USER SETUP IS COMPLETE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : USER SETUP IS COMPLETE " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------- " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -396,7 +396,7 @@ function collect_sshd() {
     SSHPORTWAS=$(sed -n -e '/^Port /p' $SSHDFILE)
     printf "${yellow}"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : CONFIGURE SSH SETTINGS " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : CONFIGURE SSH SETTINGS " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " --> Your current SSH port number is ${SSHPORTWAS} <-- " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- \n" | tee -a "$LOGFILE"
@@ -423,7 +423,7 @@ function collect_sshd() {
         else printf "${lightred}"
             echo -e " --> That number is out of range, try again. \n"
             echo "---------------------------------------------------- " >> $LOGFILE 2>&1
-            echo " `date +%m.%d.%Y_%H:%M:%S` : ERROR: User entered: $SSHPORT " >> $LOGFILE 2>&1
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: User entered: $SSHPORT " >> $LOGFILE 2>&1
             echo "---------------------------------------------------- " >> $LOGFILE 2>&1
             printf "${nocolor}"
         fi
@@ -448,14 +448,14 @@ function collect_sshd() {
     then
         printf "${lightgreen}"
         echo -e "---------------------------------------------------- "
-        echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : SSH port set to $SSHPORT " | tee -a "$LOGFILE"
+        echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : SSH port set to $SSHPORT " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${nocolor}"
     else
         printf "${lightred}"
         echo -e "---------------------------------------------------- "
         echo -e " ERROR: SSH Port couldn't be changed. Check log file for details."
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR: SSH port couldn't be changed " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: SSH port couldn't be changed " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
         printf "${nocolor}"
     fi
@@ -471,7 +471,7 @@ function prompt_rootlogin {
     figlet Root Login | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "-------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : CONFIGURE ROOT LOGIN " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : CONFIGURE ROOT LOGIN " | tee -a "$LOGFILE"
     echo -e "-------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${nocolor}"
     if [ -n "${UNAME,,}" ]
@@ -510,13 +510,13 @@ function prompt_rootlogin {
             then
                 printf "${lightgreen}"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-                echo -e " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : Root login disabled " | tee -a "$LOGFILE"
+                echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Root login disabled " | tee -a "$LOGFILE"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
                 printf "${nocolor}"
             else
                 printf "${lightred}"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-                echo -e " `date +%m.%d.%Y_%H:%M:%S` : ERROR: Couldn't disable root login" | tee -a "$LOGFILE"
+                echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: Couldn't disable root login" | tee -a "$LOGFILE"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
                 printf "${nocolor}"
             fi
@@ -555,7 +555,7 @@ function disable_passauth() {
     figlet Pass Auth | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "----------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : PASSWORD AUTHENTICATION " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PASSWORD AUTHENTICATION " | tee -a "$LOGFILE"
     echo -e "----------------------------------------------- \n"
     printf "${lightcyan}"
     echo -e " You can log into your server using an RSA public-private key pair or"
@@ -613,13 +613,13 @@ function disable_passauth() {
             then
                 printf "${lightgreen}"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-                echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : PassAuth set to NO " | tee -a "$LOGFILE"
+                echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : PassAuth set to NO " | tee -a "$LOGFILE"
                 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
                 printf "${nocolor}"
             else
                 printf "${lightred}"
                 echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-                echo " `date +%m.%d.%Y_%H:%M:%S` : ERROR: PasswordAuthentication couldn't be changed to no : " | tee -a "$LOGFILE"
+                echo " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: PasswordAuthentication couldn't be changed to no : " | tee -a "$LOGFILE"
                 echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
                 printf "${nocolor}"
             fi
@@ -639,7 +639,7 @@ function disable_passauth() {
     PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
     printf "${lightgreen}"
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : PASSWORD AUTHENTICATION COMPLETE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PASSWORD AUTHENTICATION COMPLETE " | tee -a "$LOGFILE"
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e "    Your PasswordAuthentication settings are now "  | tee -a "$LOGFILE"
     echo -e "        ** $PASSWDAUTH ** " | tee -a "$LOGFILE"
@@ -648,7 +648,7 @@ function disable_passauth() {
     clear
     printf "${lightgreen}"
     echo -e "------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : SSH CONFIG COMPLETE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SSH CONFIG COMPLETE " | tee -a "$LOGFILE"
     echo -e "------------------------------------------- " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -663,7 +663,7 @@ function ufw_config() {
     figlet Firewall Config | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "---------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : FIREWALL CONFIGURATION " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : FIREWALL CONFIGURATION " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------- \n"
     printf "${lightcyan}"
     echo -e " Uncomplicated Firewall (UFW) is a program for managing a"
@@ -712,7 +712,7 @@ function ufw_config() {
     clear
     printf "${lightgreen}"
     echo -e "------------------------------------------------ " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : FIREWALL CONFIG COMPLETE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : FIREWALL CONFIG COMPLETE " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------ " | tee -a "$LOGFILE"
     printf "${nocolor}"
 }
@@ -727,7 +727,7 @@ function server_hardening() {
     figlet Get Hard | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : QUERY TO HARDEN THE SERVER " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : QUERY TO HARDEN THE SERVER " | tee -a "$LOGFILE"
     echo -e "-------------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${lightcyan}"
     echo -e " The next steps are to secure your server's shared memory, prevent"
@@ -752,7 +752,7 @@ function server_hardening() {
         # secure shared memory
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : SECURING SHARED MEMORY " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SECURING SHARED MEMORY " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo -e ' --> Adding line to bottom of file /etc/fstab'  | tee -a "$LOGFILE"
@@ -767,7 +767,7 @@ function server_hardening() {
         # prevent IP spoofing
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : PREVENTING IP SPOOFING " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PREVENTING IP SPOOFING " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo -e " --> Updating /etc/host.conf to include 'nospoof' " | tee -a "$LOGFILE"
@@ -778,7 +778,7 @@ function server_hardening() {
         # enable DDOS protection
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : ENABLING DDOS PROTECTION " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ENABLING DDOS PROTECTION " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo -e " Replace /etc/ufw/before.rules with hardened rules " | tee -a "$LOGFILE"
@@ -789,7 +789,7 @@ function server_hardening() {
         # harden the networking layer
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : HARDENING NETWORK LAYER " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : HARDENING NETWORK LAYER " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo -e " --> Secure /etc/sysctl.conf with hardening rules " | tee -a "$LOGFILE"
@@ -800,7 +800,7 @@ function server_hardening() {
         # enable automatic security updates
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : ENABLING SECURITY UPDATES " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ENABLING SECURITY UPDATES " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo -e " Configure system to auto install security updates " | tee -a "$LOGFILE"
@@ -815,13 +815,13 @@ function server_hardening() {
         then 	echo -e " \n" ; clear
             printf "${green}"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : Server Hardened" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Server Hardened" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
             printf "${nocolor}"
         else	clear
             printf "${lightred}"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : ERROR: Hardening Failed" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: Hardening Failed" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
             printf "${nocolor}"
         fi
@@ -852,7 +852,7 @@ function ksplice_install() {
     figlet Ksplice Uptrack | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "---------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : INSTALL ORACLE KSPLICE " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALL ORACLE KSPLICE " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${lightcyan}"
     echo -e " Normally, kernel updates in Linux require a system reboot. Ksplice"
@@ -875,7 +875,7 @@ function ksplice_install() {
         # install ksplice uptrack
         printf "${yellow}"
         echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : INSTALLING KSPLICE PACKAGES " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALLING KSPLICE PACKAGES " | tee -a "$LOGFILE"
         echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
         printf "${white}"
         echo ' # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install ' | tee -a "$LOGFILE"
@@ -892,7 +892,7 @@ function ksplice_install() {
             python-gtk2 python-pycurl python-yaml dbus-x11 | tee -a "$LOGFILE"
         printf "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " `date +%m.%d.%Y_%H:%M:%S` : KSPLICE PACKAGES INSTALLED" | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : KSPLICE PACKAGES INSTALLED" | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
         echo -e " --> Download & install Ksplice package from Oracle " | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
@@ -903,7 +903,7 @@ function ksplice_install() {
         then
             printf "${lightgreen}"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-            echo -e " `date +%m.%d.%Y_%H:%M:%S` : KSPLICE UPTRACK INSTALLED" | tee -a "$LOGFILE"
+            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : KSPLICE UPTRACK INSTALLED" | tee -a "$LOGFILE"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             printf "${yellow}"
             echo -e " ** Enabling autoinstall & correcting permissions ** " | tee -a "$LOGFILE"
@@ -920,20 +920,20 @@ function ksplice_install() {
             uptrack-upgrade -y | tee -a "$LOGFILE"
             printf "${lightgreen}"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-            echo -e " `date +%m.%d.%Y_%H:%M:%S` : KSPLICE UPDATES INSTALLED" | tee -a "$LOGFILE"
+            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : KSPLICE UPDATES INSTALLED" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------- \n" | tee -a "$LOGFILE"
             printf "${nocolor}"
             sleep 1	; #  dramatic pause
             clear
             printf "${lightgreen}"
             echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : Ksplice Enabled" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Ksplice Enabled" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------- \n" | tee -a "$LOGFILE"
             printf "${nocolor}"
         else  	printf "${lightred}"
             clear
             echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : FAIL : Ksplice was not Installed" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : FAIL : Ksplice was not Installed" | tee -a "$LOGFILE"
             echo -e "-------------------------------------------------------- \n" | tee -a "$LOGFILE"
             printf "${nocolor}"
         fi
@@ -965,7 +965,7 @@ function motd_install() {
     figlet Enhance MOTD | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : PROMPT USER TO INSTALL MOTD " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PROMPT USER TO INSTALL MOTD " | tee -a "$LOGFILE"
     echo -e "--------------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${lightcyan}"
     echo -e " The normal MOTD banner displayed after a successful SSH login"
@@ -1004,12 +1004,12 @@ function motd_install() {
         if [ $? -eq 0 ]
         then printf "${lightgreen}"
             echo -e "------------------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : MOTD & Banner updated" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : MOTD & Banner updated" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------------- " | tee -a "$LOGFILE"
             printf "${nocolor}"
         else printf "${lightred}"
             echo -e "----------------------------------------------- " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : ERROR: MOTD not updated" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: MOTD not updated" | tee -a "$LOGFILE"
             echo -e "----------------------------------------------- \n" | tee -a "$LOGFILE"
         fi
 
@@ -1033,7 +1033,7 @@ function restart_sshd() {
     figlet Restart SSH | tee -a "$LOGFILE"
     printf "${yellow}"
     echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : PROMPT USER TO RESTART SSH " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PROMPT USER TO RESTART SSH " | tee -a "$LOGFILE"
     echo -e "-------------------------------------------------- \n" | tee -a "$LOGFILE"
     printf "${lightcyan}"
     echo " Changes to login security will not take effect until SSHD restarts"
@@ -1067,12 +1067,12 @@ function restart_sshd() {
         if [ $? -eq 0 ]
         then 	printf "${lightgreen}"
             echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : SSHD restart complete" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : SSHD restart complete" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
             printf "${nocolor}"
             if [ $FIREWALLP = "yes" ] || [ $FIREWALLP = "y" ]
             printf "${lightgreen}"
-            then echo " `date +%m.%d.%Y_%H:%M:%S` : SUCCESS : UFW firewall enabled" | tee -a "$LOGFILE"
+            then echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : UFW firewall enabled" | tee -a "$LOGFILE"
                 echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
                 printf "${nocolor}"
             else :
@@ -1080,7 +1080,7 @@ function restart_sshd() {
         else
             printf "${lightred}"
             echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
-            echo " `date +%m.%d.%Y_%H:%M:%S` : ERROR: SSHD could not restart" | tee -a "$LOGFILE"
+            echo " $(date +%m.%d.%Y_%H:%M:%S) : ERROR: SSHD could not restart" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
         fi
 
@@ -1104,7 +1104,7 @@ function install_complete() {
     figlet Install Complete -f small | tee -a "$LOGFILE"
     printf "${lightgreen}"
     echo -e "---------------------------------------------------- " >> $LOGFILE 2>&1
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : YOUR SERVER IS NOW SECURE " >> $LOGFILE 2>&1
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : YOUR SERVER IS NOW SECURE " >> $LOGFILE 2>&1
     printf "${lightpurple}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e "  * * * Save these important login variables! * * *  " | tee -a "$LOGFILE"
