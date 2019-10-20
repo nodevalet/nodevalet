@@ -41,7 +41,7 @@ function setup_environment() {
     # Create Log File and Begin
     clear
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
     echo -e " ------------Masternodes Made Easier ---------------- " | tee -a "$LOGFILE"
@@ -49,7 +49,7 @@ function setup_environment() {
 
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
-    then PROJECT=`cat $INFODIR/vpscoin.info`
+    then PROJECT=$(cat $INFODIR/vpscoin.info)
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
         touch $INFODIR/fullauto.info
@@ -57,16 +57,14 @@ function setup_environment() {
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
     else echo -e " Please choose from one of the following supported coins to install:"
-        # echo -e "    helium | audax | smart (smartcash) \n"
-        echo -e "    helium | audax | pivx | phore"
-        echo -e "    condominium (even though it sucks) \n"
+        echo -e "    helium | audax | pivx | phore \n"
         echo -e " In one word, which coin are installing today? "
         while :; do
             read -p "  --> " PROJECT
-            if [ -d $INSTALLDIR/nodemaster/config/${PROJECT,,} ]
+            if [ -d $INSTALLDIR/nodemaster/config/"${PROJECT,,}" ]
             then touch $INFODIR/vpscoin.info
                 echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
-                PROJECT=`cat $INFODIR/vpscoin.info`
+                PROJECT=$(cat $INFODIR/vpscoin.info)
                 PROJECTl=${PROJECT,,}
                 PROJECTt=${PROJECTl~}
                 echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE
@@ -81,7 +79,7 @@ function setup_environment() {
     if [ -e $INFODIR/vpshostname.info ]
     then HNAME=$(<$INFODIR/vpshostname.info)
         echo -e " Setting Hostname to $HNAME : vpshostname.info found" >> $LOGFILE
-    else HNAME=`hostname`
+    else HNAME=$(hostname)
         touch $INFODIR/vpshostname.info
         echo -e "$HNAME" > $INFODIR/vpshostname.info
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
@@ -90,7 +88,7 @@ function setup_environment() {
     sleep 6
 
     # set mnode daemon name from project.env
-    MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+    MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
     echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
@@ -99,7 +97,7 @@ function setup_environment() {
     echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
 
     # create or assign onlynet from project.env
-    ONLYNET=`grep ^ONLYNET $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
+    ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
     echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
     sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
     ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
@@ -117,8 +115,8 @@ function setup_environment() {
 elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=`grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}'`
-        MAXNODES=`echo $NODES | awk '{print int($1+0.5)}'`
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
+        MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n This server's memory can safely support $MAXNODES masternodes."
         echo -e " Please enter the number of masternodes to install : "
         while :; do
@@ -137,7 +135,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -s $INFODIR/vpsmnprefix.info ]
     then :
         echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
-    else MNPREFIX=`hostname`
+    else MNPREFIX=$(hostname)
         echo -e " Generating aliases from hostname ($MNPREFIX) : vpsmnprefix.info not found" >> $LOGFILE
     fi
 
@@ -230,7 +228,7 @@ elif [ "$ONLYNET" = 4 ]
             read -p "  --> " SSHPORT
             [[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
-            elif [ $SSHPORT = 22 ]; then break
+            elif [ "$SSHPORT" = 22 ]; then break
             else printf "${lightred}"
                 echo -e "\n --> That number is out of range, try again. \n"
                 printf "${nocolor}"
@@ -245,8 +243,8 @@ elif [ "$ONLYNET" = 4 ]
     echo -e "\n"
 
     # Pull BLOCKEXP from $PROJECT.env
-    BLOCKEX=`grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-    if [ -n $BLOCKEX ]
+    BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$BLOCKEX" ]
     then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
         sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
         BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
@@ -260,7 +258,7 @@ elif [ "$ONLYNET" = 4 ]
 }
 
 function add_cron() {
-    echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Adding crontabs"  | tee -a "$LOGFILE"
+    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
     chmod 0700 $INSTALLDIR/*.sh
     chmod 0700 $INSTALLDIR/maintenance/*.sh
     echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
@@ -296,7 +294,7 @@ function silent_harden() {
     then echo -e " This server seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
     else echo -e " This server is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
         echo -e " Server hardening log is saved at /var/tmp/nodevalet/logs/vps-harden.log \n" | tee -a "$LOGFILE"
-        cd $INSTALLDIR/vps-harden
+        cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
     echo -e "Installing jq and jp2a and unzip packages" | tee -a "$LOGFILE"
@@ -307,25 +305,25 @@ function silent_harden() {
 }
 
 function install_mns() {
-    if [ -e /etc/masternodes/$PROJECT_n1.conf ]
+    if [ -e /etc/masternodes/"$PROJECT_n1".conf ]
     then touch $INSTALLDIR/temp/mnsexist
         echo -e "Pre-existing masternodes detected; no changes to them will be made" > $INSTALLDIR/mnsexist
         echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
     else
-        cd $INSTALLDIR/nodemaster
+        cd $INSTALLDIR/nodemaster || exit
         echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
         # echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
         # sudo git clone https://github.com/heliumchain/vps.git && cd vps
-        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c $MNS | tee -a "$LOGFILE"
-        sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
+        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
+        sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
-        activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
+        activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
         sleep 2
 
         # check if $PROJECTd was built correctly and started
-        ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
-        cat $INSTALLDIR/temp/${PROJECT}Ds >> $LOGFILE
-        if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
+        ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
+        cat $INSTALLDIR/temp/"${PROJECT}"Ds >> $LOGFILE
+        if [ -s $INSTALLDIR/temp/"${PROJECT}"Ds ]
         then echo -e "\nIt looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
             # report back to mother
             if [ -e $INFODIR/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
@@ -368,8 +366,8 @@ EOT
             do
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
-                elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
-            else /usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
+            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
@@ -416,22 +414,22 @@ EOT
             tr -d '[:blank:]' < $INSTALLDIR/temp/GENKEY${i}FIN > $INSTALLDIR/temp/MNPRIVKEY$i
 
             # assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
-            GENKEYVAR=`cat $INSTALLDIR/temp/MNPRIVKEY$i`
+            GENKEYVAR=$(cat $INSTALLDIR/temp/MNPRIVKEY$i)
 
             # insert new genkey into project_n$i.conf files (special case for smartnodes)
             if [ "${PROJECT,,}" = "smart" ] ; then
-                sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
-                masternodeprivkeyafter=`grep ^smartnodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+                sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
+                masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE ; else
-                sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/${PROJECT}_n$i.conf
-                masternodeprivkeyafter=`grep ^masternodeprivkey /etc/masternodes/${PROJECT}_n$i.conf`
+                sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
+                masternodeprivkeyafter=$(grep ^masternodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
             fi
 
             # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/${PROJECT}_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
 
             # remove "bind=" from mnipaddresses
             sed -i "s/bind=//" $INSTALLDIR/temp/mnipaddresses 2>&1
@@ -439,8 +437,8 @@ EOT
             # the next line produces the IP addresses for this masternode
             echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
 
-            PUBLICIP=`sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
-            PRIVATEIP=`sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+            PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
+            PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 
             # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
             if [ "$PRIVATEIP" != "$PUBLICIP" ]
@@ -451,14 +449,14 @@ EOT
             # Check for presence of txid and, if present, use it for txid/txidx
             if [ -e $INFODIR/vpsmntxdata.info ]
             then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
-                TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
-                echo -e $TX >> $INSTALLDIR/temp/txid
-                echo -e $TX > $INSTALLDIR/temp/TXID$i
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" >> $INSTALLDIR/temp/txid
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 # Query nodevalet block explorer for collateral transaction
-            else curl -s "$BLOCKEXP`cat $INSTALLDIR/temp/MNADD$i`" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                TX=`echo $(cat $INSTALLDIR/temp/TXID$i)`
-                echo -e $TX >> $INSTALLDIR/temp/txid
-                echo -e $TX > $INSTALLDIR/temp/TXID$i
+            else curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" >> $INSTALLDIR/temp/txid
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
             fi
 
             # replace null with txid info
@@ -492,7 +490,7 @@ EOT
 
             # declutter ; take out trash
             rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/${PROJECT}Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
             rm $INSTALLDIR/0 --force
 
             echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
@@ -529,7 +527,7 @@ EOT
         rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
         rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-        rm $INSTALLDIR/temp/${PROJECT}Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
         rm $INSTALLDIR/temp/ONLYNET --force
 
         clear
@@ -571,8 +569,8 @@ function install_binaries() {
     echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
-    GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-    if [ -n $GIT_API ] ; then
+    GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$GIT_API" ] ; then
         echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
         sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
         GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
@@ -580,42 +578,42 @@ function install_binaries() {
 
         # Try and install Binaries now
         # Pull GITSTRING from $PROJECT.gitstring
-        GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
+        GITSTRING=$(cat $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".gitstring)
 
         mkdir $INSTALLDIR/temp/bin
-        cd $INSTALLDIR/temp/bin
+        cd $INSTALLDIR/temp/bin || exit
 
-        curl -s $GITAPI_URL \
+        curl -s "$GITAPI_URL" \
             | grep browser_download_url \
-            | grep $GITSTRING \
+            | grep "$GITSTRING" \
             | cut -d '"' -f 4 \
             | wget -qi -
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         if [[ $TARBALL == *.gz ]]
-        then tar -xzf $TARBALL
-        else unzip $TARBALL
+        then tar -xzf "$TARBALL"
+        else unzip "$TARBALL"
         fi
-        rm -f $TARBALL
-        cd  "$(\ls -1dt ./*/ | head -n 1)"
+        rm -f "$TARBALL"
+        cd  "$(\ls -1dt ./*/ | head -n 1)" || exit
         find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp ${PROJECT}* '/usr/local/bin'
+        cp "${PROJECT}"* '/usr/local/bin'
         cd ..
         rm -r -f *
-        cd
-        cd /usr/local/bin
-        chmod 777 ${PROJECT}*
+        cd || exit
+        cd /usr/local/bin || exit
+        chmod 777 "${PROJECT}"*
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
     fi
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-    dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
+    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [ "$dEXIST" = "${MNODE_DAEMON}" ]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-        curl -s $GITAPI_URL \
+        curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
