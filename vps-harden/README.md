@@ -53,15 +53,15 @@ sudo git clone https://github.com/akcryptoguy/vps-harden.git && cd vps-harden &&
 
 The script will then walk you through each of the server hardening steps, offering prompts for feedback and other notes along the way. You really can't mess it up. I have tried.
 
-<p align="center"><img src="/media/07. root login.png" alt="Root Login"></p>
+<p align="center"><img src="https://github.com/nodevalet/nodevalet/blob/master/vps-harden/media/07. root login.png" alt="Root Login"></p>
 
 The script will keep a log of changes that are made to the system which you can review when it is complete. The output will also be dispalyed on the screen.
 
-<p align="center"><img src="/media/11. hardening rules.png" alt="Hardening Rules"></p>
+<p align="center"><img src="https://github.com/nodevalet/nodevalet/blob/master/vps-harden/media/11. hardening rules.png" alt="Hardening Rules"></p>
 
 When you are finished, you'll see confirmation that the script completed setup and you will be given a list of notes about your installation. The installation log file is stored in the server's log folder at `/var/log/server_hardening.log`
 
-<p align="center"><img src="/media/15 install complete.png" alt="Install Complete"></p>
+<p align="center"><img src="https://github.com/nodevalet/nodevalet/blob/master/vps-harden/media/15 install complete.png" alt="Install Complete"></p>
 
 I would recommend that you take a screenshot of that page and save it for later. It has important information about your setup and if you don't keep note of the settings you entered, you could find yourself locked out of your server.
 
