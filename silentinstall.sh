@@ -320,7 +320,7 @@ function install_mns() {
         sudo bash install.sh -n $ONLYNET -p $PROJECT -c $MNS
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_$PROJECT echo -e | tee -a "$LOGFILE"
-        # sleep 1
+        sleep 2
 
         # check if $PROJECTd was built correctly and started
         ps -A | grep $MNODE_DAEMON >> $INSTALLDIR/temp/${PROJECT}Ds
