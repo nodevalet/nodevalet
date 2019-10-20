@@ -155,13 +155,13 @@ elif [ "$ONLYNET" = 4 ]
         for ((i=1;i<=$MNS;i++));
         do
             while :; do
-                printf "${cyan}"
+                echo -e "${cyan}"
                 echo -e "\n Please enter the $PROJECTt address for masternode #$i"
                 read -p "  --> " MNADDP
                 echo -e "You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then printf "${nocolor}" ; break
+                then echo -e "${nocolor}" ; break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
@@ -181,12 +181,12 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " (An example of when you would want to enter them yourself would"
         echo -e " be if you are trying to migrate running masternodes to this VPS)\n"
         read -p " Would you like your server to generate genkeys for you? y/n  " GETGENKEYS
-        printf "${nocolor}"
+        echo -e "${nocolor}"
 
         while [ "${GETGENKEYS,,}" != "yes" ] && [ "${GETGENKEYS,,}" != "no" ] && [ "${GETGENKEYS,,}" != "y" ] && [ "${GETGENKEYS,,}" != "n" ]; do
-            printf "${lightred}"
+            echo -e "${lightred}"
             read -p " --> I don't understand. Enter 'y' for yes or 'n' for no: " GETGENKEYS
-            printf "${nocolor}"
+            echo -e "${nocolor}"
         done
 
         if [ "${GETGENKEYS,,}" = "no" ] || [ "${GETGENKEYS,,}" = "n" ]
@@ -196,13 +196,13 @@ elif [ "$ONLYNET" = 4 ]
             for ((i=1;i<=$MNS;i++));
             do
                 while :; do
-                    printf "${cyan}"
+                    echo -e "${cyan}"
                     echo -e "\n\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
                     echo -e "You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                    then printf "${nocolor}"
+                    then echo -e "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
                         echo -e " \n"
@@ -221,17 +221,17 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        printf "${cyan}"
+        echo -e "${cyan}"
         echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
         echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
         while :; do
             read -p "  --> " SSHPORT
-            [[ $SSHPORT =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> Try harder, that's not even a number.";printf "${nocolor}";continue; }
+            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e "${lightred}";echo -e " --> Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
             elif [ "$SSHPORT" = 22 ]; then break
-            else printf "${lightred}"
+            else echo -e "${lightred}"
                 echo -e "\n --> That number is out of range, try again. \n"
-                printf "${nocolor}"
+                echo -e "${nocolor}"
             fi
         done
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE

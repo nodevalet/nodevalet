@@ -20,9 +20,8 @@
     nocolor=$'\e[0m' # no color
 
 # Used this while testing color output
-clear
-printf " ${lightred}Light Red${nocolor}\n"
-printf " ${red}Red${nocolor}\n"
+echo -e " ${lightred}Light Red${nocolor}"
+echo -e " ${red}Red${nocolor}"
 printf " ${lightgreen}Light Green${nocolor}\n"
 printf " ${green}Green${nocolor}\n"
 printf " ${lightblue}Light Blue${nocolor}\n"
@@ -41,4 +40,3 @@ printf " ${cyan}Cyan\n"
 figlet " hello $(whoami)" -f small
 printf "Text in ${red}red${nocolor}, ${white}white${nocolor} and ${blue}blue${nocolor}.\n"
 printf " ${nocolor}${nocolor}\n"
-
