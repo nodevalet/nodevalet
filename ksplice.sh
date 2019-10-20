@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # install Ksplice Uptrack
 
