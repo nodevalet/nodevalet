@@ -202,7 +202,7 @@ elif [ "$ONLYNET" = 4 ]
                     echo -e "You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                    then printf "${cyan}"
+                    then printf "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
                         echo -e " \n"
