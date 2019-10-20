@@ -7,24 +7,24 @@ function setup_environment() {
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
 
-    # Add Colors
-    lightred='\033[1;31m'  # light red
-    red='\033[0;31m'  # red
-    lightgreen='\033[1;32m'  # light green
-    green='\033[0;32m'  # green
-    lightblue='\033[1;34m'  # light blue
-    blue='\033[0;34m'  # blue
-    lightpurple='\033[1;35m'  # light purple
-    purple='\033[0;35m'  # purple
-    lightcyan='\033[1;36m'  # light cyan
-    cyan='\033[0;36m'  # cyan
-    lightgray='\033[0;37m'  # light gray
-    white='\033[1;37m'  # white
-    brown='\033[0;33m'  # brown
-    yellow='\033[1;33m'  # yellow
-    darkgray='\033[1;30m'  # dark gray
-    black='\033[0;30m'  # black
-    nocolor='\033[0m'    # no color
+    ### define colors ###
+    lightred=$'\033[1;31m'  # light red
+    red=$'\033[0;31m'  # red
+    lightgreen=$'\033[1;32m'  # light green
+    green=$'\033[0;32m'  # green
+    lightblue=$'\033[1;34m'  # light blue
+    blue=$'\033[0;34m'  # blue
+    lightpurple=$'\033[1;35m'  # light purple
+    purple=$'\033[0;35m'  # purple
+    lightcyan=$'\033[1;36m'  # light cyan
+    cyan=$'\033[0;36m'  # cyan
+    lightgray=$'\033[0;37m'  # light gray
+    white=$'\033[1;37m'  # white
+    brown=$'\033[0;33m'  # brown
+    yellow=$'\033[1;33m'  # yellow
+    darkgray=$'\033[1;30m'  # dark gray
+    black=$'\033[0;30m'  # black
+    nocolor=$'\e[0m' # no color
 
     # create root/installtemp if it doesn't exist
     if [ ! -d $INSTALLDIR ]
