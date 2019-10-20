@@ -161,7 +161,7 @@ elif [ "$ONLYNET" = 4 ]
                 echo -e "You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then printf "${cyan}" ; break
+                then printf "${nocolor}" ; break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
@@ -318,7 +318,8 @@ function install_mns() {
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-        sleep 2
+        echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
+		sleep 2
 
         # check if $PROJECTd was built correctly and started
         ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
