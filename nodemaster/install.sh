@@ -97,7 +97,7 @@ function show_help(){
     echo "-u or --update: Update a specific masternode daemon. Combine with the -p option";
     echo "-r or --release: Release version to be installed.";
     echo "-x or --startnodes: Start masternodes after installation to sync with blockchain";
-    exit 1;
+	exit 1;
 }
 
 #
@@ -109,11 +109,13 @@ function check_distro() {
         . /etc/os-release
         if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]] ; then
             echo "This script only supports Ubuntu 16.04 & 18.04 LTS, exiting."
+			if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
             exit 1
         fi
     else
         # no, thats not ok!
         echo "This script only supports Ubuntu 16.04 & 18.04 LTS, exiting."
+		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
         exit 1
     fi
 }
@@ -470,14 +472,17 @@ function source_config() {
         if [ "$update" -eq 1 ]; then
             if [ ! -f "${MNODE_DAEMON}" ]; then
                 echo "UPDATE FAILED! Daemon hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
-                exit 1
+                if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! Daemon not found  ..."}' && echo -e " " ; fi
+				exit 1
             fi
             if [ ! -f "${MNODE_HELPER}"_"${CODENAME}" ]; then
                 echo "UPDATE FAILED! Masternode activation file ${MNODE_HELPER}_${CODENAME} hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
+				if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! Masternode activation file not found  ..."}' && echo -e " " ; fi
                 exit 1
             fi
             if [ ! -d "${MNODE_DATA_BASE}" ]; then
                 echo "UPDATE FAILED! ${MNODE_DATA_BASE} hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
+				if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! MNODE_DATA_BASE was not found  ..."}' && echo -e " " ; fi
                 exit 1
             fi
         fi
@@ -604,6 +609,7 @@ function build_mn_from_source() {
     # if it's not available after compilation, theres something wrong
     if [ ! -f "${MNODE_DAEMON}" ]; then
         echo "COMPILATION FAILED! Please open an issue at https://github.com/masternodes/vps/issues. Thank you!"
+		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Compiling the wallet failed  ..."}' && echo -e " " ; fi
         exit 1
     fi
 }
@@ -680,7 +686,8 @@ function prepare_mn_interfaces() {
     # check interface status
     if [[ "${ETH_STATUS}" = "down" ]] || [[ "${ETH_STATUS}" = "" ]]; then
         echo "Default interface is down, fallback didn't work. Break here."
-        exit 1
+        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Default interface is down. Rebuild VPS & try again  ..."}' && echo -e " " ; fi
+		exit 1
     fi
 
     # DO ipv6 fix, are we on DO?
@@ -703,6 +710,7 @@ function prepare_mn_interfaces() {
     # check for vultr ipv6 box active
     if [ -z "${IPV6_INT_BASE}" ] && [ "${net}" -ne 4 ]; then
         echo "No IPv6 support on the VPS but IPv6 is the setup default. Please switch to ipv4 with flag \"-n 4\" if you want to continue."
+		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: No IPv6 support on VPS but IPv6 was selected. Try again  ..."}' && echo -e " " ; fi		
         echo ""
         echo "See the following link for instructions how to add multiple ipv4 addresses on vultr:"
         echo "${IPV4_DOC_LINK}"
