@@ -344,9 +344,12 @@ function install_mns() {
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
         # echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
 		
-		sleep 2  ---- this line seems to break things for all chains but PIVX
-
-        # check if $PROJECTd was built correctly and started
+		# this line seems to break things for all chains but PIVX
+		# some engines will quickly fail if they detect the .conf file is missing
+		# so it becomes necessary to check for the daemon before it stops
+		if [ "${PROJECT,,}" = "pivx" ] then echo "sleeping 2 seconds for PIVX" && sleep 2; fi 
+				
+		# check if $PROJECTd was built correctly and started
         ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
         cat $INSTALLDIR/temp/"${PROJECT}"Ds >> $LOGFILE
         if [ -s $INSTALLDIR/temp/"${PROJECT}"Ds ]
