@@ -6,7 +6,7 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
-	# enable 'showlog' command ASAP
+
     sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
     chmod 0700 $INSTALLDIR/maintenance/showlog.sh
 
@@ -128,7 +128,7 @@ function setup_environment() {
     echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
     sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
     ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-    if [ "$ONLYNET" > 0 ]
+    if [ "$ONLYNET" gt 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
@@ -350,10 +350,12 @@ function install_mns() {
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
 
         then
+
             # report back to mother
             if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
 
         else
+
             # continue checking for daemon for 10 seconds before reporting failure
             for ((H=1;H<=10;H++));
             do
@@ -654,13 +656,16 @@ chmod 777 ${PROJECT}*
 	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
 	fi
 
-# check if binaries exist, skip installing crypto packages if they aren't needed
-    if [ -s /usr/local/bin/${MNODE_DAEMON} ]
-    then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-    curl -s $GITAPI_URL \
+# check if binaries already exist, skip installing crypto packages if they aren't needed
+dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
+
+if [ "$dEXIST" = "${MNODE_DAEMON}" ]
+then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+curl -s $GITAPI_URL \
       | grep tag_name > $INSTALLDIR/temp/currentversion
-    else echo -e "Binaries for ${PROJECTt} were not downloaded \n"  | tee -a "$LOGFILE"
-    fi
+     
+else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+fi
 }
 
 function restart_server() {
