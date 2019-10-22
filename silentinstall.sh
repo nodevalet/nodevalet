@@ -7,9 +7,6 @@ function setup_environment() {
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
 
-    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
-    chmod 0700 $INSTALLDIR/maintenance/showlog.sh
-
     ### define colors ###
     lightred=$'\033[1;31m'  # light red
     red=$'\033[0;31m'  # red
@@ -346,6 +343,13 @@ function install_mns() {
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
+        # this line seems to break things for all chains but PIVX
+        # some engines will quickly fail if they detect the .conf file is missing
+        # so it becomes necessary to check for the daemon before it stops
+        # if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
+        # sleep 2
+        # else echo "not sleeping 2 seconds" ; fi
+
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
 
@@ -356,13 +360,12 @@ function install_mns() {
 
         else
 
-            # continue checking for daemon for 10 seconds before reporting failure
             for ((H=1;H<=10;H++));
             do
                 if ps -A | grep "$MNODE_DAEMON" > /dev/null
                 then
                     # report back to mother
-                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success after waiting ${H} second(s) to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
                     break
                 else
 
