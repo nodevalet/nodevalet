@@ -354,20 +354,39 @@ function install_mns() {
 				
 		
 		
-		# check if $PROJECTd was built correctly and started
-        ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
-        cat $INSTALLDIR/temp/"${PROJECT}"Ds >> $LOGFILE
-        if [ -s $INSTALLDIR/temp/"${PROJECT}"Ds ]
-        then echo -e "\nIt looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
-            # report back to mother
-            if [ -e $INFODIR/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
-        else echo -e "The daemon ${MNODE_DAEMON} does not appear to be running... " | tee -a "$LOGFILE"
-			echo -e "Aborting installation, can't install masternodes without ${MNODE_DAEMON}" | tee -a "$LOGFILE"
-			# report error, exit script maybe or see if it can self-correct
-			echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
-             if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start"}' && echo -e " " ; fi
-            exit
-        fi
+		#!/bin/bash
+ # check if $PROJECTd was built correctly and started
+if ps -A | grep "$MNODE_DAEMON" > /dev/null
+
+then
+
+    # report back to mother
+    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+
+else
+
+	for ((H=1;H<=10;H++));
+            do
+				if ps -A | grep "$MNODE_DAEMON" > /dev/null
+				then 
+				# report back to mother
+    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+				break
+				else
+				
+					if [ "${H}" = "10" ]
+					then echo " "
+						echo -e "After 10 seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
+						echo -e "so we are going to abort this installation now. \n" | tee -a "$LOGFILE"
+						echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
+						if [ -e "$INFODIR"/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start after 10 seconds"}' && echo -e " " ; fi
+						exit
+					fi
+				sleep 1
+				fi
+done
+fi
+
     fi
 }
 
