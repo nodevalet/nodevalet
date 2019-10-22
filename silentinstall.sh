@@ -125,7 +125,7 @@ function setup_environment() {
     echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
     sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
     ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-    if [ "$ONLYNET" > 0 ]
+    if [ "$ONLYNET" gt 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
@@ -620,8 +620,8 @@ function install_binaries() {
     echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
-    GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-    if [ -n $GIT_API ] ; then
+    GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$GIT_API" ] ; then
         echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
         sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
         GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
@@ -629,42 +629,42 @@ function install_binaries() {
 
         # Try and install Binaries now
         # Pull GITSTRING from $PROJECT.gitstring
-        GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
+        GITSTRING=$(cat $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".gitstring)
 
         mkdir $INSTALLDIR/temp/bin
-        cd $INSTALLDIR/temp/bin
+        cd $INSTALLDIR/temp/bin || exit
 
-        curl -s $GITAPI_URL \
+        curl -s "$GITAPI_URL" \
             | grep browser_download_url \
-            | grep $GITSTRING \
+            | grep "$GITSTRING" \
             | cut -d '"' -f 4 \
             | wget -qi -
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         if [[ $TARBALL == *.gz ]]
-        then tar -xzf $TARBALL
-        else unzip $TARBALL
+        then tar -xzf "$TARBALL"
+        else unzip "$TARBALL"
         fi
-        rm -f $TARBALL
-        cd  "$(\ls -1dt ./*/ | head -n 1)"
+        rm -f "$TARBALL"
+        cd  "$(\ls -1dt ./*/ | head -n 1)" || exit
         find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp ${PROJECT}* '/usr/local/bin'
+        cp "${PROJECT}"* '/usr/local/bin'
         cd ..
         rm -r -f *
-        cd
-        cd /usr/local/bin
-        chmod 777 ${PROJECT}*
+        cd || exit
+        cd /usr/local/bin || exit
+        chmod 777 "${PROJECT}"*
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
     fi
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-    dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
+    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [ "$dEXIST" = "${MNODE_DAEMON}" ]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-        curl -s $GITAPI_URL \
+        curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
