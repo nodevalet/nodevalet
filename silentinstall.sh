@@ -6,6 +6,9 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
+    # enable 'showlog' command ASAP
+    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
+    chmod 0700 $INSTALLDIR/maintenance/showlog.sh
 
     ### define colors ###
     lightred=$'\033[1;31m'  # light red
