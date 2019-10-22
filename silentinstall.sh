@@ -607,68 +607,68 @@ EOT
 
 function install_binaries() {
 
-    #make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
-    if [ "${PROJECT,,}" = "bitsend" ]
-    then echo -e "Bitsend detected, initiating funky installation process...\n"
-        # insert specific steps here
-        add-apt-repository -y ppa:bitcoin/bitcoin
-        apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
-        apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
-    fi
+#make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
+if [ "${PROJECT,,}" = "bitsend" ]
+then echo -e "Bitsend detected, initiating funky installation process...\n"
+# insert specific steps here
+add-apt-repository -y ppa:bitcoin/bitcoin
+apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
+apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
+fi
 
-    #check for binaries and install if found
-    echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+#check for binaries and install if found
+echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
-    # Pull GITAPI_URL from $PROJECT.env
-    GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-    if [ -n "$GIT_API" ] ; then
-        echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-        sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-        GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
-        echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
+	# Pull GITAPI_URL from $PROJECT.env
+	GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+	if [ -n $GIT_API ] ; then 
+	echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
+	sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
+	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
+	
+# Try and install Binaries now	
+# Pull GITSTRING from $PROJECT.gitstring
+GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
 
-        # Try and install Binaries now
-        # Pull GITSTRING from $PROJECT.gitstring
-        GITSTRING=$(cat $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".gitstring)
+mkdir $INSTALLDIR/temp/bin
+cd $INSTALLDIR/temp/bin
 
-        mkdir $INSTALLDIR/temp/bin
-        cd $INSTALLDIR/temp/bin || exit
-
-        curl -s "$GITAPI_URL" \
-            | grep browser_download_url \
-            | grep "$GITSTRING" \
-            | cut -d '"' -f 4 \
-            | wget -qi -
-        TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+curl -s $GITAPI_URL \
+       	| grep browser_download_url \
+	| grep $GITSTRING \
+	| cut -d '"' -f 4 \
+	| wget -qi -
+TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         if [[ $TARBALL == *.gz ]]
-        then tar -xzf "$TARBALL"
-        else unzip "$TARBALL"
-        fi
-        rm -f "$TARBALL"
-        cd  "$(\ls -1dt ./*/ | head -n 1)" || exit
-        find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp "${PROJECT}"* '/usr/local/bin'
-        cd ..
-        rm -r -f *
-        cd || exit
-        cd /usr/local/bin || exit
-        chmod 777 "${PROJECT}"*
+	then tar -xzf $TARBALL
+	else unzip $TARBALL
+	fi
+rm -f $TARBALL
+cd  "$(\ls -1dt ./*/ | head -n 1)"
+find . -mindepth 2 -type f -print -exec mv {} . \;
+cp ${PROJECT}* '/usr/local/bin'
+cd ..
+rm -r -f *
+cd
+cd /usr/local/bin
+chmod 777 ${PROJECT}*
+	
+	else
+	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
+	fi
 
-    else
-        echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
-    fi
+# check if binaries already exist, skip installing crypto packages if they aren't needed
+dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 
-    # check if binaries already exist, skip installing crypto packages if they aren't needed
-    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
-
-    if [ "$dEXIST" = "${MNODE_DAEMON}" ]
-    then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-        curl -s "$GITAPI_URL" \
-            | grep tag_name > $INSTALLDIR/temp/currentversion
-
-    else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-    fi
+if [ "$dEXIST" = "${MNODE_DAEMON}" ]
+then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+curl -s $GITAPI_URL \
+      | grep tag_name > $INSTALLDIR/temp/currentversion
+     
+else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+fi
 }
 
 function restart_server() {
