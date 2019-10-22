@@ -348,11 +348,12 @@ function install_mns() {
 		# some engines will quickly fail if they detect the .conf file is missing
 		# so it becomes necessary to check for the daemon before it stops
 		
-if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
- sleep 2
+	if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
+						sleep 2
                         else echo "not sleeping 2 seconds" ; fi
-
 				
+		
+		
 		# check if $PROJECTd was built correctly and started
         ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
         cat $INSTALLDIR/temp/"${PROJECT}"Ds >> $LOGFILE
@@ -360,11 +361,11 @@ if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
         then echo -e "\nIt looks like VPS install script completed and ${MNODE_DAEMON} is running... " | tee -a "$LOGFILE"
             # report back to mother
             if [ -e $INFODIR/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
-        else echo -e "It looks like VPS install script failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
-            echo -e "Aborting installation, can't install masternodes without ${MNODE_DAEMON}" | tee -a "$LOGFILE"
-            # report error, exit script maybe or see if it can self-correct
-            echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
-            if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start"}' && echo -e " " ; fi
+        else echo -e "The daemon ${MNODE_DAEMON} does not appear to be running... " | tee -a "$LOGFILE"
+			echo -e "Aborting installation, can't install masternodes without ${MNODE_DAEMON}" | tee -a "$LOGFILE"
+			# report error, exit script maybe or see if it can self-correct
+			echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
+             if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start"}' && echo -e " " ; fi
             exit
         fi
     fi
