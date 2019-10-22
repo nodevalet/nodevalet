@@ -88,28 +88,28 @@ function setup_environment() {
     sleep 6
 	
 	# read API key if it exists, if not prompt for it
-    #if [ -e $INFODIR/vpsapi.info ]
-    #then VPSAPI=$(<$INFODIR/vpsapi.info)
-    #    echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
+    if [ -e $INFODIR/vpsapi.info ]
+    then VPSAPI=$(<$INFODIR/vpsapi.info)
+        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
 	
-	#else echo -e "\n Before we can begin, we need to collect your APIKEY."
-    #   echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
-    #    echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
-    #    touch $INFODIR/vpsapi.info
-           # while :; do
-           #     echo -e "${cyan}"
-           #    echo -e "\n Please enter your NodeValet API Key."
-           #   read -p "  --> " VPSAPI
-           #    echo -e "You entered this API Key: ${VPSAPI} "
-           #    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-           #    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-           #    then echo -e "${nocolor}" ; break
-           #    fi
-           #done
-           # echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
-           # echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
-           # echo -e " \n"
-    #fi
+	else echo -e "\n Before we can begin, we need to collect your APIKEY."
+       echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
+        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+        touch $INFODIR/vpsapi.info
+            while :; do
+                echo -e "${cyan}"
+               echo -e "\n Please enter your NodeValet API Key."
+              read -p "  --> " VPSAPI
+               echo -e "You entered this API Key: ${VPSAPI} "
+               read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+               if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+               then echo -e "${nocolor}" ; break
+               fi
+           done
+            echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
+            echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
+            echo -e " \n"
+    fi
 
     # set mnode daemon name from project.env
     MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -343,7 +343,8 @@ function install_mns() {
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
         # echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
-		# sleep 2  ---- this line seems to break things because the process dies too quickly
+		
+		sleep 2  ---- this line seems to break things for all chains but PIVX
 
         # check if $PROJECTd was built correctly and started
         ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
