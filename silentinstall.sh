@@ -309,11 +309,9 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
     sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
     sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
-    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
     sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
-    # sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
 }
 
 function silent_harden() {
@@ -345,13 +343,6 @@ function install_mns() {
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-
-        # this line seems to break things for all chains but PIVX
-        # some engines will quickly fail if they detect the .conf file is missing
-        # so it becomes necessary to check for the daemon before it stops
-        # if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
-        # sleep 2
-        # else echo "not sleeping 2 seconds" ; fi
 
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
