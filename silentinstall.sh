@@ -8,6 +8,7 @@ function setup_environment() {
     INFODIR='/var/tmp/nvtemp'
 	# enable 'showlog' command ASAP
     sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
+    chmod 0700 $INSTALLDIR/maintenance/showlog.sh
 
     ### define colors ###
     lightred=$'\033[1;31m'  # light red
@@ -661,15 +662,13 @@ chmod 777 ${PROJECT}*
 	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
 	fi
 
-# check if binaries already exist, skip installing crypto packages if they aren't needed
-
-if ps -A | grep ${MNODE_DAEMON} > /dev/null
-then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-curl -s $GITAPI_URL \
+# check if binaries exist, skip installing crypto packages if they aren't needed
+    if [ -s /usr/local/bin/${MNODE_DAEMON} ]
+    then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+    curl -s $GITAPI_URL \
       | grep tag_name > $INSTALLDIR/temp/currentversion
-     
-else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-fi
+    else echo -e "Binaries for ${PROJECTt} were not downloaded \n"  | tee -a "$LOGFILE"
+    fi
 }
 
 function restart_server() {
