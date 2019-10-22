@@ -6,6 +6,8 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
+	# enable 'showlog' command ASAP
+    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
 
     ### define colors ###
     lightred=$'\033[1;31m'  # light red
@@ -660,9 +662,8 @@ chmod 777 ${PROJECT}*
 	fi
 
 # check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
 
-if [ "$dEXIST" = "${MNODE_DAEMON}" ]
+if ps -A | grep ${MNODE_DAEMON} > /dev/null
 then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
 curl -s $GITAPI_URL \
       | grep tag_name > $INSTALLDIR/temp/currentversion
