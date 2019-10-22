@@ -343,8 +343,8 @@ function install_mns() {
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-        echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
-		sleep 2
+        # echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
+		# sleep 2  ---- this line seems to break things because the process dies too quickly
 
         # check if $PROJECTd was built correctly and started
         ps -A | grep "$MNODE_DAEMON" >> $INSTALLDIR/temp/"${PROJECT}"Ds
