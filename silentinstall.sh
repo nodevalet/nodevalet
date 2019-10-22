@@ -74,7 +74,7 @@ function setup_environment() {
         done
         # echo -e " \n"
     fi
-	
+
     # set hostname variable to the name planted by install script
     if [ -e $INFODIR/vpshostname.info ]
     then HNAME=$(<$INFODIR/vpshostname.info)
@@ -86,30 +86,30 @@ function setup_environment() {
     fi
     if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " " ; fi
     sleep 6
-	
-	# read API key if it exists, if not prompt for it
-    #if [ -e $INFODIR/vpsapi.info ]
-    #then VPSAPI=$(<$INFODIR/vpsapi.info)
-    #    echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
-	
-	#else echo -e "\n Before we can begin, we need to collect your APIKEY."
-    #   echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
-    #    echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
-    #    touch $INFODIR/vpsapi.info
-    #        while :; do
-    #            echo -e "${cyan}"
-    #           echo -e "\n Please enter your NodeValet API Key."
-    #          read -p "  --> " VPSAPI
-    #           echo -e "You entered this API Key: ${VPSAPI} "
-    #           read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-    #           if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-    #           then echo -e "${nocolor}" ; break
-    #           fi
-    #       done
-    #        echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
-    #        echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
-    #        echo -e " \n"
-    #  fi
+
+    # read API key if it exists, if not prompt for it
+    if [ -e $INFODIR/vpsapi.info ]
+    then VPSAPI=$(<$INFODIR/vpsapi.info)
+        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
+
+    else echo -e "\n Before we can begin, we need to collect your APIKEY."
+        echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
+        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+        touch $INFODIR/vpsapi.info
+        while :; do
+            echo -e "${cyan}"
+            echo -e "\n Please enter your NodeValet API Key."
+            read -p "  --> " VPSAPI
+            echo -e "You entered this API Key: ${VPSAPI} "
+            read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+            then echo -e "${nocolor}" ; break
+            fi
+        done
+        echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
+        echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
+        echo -e " \n"
+    fi
 
     # set mnode daemon name from project.env
     MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -342,50 +342,45 @@ function install_mns() {
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-        # echo -e "Waiting a couple of seconds for daemons to start..." | tee -a "$LOGFILE"
-		
-		# this line seems to break things for all chains but PIVX
-		# some engines will quickly fail if they detect the .conf file is missing
-		# so it becomes necessary to check for the daemon before it stops
-		
-	if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
-						sleep 2
-                        else echo "not sleeping 2 seconds" ; fi
-				
-		
-		
-		#!/bin/bash
- # check if $PROJECTd was built correctly and started
-if ps -A | grep "$MNODE_DAEMON" > /dev/null
 
-then
+        # this line seems to break things for all chains but PIVX
+        # some engines will quickly fail if they detect the .conf file is missing
+        # so it becomes necessary to check for the daemon before it stops
+        # if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
+        # sleep 2
+        # else echo "not sleeping 2 seconds" ; fi
 
-    # report back to mother
-    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+        # check if $PROJECTd was built correctly and started
+        if ps -A | grep "$MNODE_DAEMON" > /dev/null
 
-else
+        then
 
-	for ((H=1;H<=10;H++));
+            # report back to mother
+            if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+
+        else
+
+            for ((H=1;H<=10;H++));
             do
-				if ps -A | grep "$MNODE_DAEMON" > /dev/null
-				then 
-				# report back to mother
-    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
-				break
-				else
-				
-					if [ "${H}" = "10" ]
-					then echo " "
-						echo -e "After 10 seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
-						echo -e "so we are going to abort this installation now. \n" | tee -a "$LOGFILE"
-						echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
-						if [ -e "$INFODIR"/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start after 10 seconds"}' && echo -e " " ; fi
-						exit
-					fi
-				sleep 1
-				fi
-done
-fi
+                if ps -A | grep "$MNODE_DAEMON" > /dev/null
+                then
+                    # report back to mother
+                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+                    break
+                else
+
+                    if [ "${H}" = "10" ]
+                    then echo " "
+                        echo -e "After 10 seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
+                        echo -e "so we are going to abort this installation now. \n" | tee -a "$LOGFILE"
+                        echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
+                        if [ -e "$INFODIR"/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start after 10 seconds"}' && echo -e " " ; fi
+                        exit
+                    fi
+                    sleep 1
+                fi
+            done
+        fi
 
     fi
 }
@@ -420,12 +415,12 @@ EOT
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
-				elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-			    else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
+            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-				else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
@@ -475,8 +470,8 @@ EOT
                 sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
-                echo -e " $masternodeprivkeyafter" >> $LOGFILE 
-			else
+                echo -e " $masternodeprivkeyafter" >> $LOGFILE
+            else
                 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^masternodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
@@ -504,26 +499,26 @@ EOT
             # Check for presence of txid and, if present, use it for txid/txidx
             if [ -e $INFODIR/vpsmntxdata.info ]
             then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
-               TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                echo -e "$TX" >> $INSTALLDIR/temp/txid
-                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-				echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
-                
-			# Query nodevalet block explorer for collateral transaction
-            else echo -e "Querying NodeValet for collateral txid $i"
-				echo -e "    Building query; "
-			    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-				echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-				
-				# add a line here which will generate a message or error if txid is still not found
-				
-				
-				
-				
-				
+                echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
+
+                # Query nodevalet block explorer for collateral transaction
+            else echo -e "Querying NodeValet for collateral txid $i"
+                echo -e "    Building query; "
+                curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" >> $INSTALLDIR/temp/txid
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+                # add a line here which will generate a message or error if txid is still not found
+
+
+
+
+
             fi
 
             # replace null with txid info
@@ -549,7 +544,7 @@ EOT
             rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
             rm $INSTALLDIR/0 --force
 
-            echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"			
+            echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
         done
         # echo -e " \n" | tee -a "$LOGFILE"
 
@@ -612,68 +607,68 @@ EOT
 
 function install_binaries() {
 
-#make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
-if [ "${PROJECT,,}" = "bitsend" ]
-then echo -e "Bitsend detected, initiating funky installation process...\n"
-# insert specific steps here
-add-apt-repository -y ppa:bitcoin/bitcoin
-apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
-apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
-fi
+    #make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
+    if [ "${PROJECT,,}" = "bitsend" ]
+    then echo -e "Bitsend detected, initiating funky installation process...\n"
+        # insert specific steps here
+        add-apt-repository -y ppa:bitcoin/bitcoin
+        apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
+        apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
+    fi
 
-#check for binaries and install if found
-echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    #check for binaries and install if found
+    echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
-	# Pull GITAPI_URL from $PROJECT.env
-	GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
-	if [ -n $GIT_API ] ; then 
-	echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-	sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-	GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
-	echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
-	
-# Try and install Binaries now	
-# Pull GITSTRING from $PROJECT.gitstring
-GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
+    # Pull GITAPI_URL from $PROJECT.env
+    GIT_API=`grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/$PROJECT/$PROJECT.env`
+    if [ -n $GIT_API ] ; then
+        echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
+        sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
+        GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+        echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 
-mkdir $INSTALLDIR/temp/bin
-cd $INSTALLDIR/temp/bin
+        # Try and install Binaries now
+        # Pull GITSTRING from $PROJECT.gitstring
+        GITSTRING=`cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring`
 
-curl -s $GITAPI_URL \
-       	| grep browser_download_url \
-	| grep $GITSTRING \
-	| cut -d '"' -f 4 \
-	| wget -qi -
-TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+        mkdir $INSTALLDIR/temp/bin
+        cd $INSTALLDIR/temp/bin
+
+        curl -s $GITAPI_URL \
+            | grep browser_download_url \
+            | grep $GITSTRING \
+            | cut -d '"' -f 4 \
+            | wget -qi -
+        TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         if [[ $TARBALL == *.gz ]]
-	then tar -xzf $TARBALL
-	else unzip $TARBALL
-	fi
-rm -f $TARBALL
-cd  "$(\ls -1dt ./*/ | head -n 1)"
-find . -mindepth 2 -type f -print -exec mv {} . \;
-cp ${PROJECT}* '/usr/local/bin'
-cd ..
-rm -r -f *
-cd
-cd /usr/local/bin
-chmod 777 ${PROJECT}*
-	
-	else
-	echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
-	fi
+        then tar -xzf $TARBALL
+        else unzip $TARBALL
+        fi
+        rm -f $TARBALL
+        cd  "$(\ls -1dt ./*/ | head -n 1)"
+        find . -mindepth 2 -type f -print -exec mv {} . \;
+        cp ${PROJECT}* '/usr/local/bin'
+        cd ..
+        rm -r -f *
+        cd
+        cd /usr/local/bin
+        chmod 777 ${PROJECT}*
 
-# check if binaries already exist, skip installing crypto packages if they aren't needed
-dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
+    else
+        echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
+    fi
 
-if [ "$dEXIST" = "${MNODE_DAEMON}" ]
-then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-curl -s $GITAPI_URL \
-      | grep tag_name > $INSTALLDIR/temp/currentversion
-     
-else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-fi
+    # check if binaries already exist, skip installing crypto packages if they aren't needed
+    dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMON}`
+
+    if [ "$dEXIST" = "${MNODE_DAEMON}" ]
+    then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+        curl -s $GITAPI_URL \
+            | grep tag_name > $INSTALLDIR/temp/currentversion
+
+    else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+    fi
 }
 
 function restart_server() {
