@@ -128,7 +128,7 @@ function setup_environment() {
     echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
     sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
     ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-    if [ "$ONLYNET" gt 0 ]
+    if [ "$ONLYNET" > 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
@@ -346,29 +346,21 @@ function install_mns() {
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
-        # this line seems to break things for all chains but PIVX
-        # some engines will quickly fail if they detect the .conf file is missing
-        # so it becomes necessary to check for the daemon before it stops
-        # if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
-        # sleep 2
-        # else echo "not sleeping 2 seconds" ; fi
-
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
 
         then
-
             # report back to mother
             if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
 
         else
-
+            # continue checking for daemon for 10 seconds before reporting failure
             for ((H=1;H<=10;H++));
             do
                 if ps -A | grep "$MNODE_DAEMON" > /dev/null
                 then
                     # report back to mother
-                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success after waiting ${H} second(s) to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
                     break
                 else
 
