@@ -88,29 +88,28 @@ function setup_environment() {
     sleep 6
 	
 	# read API key if it exists, if not prompt for it
-    if [ -e $INFODIR/vpsapi.info ]
-    then VPSAPI=$(<$INFODIR/vpsapi.info)
-        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
+    #if [ -e $INFODIR/vpsapi.info ]
+    #then VPSAPI=$(<$INFODIR/vpsapi.info)
+    #    echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
 	
-	else echo -e "\n Before we can begin, we need to collect your APIKEY."
-        echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
-        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
-        touch $INFODIR/vpsapi.info
-
-            while :; do
-                echo -e "${cyan}"
-                echo -e "\n Please enter your NodeValet API Key."
-                read -p "  --> " VPSAPI
-                echo -e "You entered this API Key: ${VPSAPI} "
-                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then echo -e "${nocolor}" ; break
-                fi
-            done
-            echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
-            echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
-            echo -e " \n"
-    fi
+	#else echo -e "\n Before we can begin, we need to collect your APIKEY."
+    #   echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
+    #    echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+    #    touch $INFODIR/vpsapi.info
+           # while :; do
+           #     echo -e "${cyan}"
+           #    echo -e "\n Please enter your NodeValet API Key."
+           #   read -p "  --> " VPSAPI
+           #    echo -e "You entered this API Key: ${VPSAPI} "
+           #    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+           #    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+           #    then echo -e "${nocolor}" ; break
+           #    fi
+           #done
+           # echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
+           # echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
+           # echo -e " \n"
+    #fi
 
     # set mnode daemon name from project.env
     MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -479,15 +478,16 @@ EOT
                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-				echo -e " TXID for masternode $i is set to $TX " >> $LOGFILE
+				echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
                 
 			# Query nodevalet block explorer for collateral transaction
             else echo -e "Querying NodeValet for collateral txid $i"
+				echo -e "    Building query; "
 			    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-				echo -e " TXID for masternode $i is set to $TX " >> $LOGFILE
+				echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
 				
 				# add a line here which will generate a message or error if txid is still not found
 				
