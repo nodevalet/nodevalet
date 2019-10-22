@@ -74,7 +74,7 @@ function setup_environment() {
         done
         # echo -e " \n"
     fi
-
+	
     # set hostname variable to the name planted by install script
     if [ -e $INFODIR/vpshostname.info ]
     then HNAME=$(<$INFODIR/vpshostname.info)
@@ -86,6 +86,31 @@ function setup_environment() {
     fi
     if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " " ; fi
     sleep 6
+	
+	# read API key if it exists, if not prompt for it
+    if [ -e $INFODIR/vpsapi.info ]
+    then VPSAPI=$(<$INFODIR/vpsapi.info)
+        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
+	
+	else echo -e "\n Before we can begin, we need to collect your APIKEY."
+        echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
+        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+        touch $INFODIR/vpsapi.info
+
+            while :; do
+                echo -e "${cyan}"
+                echo -e "\n Please enter your NodeValet API Key."
+                read -p "  --> " VPSAPI
+                echo -e "You entered this API Key: ${VPSAPI} "
+                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                then echo -e "${nocolor}" ; break
+                fi
+            done
+            echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
+            echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
+            echo -e " \n"
+    fi
 
     # set mnode daemon name from project.env
     MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -344,7 +369,7 @@ function get_genkeys() {
     if [ -s $INSTALLDIR/temp/mnsexist ]
     then echo -e "Skipping get_genkeys function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
         echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
-        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS."}' && echo -e " " ; fi
+        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS; stopping install."}' && echo -e " " ; fi
         exit
     else
         # Create a file containing all masternode genkeys
@@ -368,19 +393,19 @@ EOT
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
-            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+			    else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+				else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
                 if [ "${PROJECT,,}" = "polis" ] ; then SLEEPTIME=15 ; else SLEEPTIME=3 ; fi
 
-                # check if GENKEY file is empty; if so stop script and report error
+                # check if GENKEY variable is empty; if so stop script and report error
                 if [ ${#KEYXIST} = "0" ]
-                then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; it is probably still starting up" | tee -a "$LOGFILE"
+                then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; engine likely still starting up" | tee -a "$LOGFILE"
                     echo -e " --> Waiting for $SLEEPTIME seconds before trying again... loop $P" | tee -a "$LOGFILE"
                     sleep $SLEEPTIME
                 else break
@@ -388,9 +413,9 @@ EOT
 
                 if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
                 then echo " "
-                    if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkey"}' && echo -e " " ; fi
+                    if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkeys"}' && echo -e " " ; fi
                     echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
-                    echo -e "I waited through 35 loops but something isn't working correctly.\n" | tee -a "$LOGFILE"
+                    echo -e "I patiently tried 35 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
                     exit
                 fi
             done
@@ -422,7 +447,8 @@ EOT
                 sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
-                echo -e " $masternodeprivkeyafter" >> $LOGFILE ; else
+                echo -e " $masternodeprivkeyafter" >> $LOGFILE 
+			else
                 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^masternodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
@@ -453,11 +479,22 @@ EOT
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                # Query nodevalet block explorer for collateral transaction
-            else curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+                
+			# Query nodevalet block explorer for collateral transaction
+            else echo -e "Querying NodeValet for collateral txid $i"
+			    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+				
+				
+				
+				# add a line here which will generate a message or error if txid is still not found
+				
+				
+				
+				
+				
             fi
 
             # replace null with txid info
@@ -470,12 +507,6 @@ EOT
             # merge data fields to prepare masternode.return file
             paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
 
-            # add in donation if requested to do so
-            # if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-            # paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/temp/masternode.line$i
-            # else paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
-            # fi
-
             # if line contains collateral_tx then start the line with #
             sed -e '/collateral_output_txid tx/ s/^#*/#/' -i $INSTALLDIR/temp/masternode.line$i >> $INSTALLDIR/temp/masternode.line$i 2>&1
             # prepend line with delimeter
@@ -483,18 +514,13 @@ EOT
 
             # create the masternode.conf output that is returned to consumer
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
-            # add in donation if requested to do so
-            # if (( "$DONATE" > "0" )) && [ -n "$DONATEADDR" ]; then
-            # paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i $INSTALLDIR/temp/DONATION >> $INSTALLDIR/masternode.conf
-            # else paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
-            # fi
 
             # declutter ; take out trash
             rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
             rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
             rm $INSTALLDIR/0 --force
 
-            echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
+            echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"			
         done
         # echo -e " \n" | tee -a "$LOGFILE"
 
@@ -633,8 +659,8 @@ function restart_server() {
 
 setup_environment
 # if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " " ; fi
-
 # moved curl update commands into get-hard.sh to provide better detail
+
 silent_harden
 
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECTt"' Binaries ..."}' && echo -e " " ; fi
@@ -647,6 +673,7 @@ add_cron
 
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$MNS"' '"$PROJECTt"' Masternodes ..."}' && echo -e " " ; fi
 get_genkeys
+
 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " " ; fi
 
 # create file to signal cron that reboot has occurred
