@@ -366,22 +366,14 @@ function install_binaries() {
     fi
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-        # echo -e "Test for presence of binaries "  | tee -a "$LOGFILE"
-        # echo -e "MNODE_DAEMON variable is currently set to ${MNODE_DAEMON} "  | tee -a "$LOGFILE"
-
-
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
-    # echo -e "dEXIST variable is currently set to ${dEXIST} "  | tee -a "$LOGFILE"
 
-    # if [[ "${dEXIST}" == "${MNODE_DAEMON}" ]]  ; testing without this line
-    if [[ "${dEXIST}" ]]
+    if [ "$dEXIST" = "${MNODE_DAEMON}" ]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-    echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-        echo -e "${dEXIST} (dEXIST) was not found to be equal to ${MNODE_DAEMON} (MNODE_DAEMON)"  | tee -a "$LOGFILE"
     fi
 }
 
