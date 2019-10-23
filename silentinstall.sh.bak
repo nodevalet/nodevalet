@@ -202,7 +202,6 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
             echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
-            echo -e " \n"
         done
         echo -e " User manually entered $MNS masternode addresses.\n" >> $LOGFILE 2>&1
     fi
@@ -243,7 +242,6 @@ elif [ "$ONLYNET" = 4 ]
                     then echo -e -n "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
-                        echo -e " \n"
                         echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
                         break
                     fi
@@ -353,19 +351,13 @@ function install_mns() {
     else
         cd $INSTALLDIR/nodemaster || exit
         echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        # echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
-        # sudo git clone https://github.com/heliumchain/vps.git && cd vps
         echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
+        echo -e "\n"
+
+        # activate masternodes, or activate just FIRST masternode
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-
-        # this line seems to break things for all chains but PIVX
-        # some engines will quickly fail if they detect the .conf file is missing
-        # so it becomes necessary to check for the daemon before it stops
-        # if [ "${PROJECT,,}" = "pivx" ] ; then echo "pivx sleeping 2 seconds"
-        # sleep 2
-        # else echo "not sleeping 2 seconds" ; fi
 
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
@@ -601,6 +593,10 @@ EOT
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
+
+        # remove blank lines from installation log file and replace original
+        grep -v -e '^[[:space:]]*$' "$LOGFILE" > $INSTALLDIR/logs/install.log
+        mv $INSTALLDIR/logs/install.log "$LOGFILE"
         echo -e "\n"  >> "$LOGFILE"
 
         if [ ! -s $INFODIR/fullauto.info ]
