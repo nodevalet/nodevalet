@@ -99,16 +99,17 @@ function setup_environment() {
         echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
         echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
         touch $INFODIR/vpsapi.info
+        echo -e -n "${cyan}"
         while :; do
-            echo -e -n "${cyan}"
             echo -e "\n Please enter your NodeValet API Key."
             read -p "  --> " VPSAPI
             echo -e "\n You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-            then echo -e -n "${nocolor}" ; break
+            if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+            then break
             fi
         done
+        echo -e -n "${nocolor}"
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
         echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
         echo -e " \n"
@@ -201,7 +202,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e "\n\n\n You can choose to enter your own masternode genkeys or you can let"
         echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
         echo -e " are equally secure, but it's faster if your server does it for you."
         echo -e " An example of when you would want to enter them yourself would be"
