@@ -251,7 +251,8 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
-        echo -e "No problem.  The VPS will generate your masternode genkeys.${cyan}"
+        echo -e "${nocolor}"
+        echo -e "\nNo problem.  The VPS will generate your masternode genkeys.${cyan}"
         fi
     fi
 
@@ -260,7 +261,7 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
+        echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
         echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
     
         # what I consider a good example of a complicated query for numerical data
