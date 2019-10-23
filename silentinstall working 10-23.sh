@@ -338,7 +338,7 @@ function install_binaries() {
         GITSTRING=$(cat $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".gitstring)
 
         mkdir $INSTALLDIR/temp/bin
-        cd $INSTALLDIR/temp/bin || exit
+        cd $INSTALLDIR/temp/bin
 
         curl -s "$GITAPI_URL" \
             | grep browser_download_url \
@@ -352,13 +352,13 @@ function install_binaries() {
         else unzip "$TARBALL"
         fi
         rm -f "$TARBALL"
-        cd  "$(\ls -1dt ./*/ | head -n 1)" || exit
+        cd  "$(\ls -1dt ./*/ | head -n 1)"
         find . -mindepth 2 -type f -print -exec mv {} . \;
         cp "${PROJECT}"* '/usr/local/bin'
         cd ..
         rm -r -f *
-        cd || exit
-        cd /usr/local/bin || exit
+        cd
+        cd /usr/local/bin
         chmod 777 "${PROJECT}"*
 
     else
@@ -384,7 +384,6 @@ function install_binaries() {
         echo -e "${dEXIST} (dEXIST) was not found to be equal to ${MNODE_DAEMON} (MNODE_DAEMON)"  | tee -a "$LOGFILE"
     fi
 }
-
 function install_mns() {
     if [ -e /etc/masternodes/"$PROJECT_n1".conf ]
     then touch $INSTALLDIR/temp/mnsexist
@@ -699,7 +698,10 @@ function restart_server() {
 }
 
 # This is where the script actually starts
+
 setup_environment
+# if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " " ; fi
+# moved curl update commands into get-hard.sh to provide better detail
 
 # moved initial NodeValet callback into get-hard.sh to provide better detail
 silent_harden
