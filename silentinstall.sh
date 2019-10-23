@@ -607,10 +607,10 @@ EOT
             # create the masternode.conf output that is returned to consumer
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 
-            # declutter ; take out trash
-            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
-            rm $INSTALLDIR/0 --force
+# round 1: cleanup and declutter
+#            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
+#            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+#            rm $INSTALLDIR/0 --force
 
             echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
         done
@@ -640,14 +640,14 @@ EOT
 #######################################################
 EOT
 
-        # round 2: cleanup and declutter
-        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-        rm $INSTALLDIR/temp/ONLYNET --force
+# round 2: cleanup and declutter
+#        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+#        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
+#        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
+#        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
+#        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
+#        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+#        rm $INSTALLDIR/temp/ONLYNET --force
 
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
