@@ -203,20 +203,21 @@ elif [ "$ONLYNET" = 4 ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
         echo -e "\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are"
-        echo -e " equally secure, but it's faster if your server does it for you."
-        echo -e " (An example of when you would want to enter them yourself would"
-        echo -e " be if you are trying to migrate running masternodes to this VPS)\n"
-        read -p " Would you like your server to generate genkeys for you? y/n  " GETGENKEYS
-        echo -e "${nocolor}"
-
-        while [ "${GETGENKEYS,,}" != "yes" ] && [ "${GETGENKEYS,,}" != "no" ] && [ "${GETGENKEYS,,}" != "y" ] && [ "${GETGENKEYS,,}" != "n" ]; do
-            echo -e "${lightred}"
-            read -p " --> I don't understand. Enter 'y' for yes or 'n' for no: " GETGENKEYS
-            echo -e "${nocolor}"
-        done
-
-        if [ "${GETGENKEYS,,}" = "no" ] || [ "${GETGENKEYS,,}" = "n" ]
+        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
+        echo -e " are equally secure, but it's faster if your server does it for you."
+        echo -e " An example of when you would want to enter them yourself would be"
+        echo -e " if you are trying to transfer existing masternodes to this VPS.\n"
+                echo -e "${nocolor}"
+                while :; do
+                    echo -e -n "${cyan}"
+                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
+                    if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
+                    then echo -e -n "${nocolor}"
+                    break
+                    fi
+                done
+        
+        if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
         then touch $INSTALLDIR/temp/genkeys
             echo -e " User selected to manually enter genkeys for $MNS masternodes." >> $LOGFILE 2>&1
             touch $INSTALLDIR/temp/owngenkeys
@@ -228,7 +229,7 @@ elif [ "$ONLYNET" = 4 ]
                     read -p "  --> " UGENKEY
                     echo -e "You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
