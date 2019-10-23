@@ -296,38 +296,6 @@ elif [ "$ONLYNET" = 4 ]
     sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 }
 
-function add_cron() {
-    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-    chmod 0700 $INSTALLDIR/*.sh
-    chmod 0700 $INSTALLDIR/maintenance/*.sh
-    echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
-    echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
-    echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
-    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
-    echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
-    echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
-
-    # add system link to common maintenance scripts so they can be accessed more easily
-    sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
-    sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
-    sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
-    sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
-    sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
-    sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
-    sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
-    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
-    sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
-    sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
-    sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
-    # sudo ln -s $INSTALLDIR/maintenance/holy_handgrenade.sh /usr/local/bin/holy_handgrenade
-}
-
 function silent_harden() {
     if [ -e /var/log/server_hardening.log ]
     then echo -e " This server seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
@@ -394,7 +362,37 @@ function install_mns() {
     fi
 }
 
-function get_genkeys() {
+function add_cron() {
+    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
+    chmod 0700 $INSTALLDIR/*.sh
+    chmod 0700 $INSTALLDIR/maintenance/*.sh
+    echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
+    echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+    echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
+    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+    echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
+    echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+
+    # add system link to common maintenance scripts so they can be accessed more easily
+    sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
+    sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
+    sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
+    sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
+    sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
+    sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
+    sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
+    sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
+    sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
+    sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
+}
+
+function configure_mns() {
     # Iteratively create all masternode variables for masternode.conf
     # Do not break any pre-existing masternodes
     if [ -s $INSTALLDIR/temp/mnsexist ]
