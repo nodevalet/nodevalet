@@ -185,15 +185,14 @@ elif [ "$ONLYNET" = 4 ]
                 echo -e "${cyan}"
                 echo -e "\n Please enter the $PROJECTt address for masternode #$i"
                 read -p "  --> " MNADDP
-                echo -e "You entered the address: ${MNADDP} "
+                echo -e "\n You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then echo -e "${nocolor}" ; break
+                then echo -e -n "${nocolor}" ; break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
             echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
-            echo -e " \n"
         done
         echo -e " User manually entered $MNS masternode addresses.\n" >> $LOGFILE 2>&1
     fi
@@ -207,15 +206,15 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " are equally secure, but it's faster if your server does it for you."
         echo -e " An example of when you would want to enter them yourself would be"
         echo -e " if you are trying to transfer existing masternodes to this VPS.\n"
-                echo -e -n "${nocolor}"
+                echo -e -n "${cyan}"
                 while :; do
-                    echo -e -n "${cyan}"
-                    read -n 1 -s -r -p " \nWould you like your server to generate genkeys for you? y/n " GETGENKEYS
+                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
                     if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
-                    then echo -e -n "${nocolor}"
+                    then
                     break
                     fi
                 done
+                echo -e -n "${nocolor}"
         
         if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
         then touch $INSTALLDIR/temp/genkeys
@@ -223,21 +222,21 @@ elif [ "$ONLYNET" = 4 ]
             touch $INSTALLDIR/temp/owngenkeys
             for ((i=1;i<=$MNS;i++));
             do
+                echo -e -n "${cyan}"
                 while :; do
-                    echo -e -n "${cyan}"
-                    echo -e "\n\n Please enter the $PROJECTt genkey for masternode #$i"
+                    echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
-                    echo -e "You entered the address: ${UGENKEY} "
+                    echo -e "\n You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
-                        echo -e " \n"
                         echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
                         break
                     fi
                 done
+                echo -e -n "${nocolor}"
             done
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
