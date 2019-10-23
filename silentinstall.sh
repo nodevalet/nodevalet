@@ -147,16 +147,24 @@ elif [ "$ONLYNET" = 4 ]
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n This server's memory can safely support $MAXNODES masternodes."
         echo -e " Please enter the number of masternodes to install : "
-        while :; do
-            read -p "  --> " MNS
-            if (($MNS >= 1 && $MNS <= $MAXNODES))
-            then echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
+        
+    while :; do
+        read -p "  --> " MNS
+        lenMN=${#MNS}
+        testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
+            if [[ $lenMN -ne ${#testvar} ]] ; then echo "$MNS is not a number, try again."  # error message
+            # length would be the same if $MNS was a number
+
+            elif ! (($MNS >= 1 && $MNS <= $MAXNODES)) ; then echo -e "\n --> $MNS is not a number between 1 and $MAXNODES, try again."
+            
+            else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
                 echo -e "${MNS}" > $INFODIR/vpsnumber.info
-                break
-            else echo -e "\n --> $MNS is not a number between 1 and $MAXNODES, try again."
+                break   # exit the loop
+
             fi
-        done
+    done 
+    
     fi
 
     # create or assign mnprefix
