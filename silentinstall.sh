@@ -100,13 +100,13 @@ function setup_environment() {
         echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
         touch $INFODIR/vpsapi.info
         while :; do
-            echo -e "${cyan}"
+            echo -e -n "${cyan}"
             echo -e "\n Please enter your NodeValet API Key."
             read -p "  --> " VPSAPI
             echo -e "You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
             if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-            then echo -e "${nocolor}" ; break
+            then echo -e -n "${nocolor}" ; break
             fi
         done
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
@@ -223,13 +223,13 @@ elif [ "$ONLYNET" = 4 ]
             for ((i=1;i<=$MNS;i++));
             do
                 while :; do
-                    echo -e "${cyan}"
+                    echo -e -n "${cyan}"
                     echo -e "\n\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
                     echo -e "You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                    then echo -e "${nocolor}"
+                    then echo -e -n "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
                         echo -e " \n"
@@ -248,17 +248,17 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "${cyan}"
+        echo -e -n "${cyan}"
         echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
         echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
         while :; do
             read -p "  --> " SSHPORT
-            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e "${lightred}";echo -e " --> Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
+            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e -n "${lightred}";echo -e " --> Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
             elif [ "$SSHPORT" = 22 ]; then break
-            else echo -e "${lightred}"
+            else echo -e -n "${lightred}"
                 echo -e "\n --> That number is out of range, try again. \n"
-                echo -e "${nocolor}"
+                echo -e -n "${nocolor}"
             fi
         done
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
@@ -661,14 +661,14 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
     echo -e "dEXIST variable is currently set to ${dEXIST} "  | tee -a "$LOGFILE"
 
-    if [ "${dEXIST}" = "${MNODE_DAEMON}" ]
+    if [[ "${dEXIST}" == "${MNODE_DAEMON}" ]]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-    echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"
+    echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-    echo -e "${dEXIST} (dEXIST) was not found to be equal to ${MNODE_DAEMON} (MNODE_DAEMON)"
+    echo -e "${dEXIST} (dEXIST) was not found to be equal to ${MNODE_DAEMON} (MNODE_DAEMON)"  | tee -a "$LOGFILE"
     fi
 }
 
