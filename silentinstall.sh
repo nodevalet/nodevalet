@@ -151,10 +151,12 @@ elif [ "$ONLYNET" = 4 ]
         read -p "  --> " MNS
         lenMN=${#MNS}
         testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
-            if [[ $lenMN -ne ${#testvar} ]] ; then echo "$MNS is not a number, try again."  # error message
+            if [[ $lenMN -ne ${#testvar} ]]
+            then echo "\n ${lightred}$MNS is not even a number, try again.${nocolor}"
             # length would be the same if $MNS was a number
 
-            elif ! (($MNS >= 1 && $MNS <= $MAXNODES)) ; then echo -e "\n --> $MNS is not a number between 1 and $MAXNODES, try again."
+            elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
+            then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try again.${nocolor}"
             
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
