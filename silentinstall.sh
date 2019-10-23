@@ -103,7 +103,7 @@ function setup_environment() {
             echo -e -n "${cyan}"
             echo -e "\n Please enter your NodeValet API Key."
             read -p "  --> " VPSAPI
-            echo -e "You entered this API Key: ${VPSAPI} "
+            echo -e "\n You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
             if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
             then echo -e -n "${nocolor}" ; break
@@ -207,10 +207,10 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " are equally secure, but it's faster if your server does it for you."
         echo -e " An example of when you would want to enter them yourself would be"
         echo -e " if you are trying to transfer existing masternodes to this VPS.\n"
-                echo -e "${nocolor}"
+                echo -e -n "${nocolor}"
                 while :; do
                     echo -e -n "${cyan}"
-                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
+                    read -n 1 -s -r -p " \nWould you like your server to generate genkeys for you? y/n " GETGENKEYS
                     if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
                     then echo -e -n "${nocolor}"
                     break
