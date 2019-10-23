@@ -105,9 +105,8 @@ function setup_environment() {
             read -p "  --> " VPSAPI
             echo -e "\n You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-            if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-            then break
-            fi
+            [[ $VERIFY == "y" || $VERIFY == "Y" ]] && break
+            echo -e " "
         done
         echo -e -n "${nocolor}"
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
