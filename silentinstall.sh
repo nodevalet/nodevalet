@@ -152,11 +152,11 @@ elif [ "$ONLYNET" = 4 ]
         lenMN=${#MNS}
         testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
             if [[ $lenMN -ne ${#testvar} ]]
-            then echo "\n ${lightred}$MNS is not even a number, try again.${nocolor}"
+            then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
             # length would be the same if $MNS was a number
 
             elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
-            then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try again.${nocolor}"
+            then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
             
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
@@ -215,10 +215,10 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
         echo -e " are equally secure, but it's faster if your server does it for you."
         echo -e " An example of when you would want to enter them yourself would be"
-        echo -e " if you are trying to transfer existing masternodes to this VPS.\n"
+        echo -e " if you are trying to transfer existing masternodes to this VPS."
                 echo -e -n "${cyan}"
                 while :; do
-                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
+                    read -n 1 -s -r -p " \nWould you like your server to generate genkeys for you? y/n " GETGENKEYS
                     if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
                     then
                     break
@@ -250,6 +250,7 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
+        echo -e "No problem.  The VPS will generate your masternode genkeys.${cyan}"
         fi
     fi
 
@@ -258,19 +259,21 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e -n "${cyan}"
         echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
         echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+    
+        # what I consider a good example of a complicated query for numerical data
         while :; do
             read -p "  --> " SSHPORT
-            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e -n "${lightred}";echo -e " --> Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
+            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e -n "${lightred}";echo -e " \nTry harder, that's not even a number.";echo -e "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
             elif [ "$SSHPORT" = 22 ]; then break
             else echo -e -n "${lightred}"
-                echo -e "\n --> That number is out of range, try again. \n"
+                echo -e "\nThat number is out of range, try again. \n"
                 echo -e -n "${nocolor}"
             fi
         done
+    
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
         touch $INFODIR/vpssshport.info
         echo "$SSHPORT" >> $INFODIR/vpssshport.info
