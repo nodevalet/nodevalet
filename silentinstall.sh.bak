@@ -6,9 +6,6 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     INFODIR='/var/tmp/nvtemp'
-    # enable 'showlog' command ASAP
-    sudo ln -s $INSTALLDIR/maintenance/showlog.sh /usr/local/bin/showlog
-    chmod 0700 $INSTALLDIR/maintenance/showlog.sh
 
     ### define colors ###
     lightred=$'\033[1;31m'  # light red
@@ -43,11 +40,11 @@ function setup_environment() {
 
     # Create Log File and Begin
     clear
-    echo -e "${white} ---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
-    echo -e " ------------ Masternodes Made Easier --------------- " | tee -a "$LOGFILE"
+    echo -e " ------------Masternodes Made Easier ---------------- " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 
     # read or set project name
@@ -56,12 +53,12 @@ function setup_environment() {
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
         touch $INFODIR/fullauto.info
-        echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
+        echo -e " Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
     else echo -e " Please choose from one of the following supported coins to install:"
         echo -e "    helium | audax | pivx | phore \n"
-        echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
+        echo -e " In one word, which coin are installing today? "
         while :; do
             read -p "  --> " PROJECT
             if [ -d $INSTALLDIR/nodemaster/config/"${PROJECT,,}" ]
@@ -72,7 +69,7 @@ function setup_environment() {
                 PROJECTt=${PROJECTl~}
                 echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE
                 break
-            else echo -e " ${lightred}--> $PROJECT is not supported, try again.${nocolor}"
+            else echo -e " --> $PROJECT is not supported, try again."
             fi
         done
         # echo -e " \n"
@@ -87,7 +84,7 @@ function setup_environment() {
         echo -e "$HNAME" > $INFODIR/vpshostname.info
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
     fi
-    [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " "
+    if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " " ; fi
     sleep 6
 
     # read API key if it exists, if not prompt for it
@@ -99,16 +96,16 @@ function setup_environment() {
         echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
         echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
         touch $INFODIR/vpsapi.info
-        echo -e -n " "
         while :; do
-            echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
+            echo -e "${cyan}"
+            echo -e "\n Please enter your NodeValet API Key."
             read -p "  --> " VPSAPI
-            echo -e "\n You entered this API Key: ${VPSAPI} "
-            read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
-            [[ $VERIFY == "y" || $VERIFY == "Y" ]] && break
-            echo -e " "
+            echo -e "You entered this API Key: ${VPSAPI} "
+            read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+            then echo -e "${nocolor}" ; break
+            fi
         done
-        echo -e -n "${nocolor}"
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
         echo -e " -> User API Key is: $VPSAPI" >> $LOGFILE
         echo -e " \n"
@@ -128,7 +125,7 @@ function setup_environment() {
     echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
     sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
     ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
-    if [ "$ONLYNET" > 0 ]
+    if [ "$ONLYNET" gt 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
@@ -144,28 +141,18 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
-        echo -e "\n This server's memory can safely support $MAXNODES masternodes.\n"
-        echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
-        
-    while :; do
-        read -p "  --> " MNS
-        lenMN=${#MNS}
-        testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
-            if [[ $lenMN -ne ${#testvar} ]]
-            then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
-            # length would be the same if $MNS was a number
-
-            elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
-            then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
-            
-            else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
+        echo -e "\n This server's memory can safely support $MAXNODES masternodes."
+        echo -e " Please enter the number of masternodes to install : "
+        while :; do
+            read -p "  --> " MNS
+            if (($MNS >= 1 && $MNS <= $MAXNODES))
+            then echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
                 echo -e "${MNS}" > $INFODIR/vpsnumber.info
-                break   # exit the loop
-
+                break
+            else echo -e "\n --> $MNS is not a number between 1 and $MAXNODES, try again."
             fi
-    done 
-    
+        done
     fi
 
     # create or assign mnprefix
@@ -192,12 +179,13 @@ elif [ "$ONLYNET" = 4 ]
         for ((i=1;i<=$MNS;i++));
         do
             while :; do
-                echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
+                echo -e "${cyan}"
+                echo -e "\n Please enter the $PROJECTt address for masternode #$i"
                 read -p "  --> " MNADDP
-                echo -e "\n You entered the address: ${MNADDP} "
-                read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
+                echo -e "You entered the address: ${MNADDP} "
+                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then echo -e "\n" ; break
+                then echo -e "${nocolor}" ; break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
@@ -211,36 +199,34 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "\n\n\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
-        echo -e " are equally secure, but it's faster if your server does it for you."
-        echo -e " An example of when you would want to enter them yourself would be"
-        echo -e " if you are trying to transfer existing masternodes to this VPS."
-                echo -e -n "${cyan}"
-                while :; do
-                    echo -e "\n"
-                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
-                    if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
-                    then
-                    break
-                    fi
-                done
-                echo -e -n "${nocolor}"
-        
-        if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
+        echo -e "\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are"
+        echo -e " equally secure, but it's faster if your server does it for you."
+        echo -e " (An example of when you would want to enter them yourself would"
+        echo -e " be if you are trying to migrate running masternodes to this VPS)\n"
+        read -p " Would you like your server to generate genkeys for you? y/n  " GETGENKEYS
+        echo -e "${nocolor}"
+
+        while [ "${GETGENKEYS,,}" != "yes" ] && [ "${GETGENKEYS,,}" != "no" ] && [ "${GETGENKEYS,,}" != "y" ] && [ "${GETGENKEYS,,}" != "n" ]; do
+            echo -e "${lightred}"
+            read -p " --> I don't understand. Enter 'y' for yes or 'n' for no: " GETGENKEYS
+            echo -e "${nocolor}"
+        done
+
+        if [ "${GETGENKEYS,,}" = "no" ] || [ "${GETGENKEYS,,}" = "n" ]
         then touch $INSTALLDIR/temp/genkeys
             echo -e " User selected to manually enter genkeys for $MNS masternodes." >> $LOGFILE 2>&1
             touch $INSTALLDIR/temp/owngenkeys
             for ((i=1;i<=$MNS;i++));
             do
-                echo -e "${cyan}"
                 while :; do
-                    echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
+                    echo -e "${cyan}"
+                    echo -e "\n\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
-                    echo -e "\n You entered the address: ${UGENKEY} "
+                    echo -e "You entered the address: ${UGENKEY} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-                    then echo -e -n "${nocolor}"
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                    then echo -e "${nocolor}"
                         echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
                         echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
                         echo -e " \n"
@@ -248,12 +234,9 @@ elif [ "$ONLYNET" = 4 ]
                         break
                     fi
                 done
-                echo -e -n "${nocolor}"
             done
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
-        echo -e "${nocolor}"
-        echo -e "\n No problem.  The VPS will generate your masternode genkeys.${cyan}"
         fi
     fi
 
@@ -262,19 +245,19 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
-        echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
-    
-        # what I consider a good example of a complicated query for numerical data
+        echo -e "${cyan}"
+        echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) "
+        echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
         while :; do
             read -p "  --> " SSHPORT
-            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e " \n${lightred}Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
+            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e "${lightred}";echo -e " --> Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
             elif [ "$SSHPORT" = 22 ]; then break
-            else echo -e "\n${lightred}That number is out of range, try again.${nocolor}\n"
+            else echo -e "${lightred}"
+                echo -e "\n --> That number is out of range, try again. \n"
+                echo -e "${nocolor}"
             fi
         done
-    
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
         touch $INFODIR/vpssshport.info
         echo "$SSHPORT" >> $INFODIR/vpssshport.info
