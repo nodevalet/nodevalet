@@ -43,11 +43,11 @@ function setup_environment() {
 
     # Create Log File and Begin
     clear
-    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e "${white} ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
-    echo -e " ------------Masternodes Made Easier ---------------- " | tee -a "$LOGFILE"
+    echo -e " ------------ Masternodes Made Easier --------------- " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
 
     # read or set project name
@@ -56,12 +56,12 @@ function setup_environment() {
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
         touch $INFODIR/fullauto.info
-        echo -e " Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
+        echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
     else echo -e " Please choose from one of the following supported coins to install:"
         echo -e "    helium | audax | pivx | phore \n"
-        echo -e " In one word, which coin are installing today? "
+        echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT
             if [ -d $INSTALLDIR/nodemaster/config/"${PROJECT,,}" ]
@@ -72,7 +72,7 @@ function setup_environment() {
                 PROJECTt=${PROJECTl~}
                 echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE
                 break
-            else echo -e " --> $PROJECT is not supported, try again."
+            else echo -e " ${lightred}--> $PROJECT is not supported, try again.${nocolor}"
             fi
         done
         # echo -e " \n"
@@ -99,9 +99,9 @@ function setup_environment() {
         echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
         echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
         touch $INFODIR/vpsapi.info
-        echo -e -n "${cyan}"
+        echo -e -n " "
         while :; do
-            echo -e "\n Please enter your NodeValet API Key."
+            echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
             read -p "  --> " VPSAPI
             echo -e "\n You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -252,7 +252,7 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         echo -e "${nocolor}"
-        echo -e "\nNo problem.  The VPS will generate your masternode genkeys.${cyan}"
+        echo -e "\n No problem.  The VPS will generate your masternode genkeys.${cyan}"
         fi
     fi
 
@@ -396,10 +396,11 @@ function install_mns() {
     else
         cd $INSTALLDIR/nodemaster || exit
         echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        # echo -e "Downloading Nodemaster's VPS script (from heliumchain repo)" | tee -a "$LOGFILE"
-        # sudo git clone https://github.com/heliumchain/vps.git && cd vps
         echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
+        echo -e "\n"
+
+        # activate masternodes, or activate just FIRST masternode
         echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
