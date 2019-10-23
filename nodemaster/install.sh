@@ -521,6 +521,9 @@ function source_config() {
         echo -e "********************************************************************************\n"
         sleep 5
 
+        # ************* THIS IS THE END OF THE MASTERNODE INSTALLATION ********************
+        # ********************** PAY ATTENTION TO ME **************************************
+
         # main routine
         if [ "$update" -eq 0 ]; then
             prepare_mn_interfaces
