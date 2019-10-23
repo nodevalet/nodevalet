@@ -218,7 +218,8 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " if you are trying to transfer existing masternodes to this VPS."
                 echo -e -n "${cyan}"
                 while :; do
-                    read -n 1 -s -r -p " \nWould you like your server to generate genkeys for you? y/n " GETGENKEYS
+                    echo -e "\n"
+                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
                     if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
                     then
                     break
@@ -232,7 +233,7 @@ elif [ "$ONLYNET" = 4 ]
             touch $INSTALLDIR/temp/owngenkeys
             for ((i=1;i<=$MNS;i++));
             do
-                echo -e -n "${cyan}"
+                echo -e "${cyan}"
                 while :; do
                     echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
