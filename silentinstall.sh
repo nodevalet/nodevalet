@@ -661,7 +661,8 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
     echo -e "dEXIST variable is currently set to ${dEXIST} "  | tee -a "$LOGFILE"
 
-    if [[ "${dEXIST}" == "${MNODE_DAEMON}" ]]
+    # if [[ "${dEXIST}" == "${MNODE_DAEMON}" ]]  ; testing without this line
+    if [[ "${dEXIST}" ]]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
     echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
