@@ -144,7 +144,7 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
-        echo -e "\n This server's memory can safely support $MAXNODES masternodes."
+        echo -e "\n This server's memory can safely support $MAXNODES masternodes.\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
         
     while :; do
@@ -197,7 +197,7 @@ elif [ "$ONLYNET" = 4 ]
                 echo -e "\n You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then break
+                then echo -e "\n" ; break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
@@ -665,6 +665,10 @@ EOT
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
+
+        # remove blank lines from installation log file and replace original
+        grep -v -e '^[[:space:]]*$' "$LOGFILE" > $INSTALLDIR/logs/install.log
+        mv $INSTALLDIR/logs/install.log "$LOGFILE"
         echo -e "\n"  >> "$LOGFILE"
 
         if [ ! -s $INFODIR/fullauto.info ]
