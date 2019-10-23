@@ -104,7 +104,7 @@ function setup_environment() {
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
             read -p "  --> " VPSAPI
             echo -e "\n You entered this API Key: ${VPSAPI} "
-            read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+            read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
             [[ $VERIFY == "y" || $VERIFY == "Y" ]] && break
             echo -e " "
         done
@@ -145,7 +145,7 @@ elif [ "$ONLYNET" = 4 ]
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n This server's memory can safely support $MAXNODES masternodes."
-        echo -e " Please enter the number of masternodes to install : "
+        echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
         
     while :; do
         read -p "  --> " MNS
@@ -192,13 +192,12 @@ elif [ "$ONLYNET" = 4 ]
         for ((i=1;i<=$MNS;i++));
         do
             while :; do
-                echo -e "${cyan}"
-                echo -e "\n Please enter the $PROJECTt address for masternode #$i"
+                echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
                 read -p "  --> " MNADDP
                 echo -e "\n You entered the address: ${MNADDP} "
-                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then echo -e -n "${nocolor}" ; break
+                then break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
@@ -261,18 +260,16 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
-        echo -e " Enter a custom port for SSH between 11000 and 65535 or use 22 : "
+        echo -e "\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
+        echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
     
         # what I consider a good example of a complicated query for numerical data
         while :; do
             read -p "  --> " SSHPORT
-            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e -n "${lightred}";echo -e " \nTry harder, that's not even a number.";echo -e "${nocolor}";continue; }
+            [[ $SSHPORT =~ ^[0-9]+$ ]] || { echo -e " \n${lightred}Try harder, that's not even a number.";echo -e "${nocolor}";continue; }
             if (($SSHPORT >= 11000 && $SSHPORT <= 65535)); then break
             elif [ "$SSHPORT" = 22 ]; then break
-            else echo -e -n "${lightred}"
-                echo -e "\nThat number is out of range, try again. \n"
-                echo -e -n "${nocolor}"
+            else echo -e "\n${lightred}That number is out of range, try again.${nocolor}\n"
             fi
         done
     
