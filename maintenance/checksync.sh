@@ -100,6 +100,7 @@ function check_blocksync() {
 
         # if  masternode not running, echo masternode not running and break
         BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+        CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode Sync Status <-- ${nocolor}\n"
 
         echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
@@ -119,7 +120,7 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white} Blockchain not synced; will check again in 10 seconds${nocolor}\n"
+        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
             # insert a little humor
