@@ -90,7 +90,7 @@ function setup_environment() {
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
     fi
     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " "
-    sleep 6
+    sleep 4
 
     # read API key if it exists, if not prompt for it
     if [ -e $INFODIR/vpsapi.info ]
@@ -744,11 +744,10 @@ function restart_server() {
 # This is where the script actually starts
 
 setup_environment
-# if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " " ; fi
-# moved curl update commands into get-hard.sh to provide better detail
+# moved initial NodeValet callback near beginning of setup_environment to provide faster response
 
-# moved initial NodeValet callback into get-hard.sh to provide better detail
 silent_harden
+# NodeValet callbacks are embedded in get-hard.sh
 
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECTt"' Binaries ..."}' && echo -e " "
 install_binaries
