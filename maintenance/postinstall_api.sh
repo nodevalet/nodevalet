@@ -5,7 +5,7 @@ INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=$(cat $INFODIR/vpscoin.info)
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-TRANSMITMN=`cat $INSTALLDIR/temp/masternode.return`
+TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
 
 
 function final_message() {
@@ -27,8 +27,12 @@ function final_message() {
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
+        
+        # Remove postinstall_api.sh crontab
         crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
+        # create file to signal cron that reboot has occurred
+        touch $INSTALLDIR/temp/vpsvaletrebooted.txt
     else :
     fi
 }
