@@ -52,9 +52,9 @@ then clear
 
 fi
 while :; do
-    if [ -z "$i" ] ; then read -p " --> " i ; fi
-    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter a number between 1 and $MNS...${nocolor}\n"; i=""; continue; }
-    if (($i >= 1 && $i <= $MNS)); then break
+    if [ -z "$i" ] ; then read -p -r " --> " i ; fi
+    [[ $i =~ ^[0-9]+$ ]] || { echo -e "{lightred}\n --> I only recognize numbers; enter a number between 1 and $MNS...${nocolor}\n"; i=""; continue; }
+    if ((i >= 1 && i <= MNS)); then break
     else echo -e "\n${lightred} --> I can't find masternode $i; enter a number between 1 and $MNS.${nocolor}\n"
         i=""
     fi
@@ -68,18 +68,19 @@ function sync_check() {
     TIMELINE1=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblock "${HASH}" | grep '"time"')
     TIMELINE=$(echo "$TIMELINE1" | tr -dc '0-9')
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+    CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
     # echo -e "TIMELINE is set to $TIMELINE"
     LTRIMTIME=${TIMELINE#*time\" : }
     # echo -e "LTRIMTIME is set to $LTRIMTIME"
     NEWEST=${LTRIMTIME%%,*}
     # echo -e "NEWEST is set to $NEWEST"
-    TIMEDIF=$(echo -e "$(($(date +%s)-$NEWEST))")
-    echo -e "This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
+    TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
+    echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
     # check if current to within 1.5 minutes
-    if (($TIMEDIF <= 90 && $TIMEDIF >= -90))
-    then echo -e "The blockchain is almost certainly synced.\n"
+    if ((TIMEDIF <= 90 && TIMEDIF >= -90))
+    then echo -e " The blockchain is almost certainly synced.\n"
         SYNCED="yes"
-    else echo -e "That's the same as${yellow} $((($(date +%s)-$NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-$NEWEST)/86400)) days${nocolor} behind the present.\n"
+    else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
         SYNCED="no"
     fi
 }
@@ -87,7 +88,7 @@ function sync_check() {
 function check_blocksync() {
 
     # check if blockchain of n1 is synced for 4 hours (14400 seconds) before reporting failure
-    end=$((SECONDS+1440))
+    end=$((SECONDS+14400))
     # end=$((SECONDS+14400))
 
     while [ $SECONDS -lt $end ]; do
@@ -102,9 +103,10 @@ function check_blocksync() {
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode Sync Status <-- ${nocolor}\n"
 
         echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
-        echo -e "The current number of blocks is:${yellow} ${BLOCKS}${nocolor}"
+        echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
+        echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
-        if (($BLOCKS <= 1 )) ; then echo -e -n "${lightred}Masternode is not syncing,${nocolor} but "
+        if ((BLOCKS <= 1 )) ; then echo -e -n "${lightred}Masternode is not syncing,${nocolor} but "
         
         # check if daemon is running and report
             if ps -A | grep "$MNODE_DAEMON" > /dev/null
@@ -117,26 +119,24 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white}Blockchain not synced; will check again in 10 seconds${nocolor}\n"
-            echo -e "I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
+        else echo -e "${white} Blockchain not synced; will check again in 10 seconds${nocolor}\n"
+            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-            
+            # insert a little humor
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
             sleep 10
         fi
     done
 
-    if [ "$SYNCED" = "no" ]; then echo -e "${lightred}Masternode did not sync in the allowed time${nocolor}\n"
+    if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode did not sync in the allowed time${nocolor}\n"
         # exit the script because syncing did not occur
         exit
 
 else : ; fi
     
-    # report blockchain synced
-
-    # create file to signal that this blockchain is synced
-   echo -e "Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
+   # create file to signal that this blockchain is synced
+   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
    touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
 }
 

@@ -182,7 +182,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/vpsmnaddress.info ]
     then :
         # create a subroutine here to check memory and size MNS appropriately
-    else echo -e "\n Before we can begin, we need to collect $MNS masternode addresses."
+    else echo -e "\n\n Before we can begin, we need to collect $MNS masternode addresses."
         echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
         echo -e " On your local wallet, generate the masternode addresses and send"
         echo -e " your collateral transactions for masternodes you want to start"
@@ -214,10 +214,10 @@ elif [ "$ONLYNET" = 4 ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
         echo -e "\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
-        echo -e " are equally secure, but it's faster if your server does it for you."
-        echo -e " An example of when you would want to enter them yourself would be"
-        echo -e " if you are trying to transfer existing masternodes to this VPS."
+        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
+        echo -e " secure, but it's faster if your server does it for you. An example of when you "
+        echo -e " would want to enter them yourself would be if you are trying to transfer"
+        echo -e " existing masternodes to this VPS without interruption."
         echo -e -n "${cyan}"
         while :; do
             echo -e "\n"
@@ -310,7 +310,7 @@ function silent_harden() {
     echo -e " Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet | tee -a "$LOGFILE"
 
-    echo -e " Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
+    echo -e " Inserting random Chuck Norris joke to keep things spicy\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -372,13 +372,12 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e " Binaries for ${PROJECTt} were successfully downloaded and installed \n"   | tee -a "$LOGFILE"
-        echo -e "${dEXIST} was found to exist"  | tee -a "$LOGFILE"
+    then echo -e "${lightcyan} Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
-    else echo -e " Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-        echo -e " ${dEXIST} (dEXIST) was not found to exist"  | tee -a "$LOGFILE"
+    else echo -e "${lightred} Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
+        echo -e "${lightred} ${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
     fi
 }
 function install_mns() {
