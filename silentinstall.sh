@@ -97,7 +97,7 @@ function setup_environment() {
     then VPSAPI=$(<$INFODIR/vpsapi.info)
         echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
 
-    else echo -e "\n\n Before we can begin, we need to collect your APIKEY."
+    else echo -e "\n\n Before we can begin, we need to collect your NodeValet API Key."
         echo -e " Manually collecting NodeValet API Key from user" >> $LOGFILE 2>&1
         echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
         touch $INFODIR/vpsapi.info
@@ -204,8 +204,8 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
             echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
+            echo -e "\n"
         done
-        echo -e "\n"
         echo -e " User manually entered $MNS masternode addresses." >> $LOGFILE 2>&1
     fi
 

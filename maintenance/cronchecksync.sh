@@ -87,7 +87,7 @@ function sync_check() {
 function check_blocksync() {
 
     # check if blockchain of n1 is synced for 4 hours (14400 seconds) before reporting failure
-    end=$((SECONDS+1440))
+    end=$((SECONDS+60))
     # end=$((SECONDS+14400))
 
     while [ $SECONDS -lt $end ]; do
@@ -120,9 +120,6 @@ function check_blocksync() {
         else echo -e "${white}Blockchain not synced; will check again in 10 seconds${nocolor}\n"
             echo -e "I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-            
-            curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
-            echo -e "\n"
             sleep 10
         fi
     done

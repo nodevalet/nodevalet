@@ -33,6 +33,7 @@ function final_message() {
 
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/vpsvaletrebooted.txt
+        
     else :
     fi
 }
