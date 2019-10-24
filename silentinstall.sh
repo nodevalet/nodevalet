@@ -1,6 +1,8 @@
 #!/bin/bash
 # Silently install masternodes and insert privkeys
 
+# echo " $(date +%m.%d.%Y_%H:%M:%S) : $MESSAGE" | tee -a "$LOGFILE"
+
 function setup_environment() {
     # Set Variables
     INSTALLDIR='/var/tmp/nodevalet'
@@ -146,26 +148,26 @@ elif [ "$ONLYNET" = 4 ]
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n This server's memory can safely support $MAXNODES masternodes.\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
-        
-    while :; do
-        read -p "  --> " MNS
-        lenMN=${#MNS}
-        testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
+
+        while :; do
+            read -p "  --> " MNS
+            lenMN=${#MNS}
+            testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
             if [[ $lenMN -ne ${#testvar} ]]
             then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
-            # length would be the same if $MNS was a number
+                # length would be the same if $MNS was a number
 
-            elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
+        elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
-            
+
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
                 echo -e "${MNS}" > $INFODIR/vpsnumber.info
                 break   # exit the loop
 
             fi
-    done 
-    
+        done
+
     fi
 
     # create or assign mnprefix
@@ -215,17 +217,17 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " are equally secure, but it's faster if your server does it for you."
         echo -e " An example of when you would want to enter them yourself would be"
         echo -e " if you are trying to transfer existing masternodes to this VPS."
-                echo -e -n "${cyan}"
-                while :; do
-                    echo -e "\n"
-                    read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
-                    if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
-                    then
-                    break
-                    fi
-                done
-                echo -e -n "${nocolor}"
-        
+        echo -e -n "${cyan}"
+        while :; do
+            echo -e "\n"
+            read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
+            if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
+            then
+                break
+            fi
+        done
+        echo -e -n "${nocolor}"
+
         if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
         then touch $INSTALLDIR/temp/genkeys
             echo -e " User selected to manually enter genkeys for $MNS masternodes." >> $LOGFILE 2>&1
@@ -250,8 +252,8 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e " User manually entered genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes.\n" >> $LOGFILE 2>&1
-        echo -e "${nocolor}"
-        echo -e "\n No problem.  The VPS will generate your masternode genkeys.${cyan}"
+            echo -e "${nocolor}"
+            echo -e "\n No problem.  The VPS will generate your masternode genkeys.${cyan}"
         fi
     fi
 
@@ -262,7 +264,7 @@ elif [ "$ONLYNET" = 4 ]
     else
         echo -e "\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
         echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
-    
+
         # what I consider a good example of a complicated query for numerical data
         while :; do
             read -p "  --> " SSHPORT
@@ -272,7 +274,7 @@ elif [ "$ONLYNET" = 4 ]
             else echo -e "\n${lightred}That number is out of range, try again.${nocolor}\n"
             fi
         done
-    
+
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
         touch $INFODIR/vpssshport.info
         echo "$SSHPORT" >> $INFODIR/vpssshport.info
@@ -366,8 +368,8 @@ function install_binaries() {
     fi
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-        # echo -e "Test for presence of binaries "  | tee -a "$LOGFILE"
-        # echo -e "MNODE_DAEMON variable is currently set to ${MNODE_DAEMON} "  | tee -a "$LOGFILE"
+    # echo -e "Test for presence of binaries "  | tee -a "$LOGFILE"
+    # echo -e "MNODE_DAEMON variable is currently set to ${MNODE_DAEMON} "  | tee -a "$LOGFILE"
 
 
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
@@ -376,7 +378,7 @@ function install_binaries() {
     # if [[ "${dEXIST}" == "${MNODE_DAEMON}" ]]  ; testing without this line
     if [[ "${dEXIST}" ]]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-    echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"  | tee -a "$LOGFILE"
+        echo -e "${dEXIST} was found to be equal to ${MNODE_DAEMON}"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
@@ -585,22 +587,93 @@ EOT
                 echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
 
                 # Query nodevalet block explorer for collateral transaction
-            else echo -e "Querying NodeValet for collateral txid $i"
-                echo -e "    Building query; "
-                curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                echo -e "$TX" >> $INSTALLDIR/temp/txid
-                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+                # this is the original code before I tried to improve it
+                # else echo -e "Querying NodeValet for collateral txid $i"
+                #    echo -e "    Building query; "
+                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
+                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+                # fi
+
+
+
 
                 # add a line here which will generate a message or error if txid is still not found
 
 
 
 
+                # rebuilding NodeValet query to make use of new code and VPS API
+                #
+                # Query nodevalet block explorer for collateral transaction
+                # Set Variables
+                # INSTALLDIR='/var/tmp/nodevalet'
+                # LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+                # INFODIR='/var/tmp/nvtemp'
+                # [ -e $INFODIR/vpsapi.info ] && VPSAPI=$(<$INFODIR/vpsapi.info) && echo $VPSAPI
+                # BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+                # i=1
+
+                # else echo -e "Querying NodeValet for collateral txid $i"
+                #    echo -e "    Building query; "
+                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
+                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+                # fi
+
+            else
+                # I need to first assemble the API string to curl from NodeValet
+                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=	APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+
+                # store NoveValets response in a local file
+                curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+                # display original curl API response
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+
+                # read curl API response into variable
+                APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+                # check if API response is invalid
+                [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (API.response$i.json) has NOT length greater than zero
+                ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+                ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "NodeValet replied: Transaction ID recorded for MN$i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" >> $INSTALLDIR/temp/txid
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
 
             fi
 
+            # this is a pretty display of the received JSON; suitable for headless display
+            # cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+            # this returns the TXID as long as the API key is valid
+            # it returns "null null" if the API is valid but the MN address is invalid
+            # sudo -s curl "$CURLAPI"  | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+
+            # run JQ on the .json response to arrive at our TXID
+            # cat $INSTALLDIR/temp/API.response$i.json
+            # cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+
+            # if the TXID$i has length, assume it's good
+            # [ -s $INSTALLDIR/temp/TXID$i ] && echo "NodeValet returned a TXID" || echo -e "null\nnull" >> $INSTALLDIR/temp/TXID$i
+
+            # this line sends a good API query, saves the output, and then displays that to user
+            # curl -s "https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" > $INSTALLDIR/temp/API.response$i.json && clear && cat $INSTALLDIR/temp/API.response$i.json && echo -e "\n"
+
+            #
             # replace null with txid info
             sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/temp/txid >> $INSTALLDIR/temp/txid 2>&1
             sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/TXID$i 2>&1
@@ -619,10 +692,10 @@ EOT
             # create the masternode.conf output that is returned to consumer
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 
-# round 1: cleanup and declutter
-#            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-#            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
-#            rm $INSTALLDIR/0 --force
+            # round 1: cleanup and declutter
+            #            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
+            #            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+            #            rm $INSTALLDIR/0 --force
 
             echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
         done
@@ -652,14 +725,14 @@ EOT
 #######################################################
 EOT
 
-# round 2: cleanup and declutter
-#        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-#        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-#        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-#        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-#        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-#        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-#        rm $INSTALLDIR/temp/ONLYNET --force
+        # round 2: cleanup and declutter
+        #        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+        #        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
+        #        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
+        #        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
+        #        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
+        #        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+        #        rm $INSTALLDIR/temp/ONLYNET --force
 
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
