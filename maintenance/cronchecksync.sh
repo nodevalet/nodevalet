@@ -21,24 +21,24 @@ then MNS=$(<$INFODIR/vpsnumber.info)
 else MNS=1
 fi
 
-    ### define colors ###
-    lightred=$'\033[1;31m'  # light red
-    red=$'\033[0;31m'  # red
-    lightgreen=$'\033[1;32m'  # light green
-    green=$'\033[0;32m'  # green
-    lightblue=$'\033[1;34m'  # light blue
-    blue=$'\033[0;34m'  # blue
-    lightpurple=$'\033[1;35m'  # light purple
-    purple=$'\033[0;35m'  # purple
-    lightcyan=$'\033[1;36m'  # light cyan
-    cyan=$'\033[0;36m'  # cyan
-    lightgray=$'\033[0;37m'  # light gray
-    white=$'\033[1;37m'  # white
-    brown=$'\033[0;33m'  # brown
-    yellow=$'\033[1;33m'  # yellow
-    darkgray=$'\033[1;30m'  # dark gray
-    black=$'\033[0;30m'  # black
-    nocolor=$'\e[0m' # no color
+### define colors ###
+lightred=$'\033[1;31m'  # light red
+red=$'\033[0;31m'  # red
+lightgreen=$'\033[1;32m'  # light green
+green=$'\033[0;32m'  # green
+lightblue=$'\033[1;34m'  # light blue
+blue=$'\033[0;34m'  # blue
+lightpurple=$'\033[1;35m'  # light purple
+purple=$'\033[0;35m'  # purple
+lightcyan=$'\033[1;36m'  # light cyan
+cyan=$'\033[0;36m'  # cyan
+lightgray=$'\033[0;37m'  # light gray
+white=$'\033[1;37m'  # white
+brown=$'\033[0;33m'  # brown
+yellow=$'\033[1;33m'  # yellow
+darkgray=$'\033[1;30m'  # dark gray
+black=$'\033[0;30m'  # black
+nocolor=$'\e[0m' # no color
 
 # read first argument to string
 i=$1
@@ -107,14 +107,14 @@ function check_blocksync() {
         echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
         if ((BLOCKS <= 1 )) ; then echo -e -n "${lightred}Masternode is not syncing,${nocolor} but "
-        
-        # check if daemon is running and report
+
+            # check if daemon is running and report
             if ps -A | grep "$MNODE_DAEMON" > /dev/null
             then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
             else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
-            rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_syncedbreak
+                rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_syncedbreak
             fi
-        
+
         else sync_check
         fi
 
@@ -134,10 +134,10 @@ function check_blocksync() {
         exit
 
 else : ; fi
-    
-   # create file to signal that this blockchain is synced
-   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
-   touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+
+    # create file to signal that this blockchain is synced
+    echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
+    touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
 }
 
 # This is where the script actually starts
