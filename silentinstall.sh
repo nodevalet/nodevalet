@@ -370,12 +370,14 @@ function install_binaries() {
     # check if binaries already exist, skip installing crypto packages if they aren't needed
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
-    if [ "$dEXIST" = "${MNODE_DAEMON}" ]
+    if [[ "${dEXIST}" ]]
     then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
+        echo -e "${dEXIST} was found to exist"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+        echo -e "${dEXIST} (dEXIST) was not found to exist"  | tee -a "$LOGFILE"
     fi
 }
 function install_mns() {
@@ -578,27 +580,7 @@ EOT
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
 
-                # Query nodevalet block explorer for collateral transaction
-                # this is the original code before I tried to improve it
-                # else echo -e "Querying NodeValet for collateral txid $i"
-                #    echo -e "    Building query; "
-                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
-                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-                # fi
-
-
-
-
-                # add a line here which will generate a message or error if txid is still not found
-
-
-
-
                 # rebuilding NodeValet query to make use of new code and VPS API
-                #
                 # Query nodevalet block explorer for collateral transaction
                 # Set Variables
                 # INSTALLDIR='/var/tmp/nodevalet'
@@ -608,25 +590,14 @@ EOT
                 # BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
                 # i=1
 
-                # else echo -e "Querying NodeValet for collateral txid $i"
-                #    echo -e "    Building query; "
-                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
-                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-                # fi
-
             else
                 # I need to first assemble the API string to curl from NodeValet
                 CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
 
                 MNADDRESS=$(cat $INSTALLDIR/temp/MNADD$i)
-                CURLAPI=`echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI"`
+                CURLAPI=$(echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI")
 
-                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-
-
+                # curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
 
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
