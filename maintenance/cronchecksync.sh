@@ -52,7 +52,7 @@ then clear
 
 fi
 while :; do
-    if [ -z "$i" ] ; then read -p -r " --> " i ; fi
+    if [ -z "$i" ] ; then read -p " --> " i ; fi
     [[ $i =~ ^[0-9]+$ ]] || { echo -e "{lightred}\n --> I only recognize numbers; enter a number between 1 and $MNS...${nocolor}\n"; i=""; continue; }
     if ((i >= 1 && i <= MNS)); then break
     else echo -e "\n${lightred} --> I can't find masternode $i; enter a number between 1 and $MNS.${nocolor}\n"
