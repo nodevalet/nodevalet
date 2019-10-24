@@ -98,8 +98,8 @@ function setup_environment() {
         echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
 
     else echo -e "\n Before we can begin, we need to collect your APIKEY."
-        echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
-        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+        echo -e " Manually collecting NodeValet API Key from user" >> $LOGFILE 2>&1
+        echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
         touch $INFODIR/vpsapi.info
         echo -e -n " "
         while :; do
@@ -307,8 +307,8 @@ function silent_harden() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e "Installing jq and jp2a and unzip packages" | tee -a "$LOGFILE"
-    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip | tee -a "$LOGFILE"
+    echo -e "Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
+    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet | tee -a "$LOGFILE"
 
     echo -e "Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"

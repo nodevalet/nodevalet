@@ -18,8 +18,9 @@ else cd $INSTALLDIR
 fi
 
 clear
-echo -e "\n This script will now display the NodeValet2 installation log  *"
-echo -e " which is stored at $LOGFILE *"
-echo -e " **************************************************************\n"
+echo -e "\n ****************************************************************"
+echo -e " * This script will now display the NodeValet2 installation log *"
+echo -e " * which is stored at $LOGFILE *"
+echo -e " ****************************************************************\n"
 cat $LOGFILE
 echo -e "\n"
