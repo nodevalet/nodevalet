@@ -627,7 +627,14 @@ EOT
 
             else
                 # I need to first assemble the API string to curl from NodeValet
-                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=	APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+
+                MNADDRESS=$(cat $INSTALLDIR/temp/MNADD$i)
+                CURLAPI=`echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI"`
+
+                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+
+
 
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
