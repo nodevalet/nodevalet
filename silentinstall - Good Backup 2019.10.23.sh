@@ -296,134 +296,6 @@ elif [ "$ONLYNET" = 4 ]
 
     # enable softwrap so masternode.conf file can be easily copied
     sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
-
-
-
-
-
-
-
-
-
-            # Check for presence of txid and, if present, use it for txid/txidx
-            i=1
-            if [ -e $INFODIR/vpsmntxdata.info ]
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
-                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                echo -e "$TX" >> $INSTALLDIR/temp/txid
-                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
-
-                # Query nodevalet block explorer for collateral transaction
-                # this is the original code before I tried to improve it
-                # else echo -e "Querying NodeValet for collateral txid $i"
-                #    echo -e "    Building query; "
-                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
-                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-                # fi
-
-
-
-
-                # add a line here which will generate a message or error if txid is still not found
-
-
-
-
-                # rebuilding NodeValet query to make use of new code and VPS API
-                #
-                # Query nodevalet block explorer for collateral transaction
-                # Set Variables
-                # INSTALLDIR='/var/tmp/nodevalet'
-                # LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-                # INFODIR='/var/tmp/nvtemp'
-                # [ -e $INFODIR/vpsapi.info ] && VPSAPI=$(<$INFODIR/vpsapi.info) && echo $VPSAPI
-                # BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-                # i=1
-
-                # else echo -e "Querying NodeValet for collateral txid $i"
-                #    echo -e "    Building query; "
-                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-                #    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                #    echo -e "$TX" >> $INSTALLDIR/temp/txid
-                #    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                #    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-                # fi
-
-            else
-                # I need to first assemble the API string to curl from NodeValet
-                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
-
-                # store NoveValets response in a local file
-                curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
-
-                # display original curl API response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
-
-                # read curl API response into variable
-                APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
-
-                # check if API response is invalid
-                [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-                [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-                [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-                # check if stored file (API.response$i.json) has NOT length greater than zero
-                ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-                # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
-                ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "NodeValet replied: Transaction ID recorded for MN$i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
-
-                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                echo -e "$TX" >> $INSTALLDIR/temp/txid
-                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
-            fi
-
-            # this is a pretty display of the received JSON; suitable for headless display
-            # cat $INSTALLDIR/temp/API.response$i.json | jq '.'
-
-            # this returns the TXID as long as the API key is valid
-            # it returns "null null" if the API is valid but the MN address is invalid
-            # sudo -s curl "$CURLAPI"  | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-
-            # run JQ on the .json response to arrive at our TXID
-            # cat $INSTALLDIR/temp/API.response$i.json
-            # cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
-
-            # if the TXID$i has length, assume it's good
-            # [ -s $INSTALLDIR/temp/TXID$i ] && echo "NodeValet returned a TXID" || echo -e "null\nnull" >> $INSTALLDIR/temp/TXID$i
-
-            # this line sends a good API query, saves the output, and then displays that to user
-            # curl -s "https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" > $INSTALLDIR/temp/API.response$i.json && clear && cat $INSTALLDIR/temp/API.response$i.json && echo -e "\n"
-
-            #
-            # replace null with txid info
-            sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/temp/txid >> $INSTALLDIR/temp/txid 2>&1
-            sed -i "s/.*null null/collateral_output_txid tx/" $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/TXID$i 2>&1
-
-            # merge all vars into masternode.conf
-            echo "|" > $INSTALLDIR/temp/DELIMETER
-
-            # merge data fields to prepare masternode.return file
-            paste -d '|' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/temp/masternode.line$i
-
-
-echo -e "Sleeping for 60 seconds for testing"
-sleep 60
-
-
-
-
-
-
-
-
-
 }
 
 function silent_harden() {
@@ -755,7 +627,14 @@ EOT
 
             else
                 # I need to first assemble the API string to curl from NodeValet
-                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=	APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+
+                MNADDRESS=$(cat $INSTALLDIR/temp/MNADD$i)
+                CURLAPI=`echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI"`
+
+                #    curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
+
+
 
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
