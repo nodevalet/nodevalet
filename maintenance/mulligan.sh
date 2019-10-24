@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will wipe NodeValet from your VPS
+# This script will scrub NodeValet from your VPS
 
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
@@ -33,14 +33,14 @@ function search_and_destroy() {
 
     echo -e -n "${yellow}"
     clear
-    echo -e "---------------------------------------------- "
+    echo -e "-------------------------------------------- "
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PURGE NODEVALET DATA "
-    echo -e "---------------------------------------------- \n"
+    echo -e "-------------------------------------------- \n"
     echo -e -n "${lightcyan}"
     echo -e " This scriptlet will disable your masternodes on this VPS and "
     echo -e " destroy all NodeValet data. It is intended for testing only.\n"
 
-    echo -e " Do not use this in production.\n"
+    echo -e " Do not use this in production."
     # echo -e -n "${cyan}"
     while :; do
         echo -e "\n"
@@ -63,42 +63,42 @@ function search_and_destroy() {
         cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INSTALLDIR/temp/MNODE_DAEMON1
         # mnode daemon name has been set
 
-        echo -e "${yellow}---------------------------------------------- "
+        echo -e "\n${yellow}--------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all crontabs"
-        echo -e "---------------------------------------------- ${white}\n"
+        echo -e "--------------------------------------------- ${white}\n"
         crontab -r
 
-        echo -e "${yellow}--------------------------------------------------------- "
+        echo -e "${yellow}---------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternodes"
-        echo -e "--------------------------------------------------------- ${white}\n"
+        echo -e "---------------------------------------------------------- ${white}\n"
 
-        echo -e "${yellow}--------------------------------------------------------- "
+        echo -e "${yellow}-------------------------------------------------------------- "
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
             systemctl disable "${PROJECT}"_n${i}
             systemctl stop "${PROJECT}"_n${i}
         done
-        echo -e "--------------------------------------------------------- ${white}\n"
+        echo -e "-------------------------------------------------------------------- ${white}\n"
         sleep 2
-	    
-		echo -e "${yellow}--------------------------------------------------------- "
+        
+        echo -e "${yellow}------------------------------------------------------------------- "
         echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
-        echo -e "--------------------------------------------------------- ${white}\n"
-		rm -rf /var/lib/masternodes
+        echo -e "------------------------------------------------------------------- ${white}\n"
+        rm -rf /var/lib/masternodes
 
         echo -e "${lightgreen}---------------------------------------------------- "
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : All masternodes have been stopped and destroyed"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Masternodes have been stopped and destroyed"
         echo -e "---------------------------------------------------- ${yellow}\n"
 
-        echo -e "${yellow}------------------------------------------------------------- "
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin/"
-        echo -e "------------------------------------------------------------- ${white}\n"
+        echo -e "${yellow}-------------------------------------------------------------- "
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin"
+        echo -e "-------------------------------------------------------------- ${white}\n"
         rm -rf /usr/local/bin/*
 
-        echo -e "${yellow}--------------------------------------------------- "
+        echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
-        echo -e "--------------------------------------------------- ${white}\n"
+        echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
 
         echo -e "${yellow}------------------------------------------------------------- "
@@ -106,9 +106,9 @@ function search_and_destroy() {
         echo -e "------------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nodevalet
 
-        echo -e "${lightgreen}------------------------------------------------- "
-        echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Server scrubbed"
-        echo -e "------------------------------------------------- ${nocolor}\n"
+        echo -e "${lightgreen}-------------------------------------------------------------- "
+        echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : NodeValet was scrubbed from this Server"
+        echo -e "-------------------------------------------------------------- ${nocolor}\n"
 
     else :
         echo -e "${yellow}---------------------------------------------------- "
