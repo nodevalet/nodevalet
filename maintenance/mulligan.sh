@@ -81,7 +81,7 @@ function search_and_destroy() {
         done
         echo -e "-------------------------------------------------------------------- ${white}\n"
         sleep 2
-        
+
         echo -e "${yellow}------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
         echo -e "------------------------------------------------------------------- ${white}\n"
