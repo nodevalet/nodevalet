@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set Variables
-LOGFILE='/var/tmp/nodevalet/log/silentinstall.log'
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=$(cat $INFODIR/vpscoin.info)
@@ -47,8 +47,11 @@ i=$1
 
 if [ -z "$i" ]
 then clear
-    echo -e "\n This scriptlet will check the syncing status of a masternode."
-    echo -e " Which masternode would you like to look into? \n"
+
+echo -e "\n"
+echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
+echo -e " cronchecksync.sh was calls without an argument and will now exit.\n"  | tee -a "$LOGFILE"
+exit
 
 fi
 while :; do
@@ -68,7 +71,7 @@ function sync_check() {
     TIMELINE1=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblock "${HASH}" | grep '"time"')
     TIMELINE=$(echo "$TIMELINE1" | tr -dc '0-9')
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+    # CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
     # echo -e "TIMELINE is set to $TIMELINE"
     LTRIMTIME=${TIMELINE#*time\" : }
     # echo -e "LTRIMTIME is set to $LTRIMTIME"
@@ -80,8 +83,7 @@ function sync_check() {
     if ((TIMEDIF <= 90 && TIMEDIF >= -90))
     then echo -e " The blockchain is almost certainly synced.\n"
         SYNCED="yes"
-    else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
-        SYNCED="no"
+    else SYNCED="no"
     fi
 }
 
@@ -100,21 +102,21 @@ function check_blocksync() {
 
         # if  masternode not running, echo masternode not running and break
         BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-        CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+        # CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode Sync Status <-- ${nocolor}\n"
 
-        echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
+        # echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
-        echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
+        # echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
-        if ((BLOCKS <= 1 )) ; then echo -e -n "${lightred}Masternode is not syncing,${nocolor} but "
-
-            # check if daemon is running and report
-            if ps -A | grep "$MNODE_DAEMON" > /dev/null
-            then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
-            else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
-                rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_syncedbreak
-            fi
+        if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; exit
+        #
+        # check if daemon is running and report
+        #    if ps -A | grep "$MNODE_DAEMON" > /dev/null
+        #    then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
+        #    else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
+        #        rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_syncedbreak
+        #    fi
 
         else sync_check
         fi
@@ -126,7 +128,7 @@ function check_blocksync() {
             # insert a little humor
             # curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
-            sleep 1
+            exit
         fi
     done
 
