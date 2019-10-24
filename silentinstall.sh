@@ -307,10 +307,10 @@ function silent_harden() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e "Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
+    echo -e " Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet | tee -a "$LOGFILE"
 
-    echo -e "Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
+    echo -e " Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -326,7 +326,7 @@ function install_binaries() {
     fi
 
     #check for binaries and install if found
-    echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    echo -e "\n Attempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -372,13 +372,13 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "Binaries for ${PROJECTt} were successfully downloaded and installed \n"   | tee -a "$LOGFILE"
+    then echo -e " Binaries for ${PROJECTt} were successfully downloaded and installed \n"   | tee -a "$LOGFILE"
         echo -e "${dEXIST} was found to exist"  | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
-    else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-        echo -e "${dEXIST} (dEXIST) was not found to exist"  | tee -a "$LOGFILE"
+    else echo -e " Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
+        echo -e " ${dEXIST} (dEXIST) was not found to exist"  | tee -a "$LOGFILE"
     fi
 }
 function install_mns() {
@@ -388,13 +388,13 @@ function install_mns() {
         echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
     else
         cd $INSTALLDIR/nodemaster || exit
-        echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
+        echo -e " Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
+        echo -e " Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
 
         # activate masternodes, or activate just FIRST masternode
-        echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
+        echo -e " --> Activating your $PROJECT masternodes" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
         # check if $PROJECTd was built correctly and started
@@ -605,7 +605,7 @@ EOT
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
 
                 # display original curl API response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
                 # read curl API response into variable
                 APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
