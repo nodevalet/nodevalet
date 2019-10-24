@@ -33,8 +33,9 @@ function ksplice_install() {
     # install created using https://tinyurl.com/y9klkx2j and https://tinyurl.com/y8fr4duq
     # Official page: https://ksplice.oracle.com/uptrack/guide
     echo -e -n "${lightcyan}"
-    figlet Ksplice Uptrack 
+    # figlet Ksplice Uptrack 
     echo -e -n "${yellow}"
+    clear
     echo -e "---------------------------------------------- " 
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALL ORACLE KSPLICE " 
     echo -e "---------------------------------------------- \n" 
@@ -43,19 +44,21 @@ function ksplice_install() {
     echo -e " Uptrack installs these patches in memory for Ubuntu and Fedora"
     echo -e " Linux so reboots are not needed. It is free for non-commercial use."
     echo -e " To minimize server downtime, this is a good thing to install."
-    echo -e "\n"
-    echo -e -n "${cyan}"
-    read -p -r " Would you like to install Oracle Ksplice Uptrack now? y/n  " KSPLICE
-    while [ "${KSPLICE,,}" != "yes" ] && [ "${KSPLICE,,}" != "no" ] && [ "${KSPLICE,,}" != "y" ] && [ "${KSPLICE,,}" != "n" ]; do
+    
+			echo -e -n "${cyan}"
+            while :; do
+            echo -e "\n"
+            read -n 1 -s -r -p " Would you like to install Oracle Ksplice Uptrack now? y/n " KSPLICE
+            if [[ ${KSPLICE,,} == "y" || ${KSPLICE,,} == "Y" || ${KSPLICE,,} == "N" || ${KSPLICE,,} == "n" ]]
+            then
+                break
+            fi
+        done
+        echo -e "${nocolor}"
         echo -e "\n"
-        echo -e -n "${lightred}"
-        read -p -r " --> I don't understand. Enter 'y' for yes or 'n' for no: " KSPLICE
-        echo -e -n "${nocolor}"
-    done
-    echo -e "\n"
-    # check if KSPLICE is valid
-    if [ "${KSPLICE,,}" = "yes" ] || [ "${KSPLICE,,}" = "y" ]
-    then
+
+        if [ "${KSPLICE,,}" = "Y" ] || [ "${KSPLICE,,}" = "y" ]
+        then
         # install ksplice uptrack
         echo -e -n "${yellow}"
         echo -e "--------------------------------------------------- " 
@@ -97,10 +100,6 @@ function ksplice_install() {
             echo -e " ** Activate & install Ksplice patches & updates ** " 
             echo -e "---------------------------------------------------- " 
             echo -e -n "${nocolor}"
-            cat $LOGFILE /var/log/ksplicew1.log > /var/log/join.log
-            cat /var/log/join.log > $LOGFILE
-            rm /var/log/ksplicew1.log
-            rm /var/log/join.log
             uptrack-upgrade -y 
             echo -e -n "${lightgreen}"
             echo -e "------------------------------------------------- " 
@@ -108,21 +107,18 @@ function ksplice_install() {
             echo -e "------------------------------------------------- \n" 
             echo -e -n "${nocolor}"
             sleep 1	; #  dramatic pause
-            clear
             echo -e -n "${lightgreen}"
             echo -e "------------------------------------------------- " 
             echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Ksplice Enabled" 
             echo -e "------------------------------------------------- \n" 
             echo -e -n "${nocolor}"
         else  	echo -e -n "${lightred}"
-            clear
             echo -e "-------------------------------------------------------- " 
             echo " $(date +%m.%d.%Y_%H:%M:%S) : FAIL : Ksplice was not Installed" 
             echo -e "-------------------------------------------------------- \n" 
             echo -e -n "${nocolor}"
         fi
     else :
-        clear
         echo -e -n "${yellow}"
         echo -e "---------------------------------------------------- " 
         echo -e "     ** User elected not to install Ksplice ** " 
