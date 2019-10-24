@@ -87,9 +87,9 @@ function search_and_destroy() {
         echo -e "------------------------------------------------------------------- ${white}\n"
         rm -rf /var/lib/masternodes
 
-        echo -e "${lightgreen}---------------------------------------------------- "
+        echo -e "${lightgreen------------------------------------------------------------------------------ "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Masternodes have been stopped and destroyed"
-        echo -e "---------------------------------------------------- ${yellow}\n"
+        echo -e "------------------------------------------------------------------------------ ${yellow}\n"
 
         echo -e "${yellow}-------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin"
@@ -101,9 +101,9 @@ function search_and_destroy() {
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
 
-        echo -e "${yellow}------------------------------------------------------------- "
+        echo -e "${yellow}------------------------------------------------------------------ "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
-        echo -e "------------------------------------------------------------- ${white}\n"
+        echo -e "------------------------------------------------------------------ ${white}\n"
         sudo rm -rf /var/tmp/nodevalet
 
         echo -e "${lightgreen}-------------------------------------------------------------- "
