@@ -1,20 +1,17 @@
 #!/bin/bash
 
 # Set Variables
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+HNAME=$(<$INFODIR/vpshostname.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
-# read or assign number of masternodes that are installed
-if [ -e $INFODIR/vpsnumber.info ]
-then MNS=$(<$INFODIR/vpsnumber.info)
-else MNS=1
-fi
-
+# Proceed to check if each masternode is synced or not
 for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Checking if ${PROJECT}_n${i} is synced."
@@ -23,5 +20,3 @@ do
 done
 
 exit
-
-

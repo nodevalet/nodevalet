@@ -11,7 +11,7 @@ PROJECTt=${PROJECTl~}
 
 # set hostname variable to the name planted by API installation script
 if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
-then HNAME=$(</var/tmp/nodevalet/info/vpshostname.info)
+then HNAME=$(<$INFODIR/vpshostname.info)
 else HNAME=$(hostname)
 fi
 
@@ -107,7 +107,7 @@ function check_blocksync() {
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
         echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
-        if ((BLOCKS <= 1 )) ; then echo -e -n "${lightred}Masternode is not syncing,${nocolor} but "
+        if ((BLOCKS <= 1 )) ; then echo -e -n "${lightred} Masternode is not syncing,${nocolor} but "
 
             # check if daemon is running and report
             if ps -A | grep "$MNODE_DAEMON" > /dev/null

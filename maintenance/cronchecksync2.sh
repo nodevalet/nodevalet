@@ -11,7 +11,7 @@ PROJECTt=${PROJECTl~}
 
 # set hostname variable to the name planted by API installation script
 if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
-then HNAME=$(</var/tmp/nodevalet/info/vpshostname.info)
+then HNAME=$(<$INFODIR/vpshostname.info)
 else HNAME=$(hostname)
 fi
 
@@ -46,12 +46,10 @@ i=$1
 # if no argument was given, give instructions and ask for one
 
 if [ -z "$i" ]
-then clear
-
-echo -e "\n"
-echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
-echo -e " cronchecksync.sh was calls without an argument and will now exit.\n"  | tee -a "$LOGFILE"
-exit
+then echo -e "\n"
+    echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
+    echo -e " cronchecksync.sh was calls without an argument and will now exit.\n"  | tee -a "$LOGFILE"
+    exit
 
 fi
 while :; do
@@ -98,7 +96,6 @@ function check_blocksync() {
         rm -rf $INSTALLDIR/getinfo_n1
         touch $INSTALLDIR/getinfo_n1
         /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
-        clear
 
         # if  masternode not running, echo masternode not running and break
         BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
@@ -110,13 +107,6 @@ function check_blocksync() {
         # echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
         if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; exit
-        #
-        # check if daemon is running and report
-        #    if ps -A | grep "$MNODE_DAEMON" > /dev/null
-        #    then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
-        #    else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
-        #        rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_syncedbreak
-        #    fi
 
         else sync_check
         fi
@@ -124,20 +114,17 @@ function check_blocksync() {
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
-
             # if the blockchain detects that it is NOT synced, then do these things:
             # if a synced file exists, rename it for posterity
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
-            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+                rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
             else :
             fi
-
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
-            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync --force
+            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
             # previous previous echo or convert it to replace _synced instead of appending to it
-
             exit
         fi
     done
@@ -148,13 +135,12 @@ function check_blocksync() {
 
 else : ; fi
 
-    
     # if the blockchain detects that it is synced, then do these things:
     # if a not_synced file exists, rename it for posterity
     if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync ]
-    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync
-    rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync --force
-    else : 
+    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync
+        rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync --force
+    else :
     fi
 
     # create file to signal that this blockchain is synced
@@ -163,19 +149,17 @@ else : ; fi
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
 
+    # This file will contain if the chain is currently not synced
+    # $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync  (eg. audax_n2_nosync)
 
-# This file will contain if the chain is currently not synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync  (eg. audax_n2_nosync)
+    # This file will contain time of when the chain was fully synced
+    # $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced  (eg. audax_n2_synced)
 
-# This file will contain time of when the chain was fully synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced  (eg. audax_n2_synced)
+    # This file will contain time of when the chain was last out-of-sync
+    # $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync  (eg. audax_n2_lastosync)
 
-# This file will contain time of when the chain was last out-of-sync
-# $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync  (eg. audax_n2_lastoutsync)
-
-# If no longer synced, this file will contain last time chain was synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync  (eg. audax_n2_lastnsync)
-
+    # If no longer synced, this file will contain last time chain was synced
+    # $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync  (eg. audax_n2_lastnsync)
 }
 
 # This is where the script actually starts
