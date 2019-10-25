@@ -17,7 +17,7 @@ fi
 
 for ((i=1;i<=$MNS;i++));
 do
-    echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Checking if ${PROJECT}_n${i} is synced." >> "$LOGFILE"
+    echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Checking if ${PROJECT}_n${i} is synced."
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i"
     sleep 5
 done

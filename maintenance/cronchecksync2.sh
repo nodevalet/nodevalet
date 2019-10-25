@@ -129,6 +129,15 @@ function check_blocksync() {
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
             # previous previous echo or convert it to replace _synced instead of appending to it
 
+    # if a synced file exists, rename it for posterity
+                    if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+                    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastsynced
+                    rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+                    else :
+                    fi
+    
+    
+    
             # insert a little humor
             # curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
@@ -146,9 +155,14 @@ else : ; fi
     echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-    # previous previous echo or convert it to replace _synced instead of appending to it
-    #
-    #
+    
+    # if a not_synced file exists, rename it for posterity
+    if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced ]
+    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastunsynced
+    rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
+    else :
+    fi
+  
 
 }
 
