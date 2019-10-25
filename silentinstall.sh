@@ -379,6 +379,9 @@ function install_binaries() {
     else echo -e "${lightred} Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
         echo -e "${lightred} ${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
     fi
+
+    # remove binaries temp folder
+    rm -rf $INSTALLDIR/temp/bin
 }
 function install_mns() {
     if [ -e /etc/masternodes/"$PROJECT_n1".conf ]
@@ -558,13 +561,13 @@ EOT
             fi
 
             # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vpsipaddresses.info
 
-            # remove "bind=" from mnipaddresses
-            sed -i "s/bind=//" $INSTALLDIR/temp/mnipaddresses 2>&1
+            # remove "bind=" from vpsipaddresses.info
+            sed -i "s/bind=//" $INFODIR/vpsipaddresses.info 2>&1
 
             # the next line produces the IP addresses for this masternode
-            echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
+            echo -e "$(sed -n ${i}p $INFODIR/vpsipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
 
             PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
             PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
@@ -700,13 +703,14 @@ EOT
 
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-        $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-        rm $INSTALLDIR/temp/ONLYNET --force
-
+        rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
+        rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
+        rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
+        rm $INSTALLDIR/temp/txid --force            ;   rm $INSTALLDIR/temp/mnaliases --force
+        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
+        cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
+        rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
+        
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
