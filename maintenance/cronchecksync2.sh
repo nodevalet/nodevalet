@@ -124,23 +124,20 @@ function check_blocksync() {
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
-            rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-            touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
-            echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
+
+            # if the blockchain detects that it is NOT synced, then do these things:
+            # if a synced file exists, rename it for posterity
+            if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+            then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
+            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+            else :
+            fi
+
+            touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
+            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync --force
             # previous previous echo or convert it to replace _synced instead of appending to it
 
-    # if a synced file exists, rename it for posterity
-                    if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
-                    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastsynced
-                    rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-                    else :
-                    fi
-    
-    
-    
-            # insert a little humor
-            # curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
-            echo -e "\n"
             exit
         fi
     done
@@ -151,18 +148,33 @@ function check_blocksync() {
 
 else : ; fi
 
+    
+    # if the blockchain detects that it is synced, then do these things:
+    # if a not_synced file exists, rename it for posterity
+    if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync ]
+    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync
+    rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync --force
+    else : 
+    fi
+
     # create file to signal that this blockchain is synced
     echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-    
-    # if a not_synced file exists, rename it for posterity
-    if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced ]
-    then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastunsynced
-    rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
-    else :
-    fi
-  
+    rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
+
+
+# This file will contain if the chain is currently not synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync  (eg. audax_n2_nosync)
+
+# This file will contain time of when the chain was fully synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced  (eg. audax_n2_synced)
+
+# This file will contain time of when the chain was last out-of-sync
+# $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastoutsync  (eg. audax_n2_lastoutsync)
+
+# If no longer synced, this file will contain last time chain was synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync  (eg. audax_n2_lastnsync)
 
 }
 
