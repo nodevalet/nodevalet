@@ -50,7 +50,7 @@ function setup_environment() {
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
     echo -e " ------------ Masternodes Made Easier --------------- " | tee -a "$LOGFILE"
-    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " ---------------------------------------------------- ${nocolor}" | tee -a "$LOGFILE"
 
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
@@ -664,9 +664,9 @@ EOT
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 
             # round 1: cleanup and declutter
-            #            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-            #            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
-            #            rm $INSTALLDIR/0 --force
+            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
+            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+            rm $INSTALLDIR/0 --force
 
             echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
         done
@@ -697,13 +697,13 @@ EOT
 EOT
 
         # round 2: cleanup and declutter
-        #        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        #        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-        #        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-        #        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-        #        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-        #        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-        #        rm $INSTALLDIR/temp/ONLYNET --force
+        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
+        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
+        $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
+        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
+        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
+        rm $INSTALLDIR/temp/ONLYNET --force
 
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
@@ -722,12 +722,12 @@ EOT
             echo -e "    file on your local wallet. (insert txid info to end of each line) "
             echo -e " 2. Reboot the local wallet: type 'reboot' to reboot this VPS and "
             echo -e "    begin syncing the blockchain. "
-            echo -e " 3. One the VPS has rebooted successfully, restart your local wallet, "
+            echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
             echo -e "    and then you may click Start Missing to start your new masternodes. "
             echo -e " 4. If starting any masternodes fails, you may need to start them from "
             echo -e "    debug console using 'startmasternode alias 0 MN1'  where you replace "
-            echo -e "    MN1 with the  alias of your masternode. This is due to a quirk in "
-            echo -e "    the wallet that doesn't always recognize IPv6 addresses. \n"
+            echo -e "    MN1 with the alias of your masternode. Some wallets don't always"
+            echo -e "    recognize IPv6 addresses. \n"
             read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
     else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ;fi
     fi

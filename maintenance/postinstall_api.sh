@@ -15,7 +15,7 @@ function final_message() {
         # set hostname variable to the name planted by install script
         if [ -e $INFODIR/vpshostname.info ]
         then HNAME=$(<$INFODIR/vpshostname.info)
-        else HNAME=`hostname`
+        else HNAME=$(hostname)
         fi
 
         # log successful reboot
@@ -32,8 +32,10 @@ function final_message() {
         crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
         # create file to signal cron that reboot has occurred
-        touch $INSTALLDIR/temp/vpsvaletrebooted.txt
-        
+        touch $INSTALLDIR/temp/install_completion_time.txt
+        echo -e " $INSTALLDIR/temp/install_completion_time
+        echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/install_completion_time.txt"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SERVER REBOOTED SUCCESSFULLY " | tee -a "$LOGFILE"
     else :
     fi
 }
