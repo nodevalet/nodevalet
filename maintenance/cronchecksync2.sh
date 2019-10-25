@@ -125,6 +125,10 @@ function check_blocksync() {
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             rm -rf $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+            touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_not_synced
+            # previous previous echo or convert it to replace _synced instead of appending to it
+
             # insert a little humor
             # curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
@@ -141,7 +145,11 @@ else : ; fi
     # create file to signal that this blockchain is synced
     echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-    echo -e "$(date +%m.%d.%Y_%H:%M:%S)" > $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+    echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+    # previous previous echo or convert it to replace _synced instead of appending to it
+    #
+    #
+
 }
 
 # This is where the script actually starts

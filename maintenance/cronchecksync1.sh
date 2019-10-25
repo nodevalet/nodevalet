@@ -19,7 +19,7 @@ for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n `date +%m.%d.%Y_%H:%M:%S` : Checking if ${PROJECT}_n${i} is synced." >> "$LOGFILE"
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i"
-    sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
+    sleep 5
 done
 
 exit
