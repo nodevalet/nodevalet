@@ -738,6 +738,7 @@ function restart_server() {
     echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
+    touch $INSTALLDIR/temp/vpsvaletreboot.txt
     shutdown -r now "Server is going down for upgrade."
 }
 
@@ -763,6 +764,6 @@ configure_mns
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
-touch $INSTALLDIR/temp/vpsvaletreboot.txt
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
+
 restart_server
