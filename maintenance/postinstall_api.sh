@@ -32,8 +32,7 @@ function final_message() {
         crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
         # create file to signal cron that reboot has occurred
-        touch $INSTALLDIR/temp/install_completion_time.txt
-        echo -e " $INSTALLDIR/temp/install_completion_time
+        touch $INSTALLDIR/temp/installation_comple
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/install_completion_time.txt"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SERVER REBOOTED SUCCESSFULLY " | tee -a "$LOGFILE"
     else :
