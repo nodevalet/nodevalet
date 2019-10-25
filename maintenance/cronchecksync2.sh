@@ -79,8 +79,8 @@ function sync_check() {
     # echo -e "NEWEST is set to $NEWEST"
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
     echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
-    # check if current to within 1.5 minutes
-    if ((TIMEDIF <= 90 && TIMEDIF >= -90))
+    # check if current to within 2 minutes
+    if ((TIMEDIF <= 120 && TIMEDIF >= -120))
     then echo -e " The blockchain is almost certainly synced.\n"
         SYNCED="yes"
     else SYNCED="no"
@@ -141,6 +141,7 @@ else : ; fi
     # create file to signal that this blockchain is synced
     echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+    echo -e "$(date +%m.%d.%Y_%H:%M:%S)" > $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
 }
 
 # This is where the script actually starts

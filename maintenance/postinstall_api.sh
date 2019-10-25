@@ -23,7 +23,6 @@ function final_message() {
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
 
-
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
         
@@ -31,8 +30,8 @@ function final_message() {
         crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
         # create file to signal cron that reboot has occurred
-        touch $INSTALLDIR/temp/installation_comple
-        echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/install_completion_time.txt"
+        touch $INSTALLDIR/temp/installation_complete
+        echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SERVER REBOOTED SUCCESSFULLY " | tee -a "$LOGFILE"
     else :
     fi

@@ -447,6 +447,8 @@ function add_cron() {
     (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
     echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
     (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+    echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
 
     # add system link to common maintenance scripts so they can be accessed more easily
     sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
