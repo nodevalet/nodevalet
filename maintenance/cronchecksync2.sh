@@ -95,12 +95,12 @@ function check_blocksync() {
         # echo -e "Time $SECONDS"
         rm -rf $INSTALLDIR/getinfo_n1
         touch $INSTALLDIR/getinfo_n1
-        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
+        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n1
 
         # if  masternode not running, echo masternode not running and break
         BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
         # CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-        echo -e "\n${lightcyan}    --> $PROJECTt Masternode Sync Status <-- ${nocolor}\n"
+        echo -e "\n${lightcyan}    --> $PROJECTt Masternode $i Sync Status <-- ${nocolor}\n"
 
         # echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
@@ -112,8 +112,8 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
-            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
+        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}.\n"
+            # echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             # if the blockchain detects that it is NOT synced, then do these things:
             # if a synced file exists, rename it for posterity
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]

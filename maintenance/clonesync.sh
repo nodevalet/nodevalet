@@ -12,6 +12,8 @@ HNAME=$(<$INFODIR/vpshostname.info)
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
+touch $INSTALLDIR/temp/updating
+
 # read first argument to string
 t=$1
 
@@ -39,6 +41,7 @@ sleep 2
 TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
 if [[ "${TARGETSYNC}" ]]
 then echo -e "* ${PROJECT}_n${t} is already synced *\n"
+rm -rf $INSTALLDIR/temp/updating
 exit
 else echo -e "${PROJECT}_n${t} is not synced and will be clonesynced" | tee -a "$LOGFILE"
 fi
@@ -70,6 +73,7 @@ done
 # Check if a valid Source Masternode was found
 if [[ "${s}" == "0" ]]
     then echo -e " Unable to locate valid Source Masternode, stopping.\n"
+    rm -rf $INSTALLDIR/temp/updating
     exit
     
 else echo -e " Clonesync will now attempt to clone the blockchain from "
@@ -79,31 +83,16 @@ else echo -e " Clonesync will now attempt to clone the blockchain from "
 
 echo -e "This is the part where I would do the things."
 echo -e "Exiting because I haven't written the rest of the code yet."
+rm -rf $INSTALLDIR/temp/updating
 exit
-
-
-fi
-
-# This file will contain if the chain is currently not synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${t}_nosync  (eg. audax_n2_nosync)
-
-# This file will contain time of when the chain was fully synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${t}_synced  (eg. audax_n2_synced)
-
-# This file will contain time of when the chain was last out-of-sync
-# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastosync  (eg. audax_n2_lastoutsync)
-
-# If no longer synced, this file will contain last time chain was synced
-# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastnsync  (eg. audax_n2_lastnsync)
 
 
 
 
 echo -e "\n"
 echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh" | tee -a "$LOGFILE"
-echo -e " User has manually asked to clonesync the chain on ${PROJECT}_n${t}.\n"  | tee -a "$LOGFILE"
+echo -e " Going to clone ${PROJECT}_n${s}'s blockchain onto ${PROJECT}_n${t}'.\n"  | tee -a "$LOGFILE"
 
-touch $INSTALLDIR/temp/updating
 
 echo -e " Disabling Source Masternode ${PROJECT}_n${s} now."
 sudo systemctl disable "${PROJECT}"_n${s}
@@ -121,6 +110,11 @@ sleep 2
 
 echo -e " Copying source blockchain data from MNx except wallet.dat and masternode.conf."
 # cp /var/lib/masternodes/"${PROJECT}"${t}/
+# cp !(b*) new_dir/  # this is a sample
+
+cp !("wallet.dat"|"masternode.conf") new_dir/  # this is a sample
+
+sudo rm -rf !("wallet.dat"|"masternode.conf")
 
 echo -e " Restarting Source Masternode ${PROJECT}_n${s}.\n"
 sudo systemctl enable "${PROJECT}"_n${s}
@@ -136,3 +130,20 @@ echo -e " Clonesync complete.\n"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
+exit
+
+
+fi
+
+# This file will contain if the chain is currently not synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_nosync  (eg. audax_n2_nosync)
+
+# This file will contain time of when the chain was fully synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_synced  (eg. audax_n2_synced)
+
+# This file will contain time of when the chain was last out-of-sync
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastosync  (eg. audax_n2_lastoutsync)
+
+# If no longer synced, this file will contain last time chain was synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastnsync  (eg. audax_n2_lastnsync)
+

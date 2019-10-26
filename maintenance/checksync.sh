@@ -95,7 +95,7 @@ function check_blocksync() {
         # echo -e "Time $SECONDS"
         rm -rf $INSTALLDIR/getinfo_n1
         touch $INSTALLDIR/getinfo_n1
-        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo  | tee -a $INSTALLDIR/getinfo_n1
+        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n1
         clear
 
         # if  masternode not running, echo masternode not running and break

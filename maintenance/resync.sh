@@ -50,6 +50,7 @@ sudo systemctl stop "${PROJECT}"_n${i}
 sleep 2
 echo -e " Removing blockchain data except wallet.dat and masternode.conf."
 cd /var/lib/masternodes/"${PROJECT}"${i}
+rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
 sudo rm -rf !("wallet.dat"|"masternode.conf")
 sleep 2
 echo -e " Restarting masternode.\n"
