@@ -9,6 +9,8 @@ LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
 HNAME=$(<$INFODIR/vpshostname.info)
 
+clear
+
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
@@ -106,9 +108,9 @@ sleep 2
 echo -e " Copying source blockchain data from MNx except wallet.dat and masternode.conf.\n"
 # read -p "Do it now" A
 cd /var/lib/masternodes/"${PROJECT}"${s}
-cp -r /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
-cp -r /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
-cp -r /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
 
 # cp -r /var/lib/masternodes/audax1/blocks /var/lib/masternodes/audax2/blocks
 # cp -r /var/lib/masternodes/audax1/chainstate /var/lib/masternodes/audax2/chainstate
@@ -126,15 +128,12 @@ echo -e " Restarting Source Masternode ${PROJECT}_n${s}.\n"
 sudo systemctl enable "${PROJECT}"_n${s}
 sudo systemctl start "${PROJECT}"_n${s}
 
-
-
 echo -e " Restarting Target Masternode ${PROJECT}_n${t}.\n"
 # read -p "Do it now" C
 # need to update this 
-/usr/local/bin/audaxd -conf=/etc/masternodes/audax_n2.conf -rescan
-sleep 5
+# /usr/local/bin/audaxd -conf=/etc/masternodes/audax_n2.conf -rescan
 sudo systemctl enable "${PROJECT}"_n${t}
-# sudo systemctl start "${PROJECT}"_n${t}
+sudo systemctl start "${PROJECT}"_n${t}
 # -reindex
 
 echo -e " Clonesync complete; masternodes have been restarted.\n"  | tee -a "$LOGFILE"
