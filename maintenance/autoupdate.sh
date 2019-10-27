@@ -52,7 +52,7 @@ rm -r -f $PROJECT*
 CURVERSION=$(cat $INSTALLDIR/temp/currentversion)
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
@@ -131,7 +131,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	make install
 	fi
 	
-	cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")"
+	cd /usr/local/bin && rm -f !"("activate_masternodes_$PROJECT")"
 	cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/temp/$PROJECT
 	cd $INSTALLDIR/temp
@@ -166,27 +166,24 @@ function check_project() {
         echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/${PROJECT}Ds
     fi
-	
 }
 
 function check_restore() {
-	# need to update this to work with new variables (copy from dEXIST above)
-    # check if $PROJECTd is running
-	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
-	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " ** ${MNODE_DAEMON} is running...original binaries were restored" | tee -a "$LOGFILE"
-	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	rm -f $INSTALLDIR/temp/updating
-	reboot
-	exit
-	else echo -e " Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
-	echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord." | tee -a "$LOGFILE"
-	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	rm -f $INSTALLDIR/temp/updating
-	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
-	reboot
+	    # check if binaries already exist, skip installing crypto packages if they aren't needed
+    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
+
+    if [[ "${dEXIST}" ]]
+    then echo -e "${lightcyan} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
+    	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
+    	rm -f $INSTALLDIR/temp/updating
+	    reboot
+	    exit
+
+    else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
+        echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
+	    echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
+	    rm -f $INSTALLDIR/temp/updating
+	    reboot
 	fi
 }
 
