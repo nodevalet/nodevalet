@@ -43,7 +43,7 @@ NodeValet keeps its files in  `/var/tmp/nodevalet` and its logs in `/var/tmp/nod
 
 We've added a few small scripts to make the most common commands a lot easier. You can just enter these on the command line:
 
-`autoupdate` will run the autoupdate script and check for a new version (rather than wait for the scheduled check)  
+`autoupdate` runs the autoupdate script to check for new binaries (rather than wait for the scheduled check)  
 `checkdaemon` will check if all masternodes are correctly synced  
 `checksync` will return the syncing status of all masternodes  
 `clonesync` can be used to bootstrap a masternode and fully sync its chain from another masternode  
