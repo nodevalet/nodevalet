@@ -41,6 +41,7 @@ if [ -e $INSTALLDIR/temp/updating ]
 		rm -f $INSTALLDIR/temp/updating
 fi
 
+
 function update_binaries() {
 #check for updates and install binaries if necessary
 echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
@@ -154,24 +155,34 @@ function check_project() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "${lightcyan} $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
-    	echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
-		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
-            curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
-        rm -f $INSTALLDIR/temp/${PROJECT}Ds
-    	rm -f $INSTALLDIR/temp/updating
-	    exit
+    then echo -e "${lightcyan} Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
+        curl -s "$GITAPI_URL" \
+            | grep tag_name > $INSTALLDIR/temp/currentversion
 
-    else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist..." | tee -a "$LOGFILE"
-        echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
-        rm -f $INSTALLDIR/temp/${PROJECT}Ds
+    else echo -e "${lightred} Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
+        echo -e "${lightred} ${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
     fi
-	
+
+
+	# check if $PROJECTd is running
+	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
+	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
+	then 	echo -e "\n"
+		echo -e "$(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
+		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
+		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
+	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+	rm -f $INSTALLDIR/temp/${PROJECT}Ds
+	rm -f $INSTALLDIR/temp/updating
+	exit
+	else echo -e "$(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
+	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
+	rm -f $INSTALLDIR/temp/${PROJECT}Ds
+	fi
 }
 
 function check_restore() {
-	# need to update this to work with new variables (copy from dEXIST above)
-    # check if $PROJECTd is running
+	# check if $PROJECTd is running
 	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
 	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
 	then echo -e " ** ${MNODE_DAEMON} is running...original binaries were restored" | tee -a "$LOGFILE"
