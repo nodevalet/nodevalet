@@ -447,7 +447,7 @@ function add_cron() {
     (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
     (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
-    echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
+    echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
     (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
     echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
