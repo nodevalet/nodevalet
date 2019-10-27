@@ -125,6 +125,7 @@ function check_blocksync() {
             # insert a little humor
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
+            rm -rf $INSTALLDIR/getinfo_n${i} --force
             sleep 10
         fi
     done
