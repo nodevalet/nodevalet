@@ -95,8 +95,7 @@ function setup_environment() {
     # read API key if it exists, if not prompt for it
     if [ -e $INFODIR/vpsapi.info ]
     then VPSAPI=$(<$INFODIR/vpsapi.info)
-        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
-
+        echo -e " Setting NodeValet API key to provided value : vpsapi.info found" >> $LOGFILE
     else echo -e "\n\n Before we can begin, we need to collect your NodeValet API Key."
         echo -e " Manually collecting NodeValet API Key from user" >> $LOGFILE 2>&1
         echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
