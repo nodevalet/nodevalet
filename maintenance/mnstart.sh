@@ -38,7 +38,7 @@ while :; do
 done
 
 echo -e "\n"
-echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running mnstart.sh" | tee -a "$LOGFILE"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstart.sh" | tee -a "$LOGFILE"
 echo -e " User has asked to re-enable masternode ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating

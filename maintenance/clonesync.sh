@@ -86,8 +86,8 @@ else echo -e " Clonesync will now attempt to clone the blockchain from "
 # echo -e "Exiting because I haven't written the rest of the code yet."
 # rm -rf $INSTALLDIR/temp/updating
 # exit
-
-echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh" | tee -a "$LOGFILE"
+echo -e "\n"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh" | tee -a "$LOGFILE"
 echo -e " Going to clone ${PROJECT}_n${s}'s blockchain onto ${PROJECT}_n${t}."  | tee -a "$LOGFILE"
 
 
