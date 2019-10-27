@@ -67,7 +67,7 @@ function sync_check() {
     #echo -e "HASH is set to $HASH"
     TIMELINE1=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblock "${HASH}" | grep '"time"')
     TIMELINE=$(echo "$TIMELINE1" | tr -dc '0-9')
-    BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+    BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
     CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
     # echo -e "TIMELINE is set to $TIMELINE"
     LTRIMTIME=${TIMELINE#*time\" : }
