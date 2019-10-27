@@ -11,8 +11,7 @@ HNAME=$(<$INFODIR/vpshostname.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
-#update .gitstring binary search string variable
-
+# update .gitstring binary search string variable
 cd $INSTALLDIR/nodemaster/config/"$PROJECT"
 echo -e " \n$(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring"
 curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/"$PROJECT"/"$PROJECT".gitstring
