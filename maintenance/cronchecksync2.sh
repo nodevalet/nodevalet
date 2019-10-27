@@ -47,7 +47,7 @@ i=$1
 
 if [ -z "$i" ]
 then echo -e "\n"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
+    echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
     echo -e " cronchecksync.sh was called without an argument and will now exit.\n"  | tee -a "$LOGFILE"
     exit
 fi
@@ -119,7 +119,7 @@ function check_blocksync() {
             # previous previous echo or convert it to replace _synced instead of appending to it
             
             # add in logging for testing
-            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
             echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
             exit
         fi
@@ -146,7 +146,7 @@ else : ; fi
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
     
     # add in logging for testing
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
+    echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
     echo -e "                    Masternode ${PROJECT}_n${i} is synced."  | tee -a "$LOGFILE"
 
 
