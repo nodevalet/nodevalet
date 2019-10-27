@@ -6,7 +6,7 @@ INFODIR='/var/tmp/nvtemp'
 PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
@@ -23,7 +23,7 @@ echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
 sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON*
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
