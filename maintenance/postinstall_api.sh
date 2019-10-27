@@ -32,7 +32,7 @@ function final_message() {
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SERVER REBOOTED SUCCESSFULLY " | tee -a "$LOGFILE"
-        bash $INSTALLDIR/maintenance/cronchecksync1.sh
+        bash /var/tmp/nodevalet/maintenance/cronchecksync1.sh
     else :
     fi
 }
