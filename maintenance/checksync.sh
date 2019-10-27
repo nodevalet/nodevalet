@@ -93,7 +93,6 @@ function check_blocksync() {
 
     while [ $SECONDS -lt $end ]; do
         # echo -e "Time $SECONDS"
-        rm -rf $INSTALLDIR/getinfo_n${i}
         touch $INSTALLDIR/getinfo_n${i}
         /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n${i}
         clear
@@ -113,6 +112,7 @@ function check_blocksync() {
             if ps -A | grep "$MNODE_DAEMON" > /dev/null
             then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
             else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
+                rm -rf $INSTALLDIR/getinfo_n${i} --force
                 break
             fi
 
@@ -131,6 +131,7 @@ function check_blocksync() {
 
     if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode did not sync in the allowed time${nocolor}\n"
         # exit the script because syncing did not occur
+        rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
 
 else : ; fi
@@ -144,4 +145,5 @@ else : ; fi
 # This is where the script actually starts
 check_blocksync
 
+rm -rf $INSTALLDIR/getinfo_n${i} --force
 exit

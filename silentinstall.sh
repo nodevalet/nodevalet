@@ -122,7 +122,11 @@ function setup_environment() {
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
     cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
+    # eventually switch over from MNODE_DAEMON to $INFODIR/vpsmnode_daemon.info
+    # cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+    cat $INSTALLDIR/temp/MNODE_DAEMON > $INFODIR/vpsmnode_daemon.info
+
+    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)

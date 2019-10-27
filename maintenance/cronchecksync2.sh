@@ -98,7 +98,7 @@ function check_blocksync() {
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
         # echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
-        if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; exit
+        if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; rm -rf $INSTALLDIR/getinfo_n${i} --force ; exit
 
         else sync_check
         fi
@@ -124,12 +124,14 @@ function check_blocksync() {
             # add in logging for testing
             # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
             # echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
+            rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
         fi
     done
 
     if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode did not sync in the allowed time${nocolor}\n"
         # exit the script because syncing did not occur
+        rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
 
 else : ; fi
@@ -171,4 +173,5 @@ else : ; fi
 # This is where the script actually starts
 check_blocksync
 
+rm -rf $INSTALLDIR/getinfo_n${i} --force
 exit
