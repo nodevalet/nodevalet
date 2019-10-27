@@ -3,9 +3,11 @@
 
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
-MNS=$(cat $INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -28,14 +30,6 @@ nocolor=$'\e[0m' # no color
 
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
-
-# set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
-cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm -f $INSTALLDIR/temp/MNODE_DAEMON1
 
 if [ -e "$INSTALLDIR/temp/updating" ]
 then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running masternodestatus.sh"

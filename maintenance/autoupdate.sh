@@ -1,9 +1,13 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+HNAME=$(<$INFODIR/vpshostname.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 
@@ -41,7 +45,6 @@ then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOG
     echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
     rm -f $INSTALLDIR/temp/updating
 fi
-
 
 function update_binaries() {
     #check for updates and install binaries if necessary

@@ -3,19 +3,13 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
-MNS=$(cat $INFODIR/vpsnumber.info)
-
-# set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
-cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+HNAME=$(<$INFODIR/vpshostname.info)
 
 # add logging to check if cron is working as planned
 # echo -e "`date +%m.%d.%Y_%H:%M:%S` : Executing makerun.sh (every 5 minutes, cron) \n"  | tee -a "$LOGFILE"

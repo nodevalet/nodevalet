@@ -6,7 +6,6 @@ INFODIR='/var/tmp/nvtemp'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
 
-
 function final_message() {
 
     if [ -e $INSTALLDIR/temp/vpsvaletreboot.txt ]; then
