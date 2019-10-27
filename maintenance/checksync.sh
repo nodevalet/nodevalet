@@ -68,7 +68,7 @@ function sync_check() {
     TIMELINE1=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblock "${HASH}" | grep '"time"')
     TIMELINE=$(echo "$TIMELINE1" | tr -dc '0-9')
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-    CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+    CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
     # echo -e "TIMELINE is set to $TIMELINE"
     LTRIMTIME=${TIMELINE#*time\" : }
     # echo -e "LTRIMTIME is set to $LTRIMTIME"
@@ -93,14 +93,14 @@ function check_blocksync() {
 
     while [ $SECONDS -lt $end ]; do
         # echo -e "Time $SECONDS"
-        rm -rf $INSTALLDIR/getinfo_n1
-        touch $INSTALLDIR/getinfo_n1
-        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n1
+        rm -rf $INSTALLDIR/getinfo_n${i}
+        touch $INSTALLDIR/getinfo_n${i}
+        /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n${i}
         clear
 
         # if  masternode not running, echo masternode not running and break
-        BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
-        CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n1 | tr -dc '0-9')
+        BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
+        CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode Sync Status <-- ${nocolor}\n"
 
         echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
