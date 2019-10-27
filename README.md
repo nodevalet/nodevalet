@@ -59,7 +59,7 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 `showlog` will display the installation log  
 `showmlog` will display the maintenance log  
 
-We'll be adding a couple more in the future so stay tuned!
+We may add more from time to time so stay tuned!
 
 Meanwhile, enjoy the service!
 
