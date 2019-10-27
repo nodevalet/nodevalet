@@ -113,13 +113,13 @@ function check_blocksync() {
             if ps -A | grep "$MNODE_DAEMON" > /dev/null
             then echo -e -n "${lightgreen}$MNODE_DAEMON is running.${nocolor}\n"
             else echo -e -n "${lightred}$MNODE_DAEMON is NOT running.${nocolor}\n"
-            break
+                break
             fi
 
         else sync_check
         fi
 
-        if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
+        if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             # insert a little humor
@@ -135,9 +135,9 @@ function check_blocksync() {
 
 else : ; fi
 
-#   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
-#   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
-#   touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
+    #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
+    #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
+    #   touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
 
 }
 

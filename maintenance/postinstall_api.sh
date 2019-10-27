@@ -25,7 +25,7 @@ function final_message() {
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
-        
+
         # Remove postinstall_api.sh crontab
         crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 

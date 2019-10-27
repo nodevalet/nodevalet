@@ -435,9 +435,8 @@ function install_mns() {
 }
 
 function add_cron() {
+    # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-    chmod 0700 $INSTALLDIR/*.sh
-    chmod 0700 $INSTALLDIR/maintenance/*.sh
     echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
@@ -453,7 +452,11 @@ function add_cron() {
     echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
 
-    # add system link to common maintenance scripts so they can be accessed more easily
+    # Enable run permissions on all scripts
+    chmod 0700 $INSTALLDIR/*.sh
+    chmod 0700 $INSTALLDIR/maintenance/*.sh
+
+    # Add system link to common maintenance scripts so they can be accessed more easily
     sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
     sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
     sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
@@ -471,20 +474,16 @@ function add_cron() {
 }
 
 function configure_mns() {
-    # Iteratively create all masternode variables for masternode.conf
-    # Do not break any pre-existing masternodes
+    # Do not break any existing masternodes
     if [ -s $INSTALLDIR/temp/mnsexist ]
     then echo -e "Skipping configure_mns function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
         echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
         [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS; stopping install."}' && echo -e " "
         exit
     else
-        # Create a file containing all masternode genkeys
         # echo -e "Saving genkey(s) to $INSTALLDIR/temp/genkeys \n"  | tee -a "$LOGFILE"
-        touch $INSTALLDIR/temp/genkeys
-
-        # create initial masternode.conf file and populate with notes
-        touch $INSTALLDIR/masternode.conf
+        touch $INSTALLDIR/temp/genkeys # Create file to store masternode genkeys
+        touch $INSTALLDIR/masternode.conf # create initial masternode.conf file
         echo -e "Creating $INSTALLDIR/masternode.conf file to collect user settings" | tee -a "$LOGFILE"
         cat <<EOT >> $INSTALLDIR/masternode.conf
 #######################################################
@@ -492,7 +491,6 @@ function configure_mns() {
 #######################################################
 EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
-
         for ((i=1;i<=$MNS;i++));
         do
             for ((P=1;P<=35;P++));
@@ -589,24 +587,11 @@ EOT
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
 
-                # rebuilding NodeValet query to make use of new code and VPS API
-                # Query nodevalet block explorer for collateral transaction
-                # Set Variables
-                # INSTALLDIR='/var/tmp/nodevalet'
-                # LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-                # INFODIR='/var/tmp/nvtemp'
-                # [ -e $INFODIR/vpsapi.info ] && VPSAPI=$(<$INFODIR/vpsapi.info) && echo $VPSAPI
-                # BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-                # i=1
-
             else
-                # I need to first assemble the API string to curl from NodeValet
-                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+                # CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
 
                 MNADDRESS=$(cat $INSTALLDIR/temp/MNADD$i)
                 CURLAPI=$(echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI")
-
-                # curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
 
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
@@ -713,7 +698,7 @@ EOT
         rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
         cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
-        
+
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
