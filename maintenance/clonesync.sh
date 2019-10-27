@@ -38,6 +38,7 @@ done
 sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$t"
 sleep 2
 
+# check if file exists with name that contains both "audax_n1" and "synced"
 TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
 if [[ "${TARGETSYNC}" ]]
 then echo -e "* ${PROJECT}_n${t} is already synced *\n"
@@ -51,7 +52,7 @@ s=0
 
 for ((i=1;i<=$MNS;i++));
 do
-    echo -e " `date +%m.%d.%Y_%H:%M:%S` : Checking if ${PROJECT}_n${i} is synced."
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if ${PROJECT}_n${i} is synced."
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i"
     sleep 1
 
@@ -88,35 +89,53 @@ echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh" | tee -a "$LOGFIL
 echo -e " Going to clone ${PROJECT}_n${s}'s blockchain onto ${PROJECT}_n${t}."  | tee -a "$LOGFILE"
 
 
-echo -e "\n Disabling Source Masternode ${PROJECT}_n${s} now."
+echo -e "\n Disabling Source Masternode ${PROJECT}_n${s} now.\n"
 sudo systemctl disable "${PROJECT}"_n${s}
 sudo systemctl stop "${PROJECT}"_n${s}
 
-echo -e "\n Disabling Target Masternode ${PROJECT}_n${t} now."
+echo -e " Disabling Target Masternode ${PROJECT}_n${t} now.\n"
 sudo systemctl disable "${PROJECT}"_n${t}
 sudo systemctl stop "${PROJECT}"_n${t}
 sleep 2
 
-echo -e "\n Removing target blockchain data except wallet.dat and masternode.conf."
+echo -e " Removing target blockchain data except wallet.dat and masternode.conf.\n"
 cd /var/lib/masternodes/"${PROJECT}"${t}
 sudo rm -rf !("wallet.dat"|"masternode.conf")
 sleep 2
 
-echo -e "\n Copying source blockchain data from MNx except wallet.dat and masternode.conf."
-
+echo -e " Copying source blockchain data from MNx except wallet.dat and masternode.conf.\n"
+# read -p "Do it now" A
 cd /var/lib/masternodes/"${PROJECT}"${s}
-cp -r !("wallet.dat"|"${PROJECT}.pid"|"$backups") /var/lib/masternodes/"${PROJECT}"${t}/
+cp -r /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+cp -r /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+cp -r /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+
+# cp -r /var/lib/masternodes/audax1/blocks /var/lib/masternodes/audax2/blocks
+# cp -r /var/lib/masternodes/audax1/chainstate /var/lib/masternodes/audax2/chainstate
+# cp -r /var/lib/masternodes/audax1/sporks /var/lib/masternodes/audax2/sporks
+
+
+
+# these are not relevant
+# cp -r !("wallet.dat"|"${PROJECT}.pid"|"backups") /var/lib/masternodes/"${PROJECT}"${t}/
+# cp -r !("wallet.dat"|"audax.pid"|"backups") /var/lib/masternodes/audax3/
 # cp -r !("wallet.dat"|"masternode.conf") /var/lib/masternodes/"${PROJECT}"${t}/
 
-echo -e "\n Restarting Source Masternode ${PROJECT}_n${s}."
+echo -e " Restarting Source Masternode ${PROJECT}_n${s}.\n"
+# read -p "Do it now" B
 sudo systemctl enable "${PROJECT}"_n${s}
 sudo systemctl start "${PROJECT}"_n${s}
 
 
-echo -e "\n Restarting Target Masternode ${PROJECT}_n${t}."
-sudo systemctl enable "${PROJECT}"_n${t}
-sudo systemctl start "${PROJECT}"_n${t}
 
+echo -e " Restarting Target Masternode ${PROJECT}_n${t}.\n"
+# read -p "Do it now" C
+# need to update this 
+/usr/local/bin/audaxd -conf=/etc/masternodes/audax_n2.conf -rescan
+sleep 5
+sudo systemctl enable "${PROJECT}"_n${t}
+# sudo systemctl start "${PROJECT}"_n${t}
+# -reindex
 
 echo -e " Clonesync complete; masternodes have been restarted.\n"  | tee -a "$LOGFILE"
 
