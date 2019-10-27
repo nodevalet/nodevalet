@@ -68,7 +68,7 @@ function sync_check() {
     NEWEST=${LTRIMTIME%%,*}
     # echo -e "NEWEST is set to $NEWEST"
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
-    echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
+    # echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
     # check if current to within 2 minutes
     if ((TIMEDIF <= 120 && TIMEDIF >= -120))
     then echo -e " The blockchain is almost certainly synced.\n"
