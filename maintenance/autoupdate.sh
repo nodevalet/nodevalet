@@ -27,15 +27,15 @@ cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALL
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+echo "$GIT_API" > $INFODIR/vps.GIT_API.info
+sed -i "s/GITAPI_URL=//" $INFODIR/vps.GIT_API.info
+GITAPI_URL=$(<$INFODIR/vps.GIT_API.info)
 
 # Pull GIT URL from $PROJECT.env
 GIT_URL=$(grep ^GIT_URL $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
-sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
-GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+echo "$GIT_URL" > $INFODIR/vps.GIT_URL.info
+sed -i "s/GIT_URL=//" $INFODIR/vps.GIT_URL.info
+GIT_URL=$(<$INFODIR/vps.GIT_URL.info)
 
 # Pull GITSTRING from $PROJECT.env
 GITSTRING=$(cat $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".gitstring)
