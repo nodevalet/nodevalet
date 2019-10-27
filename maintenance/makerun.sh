@@ -19,13 +19,13 @@ CUR_DAEMON=$(expr "$TOTAL" - 1)
 EXP_DAEMON=$(cat $INFODIR/vpsnumber.info)
 
 if [ -e $INSTALLDIR/temp/updating ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running makerun.sh" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running makerun.sh" | tee -a "$LOGFILE"
     echo -e " It looks like I'm busy with something else; skipping make run.\n"  | tee -a "$LOGFILE"
     exit
 fi
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
     bash /usr/local/bin/activate_masternodes_"$PROJECT"
-else echo -e "\n$(date +%m.%d.%Y_%H:%M:%S) : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
+else echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
 fi
