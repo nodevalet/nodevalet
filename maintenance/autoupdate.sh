@@ -145,6 +145,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	activate_masternodes_$PROJECT
 	sleep 2
 	check_restore
+    reboot
 	exit
 fi
 }
@@ -158,13 +159,12 @@ function check_project() {
     	echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
 		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
             curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
-        rm -f $INSTALLDIR/temp/${PROJECT}Ds
-    	rm -f $INSTALLDIR/temp/updating
+            	rm -f $INSTALLDIR/temp/updating
+        reboot
 	    exit
 
     else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist..." | tee -a "$LOGFILE"
         echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
-        rm -f $INSTALLDIR/temp/${PROJECT}Ds
     fi
 }
 
