@@ -118,9 +118,12 @@ function check_blocksync() {
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
             # previous previous echo or convert it to replace _synced instead of appending to it
             
+            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh"
+            echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced."
+            
             # add in logging for testing
-            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-            echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
+            # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
+            # echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
             exit
         fi
     done
@@ -144,10 +147,12 @@ else : ; fi
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
-    
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh"
+    echo -e "                    Masternode ${PROJECT}_n${i} is synced."
+
     # add in logging for testing
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-    echo -e "                    Masternode ${PROJECT}_n${i} is synced."  | tee -a "$LOGFILE"
+    # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
+    # echo -e "                    Masternode ${PROJECT}_n${i} is synced."  | tee -a "$LOGFILE"
 
 
     # This file will contain if the chain is currently not synced

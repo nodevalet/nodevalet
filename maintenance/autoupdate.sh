@@ -157,7 +157,7 @@ function check_project() {
     if [[ "${dEXIST}" ]]
     then echo -e "${lightcyan} $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
     	echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
-		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
+		echo -e "  --> ${PROJECTt}d was successfully updated, restarting VPS \n" | tee -a "$LOGFILE"
             curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
             	rm -f $INSTALLDIR/temp/updating
         reboot
@@ -174,7 +174,7 @@ function check_restore() {
 
     if [[ "${dEXIST}" ]]
     then echo -e "${lightcyan} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
-    	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
+    	echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
     	rm -f $INSTALLDIR/temp/updating
 	    reboot
 	    exit
