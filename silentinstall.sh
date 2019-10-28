@@ -620,7 +620,8 @@ EOT
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
+                rm API.response$i.json --force
+                
             fi
 
             # this is a pretty display of the received JSON; suitable for headless display
