@@ -11,7 +11,7 @@ PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
-echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running killswitch.sh" >> "$LOGFILE"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running killswitch.sh" >> "$LOGFILE"
 echo -e " User directed server to shut down and disable all masternodes.\n" >> "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
