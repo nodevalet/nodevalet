@@ -1,46 +1,23 @@
 #!/bin/bash
-# to be added to crontab to updatebinaries using any means necessary
+# attempt to bootstrap blockchain and sync; not yet working
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=$(cat $INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 
-# update .gitstring binary search string variable
-cd $INSTALLDIR/nodemaster/config/$PROJECT
-echo -e " \n$(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring"
-curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.gitstring
-
-# set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
-cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-
-# Pull GITAPI_URL from $PROJECT.env
-GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
-
-# Pull GIT URL from $PROJECT.env
-GIT_URL=$(grep ^GIT_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
-sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+GITSTRING=$(<$INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
-# Pull GITSTRING from $PROJECT.env
-GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"
 		echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
 		rm -f $INSTALLDIR/temp/updating
 fi
-
 
 function update_binaries() {
 #check for updates and install binaries if necessary
@@ -53,7 +30,7 @@ rm -r -f $PROJECT*
 CURVERSION=$(cat $INSTALLDIR/temp/currentversion)
 NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
 if [ "$CURVERSION" != "$NEWVERSION" ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
 	echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
 	echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
 	echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
@@ -132,7 +109,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	make install
 	fi
 	
-	cd /usr/local/bin && rm -f !"("activate_masternodes_"$PROJECT"")"
+	cd /usr/local/bin && rm -f !"("activate_masternodes_$PROJECT")"
 	cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
 	rm -rf $INSTALLDIR/temp/$PROJECT
 	cd $INSTALLDIR/temp
@@ -146,6 +123,7 @@ then 	echo -e " I couldn't download the new binaries, so I am now"
 	activate_masternodes_$PROJECT
 	sleep 2
 	check_restore
+    reboot
 	exit
 fi
 }
@@ -155,49 +133,35 @@ function check_project() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "${lightcyan} Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
-        curl -s "$GITAPI_URL" \
-            | grep tag_name > $INSTALLDIR/temp/currentversion
+    then echo -e "${lightcyan} $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
+    	echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
+		echo -e "  --> ${PROJECTt}d was successfully updated, restarting VPS \n" | tee -a "$LOGFILE"
+            curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+            	rm -f $INSTALLDIR/temp/updating
+        reboot
+	    exit
 
-    else echo -e "${lightred} Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
-        echo -e "${lightred} ${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
+    else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist..." | tee -a "$LOGFILE"
+        echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
     fi
-
-
-	# check if $PROJECTd is running
-	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
-	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then 	echo -e "\n"
-		echo -e "$(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} is running..." | tee -a "$LOGFILE"
-		echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
-		echo -e "  --> ${PROJECTt}d was successfully updated, exiting Autoupdate \n" | tee -a "$LOGFILE"
-	curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	rm -f $INSTALLDIR/temp/updating
-	exit
-	else echo -e "$(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} is not running..." | tee -a "$LOGFILE"
-	echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	fi
 }
 
 function check_restore() {
-	# check if $PROJECTd is running
-	ps -A | grep $PROJECT >> $INSTALLDIR/temp/${PROJECT}Ds
-	if [ -s $INSTALLDIR/temp/${PROJECT}Ds ]
-	then echo -e " ** ${MNODE_DAEMON} is running...original binaries were restored" | tee -a "$LOGFILE"
-	echo -e "  --> We will try to install this update again next time \n" | tee -a "$LOGFILE"
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	rm -f $INSTALLDIR/temp/updating
-	reboot
-	exit
-	else echo -e " Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
-	echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord." | tee -a "$LOGFILE"
-	echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
-	rm -f $INSTALLDIR/temp/${PROJECT}Ds
-	rm -f $INSTALLDIR/temp/updating
-	echo -e "Removing maintenance flag that was set during autoupdate.\n"  | tee -a "$LOGFILE"
-	reboot
+	    # check if binaries already exist, skip installing crypto packages if they aren't needed
+    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
+
+    if [[ "${dEXIST}" ]]
+    then echo -e "${lightcyan} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
+    	echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
+    	rm -f $INSTALLDIR/temp/updating
+	    reboot
+	    exit
+
+    else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
+        echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
+	    echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
+	    rm -f $INSTALLDIR/temp/updating
+	    reboot
 	fi
 }
 
