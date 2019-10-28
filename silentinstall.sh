@@ -29,15 +29,12 @@ function setup_environment() {
     nocolor=$'\e[0m' # no color
 
     # create root/installtemp if it doesn't exist
-    if [ ! -d $INSTALLDIR ]
-    then mkdir $INSTALLDIR
+        mkdir $INSTALLDIR
         mkdir $INFODIR
         mkdir $INSTALLDIR/logs
         mkdir $INSTALLDIR/temp
         touch $INSTALLDIR/logs/maintenance.log
         touch $INSTALLDIR/logs/silentinstall.log
-    else :
-    fi
 
     # Create Log File and Begin
     clear
