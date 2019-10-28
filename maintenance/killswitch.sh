@@ -17,7 +17,7 @@ touch $INSTALLDIR/temp/updating
 for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
-    systemctl disable "${PROJECT}"_n${i}
+    systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl stop "${PROJECT}"_n${i}
 done
 
