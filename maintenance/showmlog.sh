@@ -6,7 +6,7 @@ INFODIR='/var/tmp/nvtemp'
 PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # verify that this is a NodeValet.io configured VPS
