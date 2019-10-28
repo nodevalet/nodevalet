@@ -436,19 +436,19 @@ function add_cron() {
     # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
     echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
+    (crontab -l ; echo "*/1 * * * * /var/tmp/nodevalet/maintenance/maintenance/postinstall_api.sh") | crontab - > /dev/null 2>&1
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/maintenance/makerun.sh") | crontab -
     echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
+    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/maintenance/checkdaemon.sh") | crontab -
     echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
+    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/maintenance/autoupdate.sh") | crontab -
     echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+    (crontab -l ; echo "@weekly /var/tmp/nodevalet/maintenance/maintenance/cleardebuglog.sh") | crontab -
     echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/maintenance/cronchecksync1.sh") | crontab -
 
     # Enable run permissions on all scripts
     chmod 0700 $INSTALLDIR/*.sh
