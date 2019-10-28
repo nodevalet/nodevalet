@@ -4,8 +4,8 @@
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 

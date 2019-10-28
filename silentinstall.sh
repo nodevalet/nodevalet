@@ -121,10 +121,9 @@ function setup_environment() {
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
     # eventually switch over from MNODE_DAEMON to $INFODIR/vpsmnode_daemon.info
     # cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    cat $INSTALLDIR/temp/MNODE_DAEMON > $INFODIR/vpsmnode_daemon.info
 
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 

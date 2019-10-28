@@ -3,9 +3,8 @@
 # Set Variables
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-# set mnode daemon name from project.env
-MNODE_DAEMOND=$(</var/tmp/nodevalet/temp/MNODE_DAEMON)
 INFODIR='/var/tmp/nvtemp'
+MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
