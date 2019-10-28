@@ -698,6 +698,9 @@ EOT
         cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
 
+        # Set the not_synced flags before reboot
+        sudo bash /var/tmp/nodevalet/maintenance/cronchecksync1.sh
+
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
