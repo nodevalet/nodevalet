@@ -50,7 +50,7 @@ function setup_environment() {
     echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " -------- NodeValet.io Masternode Script ------------ " | tee -a "$LOGFILE"
     echo -e " ------------ Masternodes Made Easier --------------- " | tee -a "$LOGFILE"
-    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " ---------------------------------------------------- ${nocolor}" | tee -a "$LOGFILE"
 
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
@@ -90,16 +90,15 @@ function setup_environment() {
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
     fi
     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " "
-    sleep 6
+    sleep 4
 
     # read API key if it exists, if not prompt for it
     if [ -e $INFODIR/vpsapi.info ]
     then VPSAPI=$(<$INFODIR/vpsapi.info)
-        echo -e " Setting VPSAPI to $VPSAPI : vpsapi.info found" >> $LOGFILE
-
-    else echo -e "\n Before we can begin, we need to collect your APIKEY."
-        echo -e " Manually collecting VPSAPI from user" >> $LOGFILE 2>&1
-        echo -e "   ! ! Please double check your APIKEY for accuracy ! !"
+        echo -e " Setting NodeValet API key to provided value : vpsapi.info found" >> $LOGFILE
+    else echo -e "\n\n Before we can begin, we need to collect your NodeValet API Key."
+        echo -e " Manually collecting NodeValet API Key from user" >> $LOGFILE 2>&1
+        echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
         touch $INFODIR/vpsapi.info
         echo -e -n " "
         while :; do
@@ -123,7 +122,11 @@ function setup_environment() {
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
     cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    echo -e " Setting masternode-daemon to $MNODE_DAEMON" >> $LOGFILE
+    # eventually switch over from MNODE_DAEMON to $INFODIR/vpsmnode_daemon.info
+    # cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+    cat $INSTALLDIR/temp/MNODE_DAEMON > $INFODIR/vpsmnode_daemon.info
+
+    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -182,7 +185,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/vpsmnaddress.info ]
     then :
         # create a subroutine here to check memory and size MNS appropriately
-    else echo -e "\n Before we can begin, we need to collect $MNS masternode addresses."
+    else echo -e "\n\n Before we can begin, we need to collect $MNS masternode addresses."
         echo -e " Manually collecting masternode addresses from user" >> $LOGFILE 2>&1
         echo -e " On your local wallet, generate the masternode addresses and send"
         echo -e " your collateral transactions for masternodes you want to start"
@@ -199,13 +202,14 @@ elif [ "$ONLYNET" = 4 ]
                 echo -e "\n You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then echo -e "\n" ; break
+                then break
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
             echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
+            echo -e "\n"
         done
-        echo -e " User manually entered $MNS masternode addresses.\n" >> $LOGFILE 2>&1
+        echo -e " User manually entered $MNS masternode addresses." >> $LOGFILE 2>&1
     fi
 
     # query to generate new genkeys or query for user input
@@ -213,10 +217,10 @@ elif [ "$ONLYNET" = 4 ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
         echo -e "\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both"
-        echo -e " are equally secure, but it's faster if your server does it for you."
-        echo -e " An example of when you would want to enter them yourself would be"
-        echo -e " if you are trying to transfer existing masternodes to this VPS."
+        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
+        echo -e " secure, but it's faster if your server does it for you. An example of when you "
+        echo -e " would want to enter them yourself would be if you are trying to transfer"
+        echo -e " existing masternodes to this VPS without interruption."
         echo -e -n "${cyan}"
         while :; do
             echo -e "\n"
@@ -262,7 +266,7 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSHPORT to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
+        echo -e "\n\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
         echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
 
         # what I consider a good example of a complicated query for numerical data
@@ -306,10 +310,10 @@ function silent_harden() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e "Installing jq and jp2a and unzip packages" | tee -a "$LOGFILE"
-    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip | tee -a "$LOGFILE"
+    echo -e " Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
+    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet | tee -a "$LOGFILE"
 
-    echo -e "Inserting random Chuck Norris joke to avoid excessive blandness\n" | tee -a "$LOGFILE"
+    echo -e " Inserting random Chuck Norris joke to keep things spicy\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -325,7 +329,7 @@ function install_binaries() {
     fi
 
     #check for binaries and install if found
-    echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    echo -e "\n Attempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -371,14 +375,16 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "Binaries for ${PROJECTt} were downloaded and installed \n"   | tee -a "$LOGFILE"
-        echo -e "${dEXIST} was found to exist"  | tee -a "$LOGFILE"
+    then echo -e "${lightcyan} Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
-    else echo -e "Binaries for ${PROJECTt} could not be downloaded \n"  | tee -a "$LOGFILE"
-        echo -e "${dEXIST} (dEXIST) was not found to exist"  | tee -a "$LOGFILE"
+    else echo -e "${lightred} Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
+        echo -e "${lightred} ${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
     fi
+
+    # remove binaries temp folder
+    rm -rf $INSTALLDIR/temp/bin
 }
 function install_mns() {
     if [ -e /etc/masternodes/"$PROJECT_n1".conf ]
@@ -387,13 +393,13 @@ function install_mns() {
         echo -e "Masternodes seem to already be installed, skipping this part" | tee -a "$LOGFILE"
     else
         cd $INSTALLDIR/nodemaster || exit
-        echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
+        echo -e " Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
+        echo -e " Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
 
         # activate masternodes, or activate just FIRST masternode
-        echo -e "activating_masternodes_$PROJECT" | tee -a "$LOGFILE"
+        echo -e " --> Activating your $PROJECT masternodes" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
         # check if $PROJECTd was built correctly and started
@@ -432,9 +438,8 @@ function install_mns() {
 }
 
 function add_cron() {
+    # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-    chmod 0700 $INSTALLDIR/*.sh
-    chmod 0700 $INSTALLDIR/maintenance/*.sh
     echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
@@ -445,10 +450,16 @@ function add_cron() {
     (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
     (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
-    echo -e "  --> Clear daemon debug logs weekly to prevent clog \n"  | tee -a "$LOGFILE"
+    echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
     (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+    echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
 
-    # add system link to common maintenance scripts so they can be accessed more easily
+    # Enable run permissions on all scripts
+    chmod 0700 $INSTALLDIR/*.sh
+    chmod 0700 $INSTALLDIR/maintenance/*.sh
+
+    # Add system link to common maintenance scripts so they can be accessed more easily
     sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
     sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
     sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
@@ -460,23 +471,22 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
     sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
     sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
+    sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
+    sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
+    sudo ln -s $INSTALLDIR/maintenance/clonesync.sh /usr/local/bin/clonesync
 }
 
 function configure_mns() {
-    # Iteratively create all masternode variables for masternode.conf
-    # Do not break any pre-existing masternodes
+    # Do not break any existing masternodes
     if [ -s $INSTALLDIR/temp/mnsexist ]
     then echo -e "Skipping configure_mns function due to presence of $INSTALLDIR/mnsexist" | tee -a "$LOGFILE"
         echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
         [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Masternodes already exist on this VPS; stopping install."}' && echo -e " "
         exit
     else
-        # Create a file containing all masternode genkeys
         # echo -e "Saving genkey(s) to $INSTALLDIR/temp/genkeys \n"  | tee -a "$LOGFILE"
-        touch $INSTALLDIR/temp/genkeys
-
-        # create initial masternode.conf file and populate with notes
-        touch $INSTALLDIR/masternode.conf
+        touch $INSTALLDIR/temp/genkeys # Create file to store masternode genkeys
+        touch $INSTALLDIR/masternode.conf # create initial masternode.conf file
         echo -e "Creating $INSTALLDIR/masternode.conf file to collect user settings" | tee -a "$LOGFILE"
         cat <<EOT >> $INSTALLDIR/masternode.conf
 #######################################################
@@ -484,7 +494,6 @@ function configure_mns() {
 #######################################################
 EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
-
         for ((i=1;i<=$MNS;i++));
         do
             for ((P=1;P<=35;P++));
@@ -556,13 +565,13 @@ EOT
             fi
 
             # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INSTALLDIR/temp/mnipaddresses
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vpsipaddresses.info
 
-            # remove "bind=" from mnipaddresses
-            sed -i "s/bind=//" $INSTALLDIR/temp/mnipaddresses 2>&1
+            # remove "bind=" from vpsipaddresses.info
+            sed -i "s/bind=//" $INFODIR/vpsipaddresses.info 2>&1
 
             # the next line produces the IP addresses for this masternode
-            echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnipaddresses)" > $INSTALLDIR/temp/IPADDR$i
+            echo -e "$(sed -n ${i}p $INFODIR/vpsipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
 
             PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
             PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
@@ -581,30 +590,17 @@ EOT
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
 
-                # rebuilding NodeValet query to make use of new code and VPS API
-                # Query nodevalet block explorer for collateral transaction
-                # Set Variables
-                # INSTALLDIR='/var/tmp/nodevalet'
-                # LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-                # INFODIR='/var/tmp/nvtemp'
-                # [ -e $INFODIR/vpsapi.info ] && VPSAPI=$(<$INFODIR/vpsapi.info) && echo $VPSAPI
-                # BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
-                # i=1
-
             else
-                # I need to first assemble the API string to curl from NodeValet
-                CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=70B6-B2FF-9D07-4073-A69B-69CA"
+                # CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
 
                 MNADDRESS=$(cat $INSTALLDIR/temp/MNADD$i)
                 CURLAPI=$(echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI")
-
-                # curl -s "$BLOCKEXP$(cat $INSTALLDIR/temp/MNADD$i)&KEY=$VPSAPI" | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i
 
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
 
                 # display original curl API response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
                 # read curl API response into variable
                 APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
@@ -664,9 +660,9 @@ EOT
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 
             # round 1: cleanup and declutter
-            #            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
-            #            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
-            #            rm $INSTALLDIR/0 --force
+            rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
+            rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
+            rm $INSTALLDIR/0 --force
 
             echo -e " --> Completed masternode $i loop, moving on..."  | tee -a "$LOGFILE"
         done
@@ -697,13 +693,14 @@ EOT
 EOT
 
         # round 2: cleanup and declutter
-        #        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        #        rm $INSTALLDIR/temp/complete --force		;	rm $INSTALLDIR/temp/masternode.all --force
-        #        rm $INSTALLDIR/temp/masternode.1 --force	;	rm $INSTALLDIR/temp/masternode.l* --force
-        #        rm $INSTALLDIR/temp/DONATION --force		;	rm $INSTALLDIR/temp/DONATEADDR --force
-        #        rm $INSTALLDIR/temp/txid --force		;	rm $INSTALLDIR/temp/mnaliases --force
-        #        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force	;	rm $INSTALLDIR/temp/MNPRIV* --force
-        #        rm $INSTALLDIR/temp/ONLYNET --force
+        echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+        rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
+        rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
+        rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
+        rm $INSTALLDIR/temp/txid --force            ;   rm $INSTALLDIR/temp/mnaliases --force
+        rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
+        cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
+        rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
 
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
@@ -722,12 +719,12 @@ EOT
             echo -e "    file on your local wallet. (insert txid info to end of each line) "
             echo -e " 2. Reboot the local wallet: type 'reboot' to reboot this VPS and "
             echo -e "    begin syncing the blockchain. "
-            echo -e " 3. One the VPS has rebooted successfully, restart your local wallet, "
+            echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
             echo -e "    and then you may click Start Missing to start your new masternodes. "
             echo -e " 4. If starting any masternodes fails, you may need to start them from "
             echo -e "    debug console using 'startmasternode alias 0 MN1'  where you replace "
-            echo -e "    MN1 with the  alias of your masternode. This is due to a quirk in "
-            echo -e "    the wallet that doesn't always recognize IPv6 addresses. \n"
+            echo -e "    MN1 with the alias of your masternode. Some wallets don't always"
+            echo -e "    recognize IPv6 addresses. \n"
             read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
     else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ;fi
     fi
@@ -738,17 +735,17 @@ function restart_server() {
     echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
+    touch $INSTALLDIR/temp/vpsvaletreboot.txt
     shutdown -r now "Server is going down for upgrade."
 }
 
 # This is where the script actually starts
 
 setup_environment
-# if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Beginning Installation Script..."}' && echo -e " " ; fi
-# moved curl update commands into get-hard.sh to provide better detail
+# moved initial NodeValet callback near beginning of setup_environment to provide faster response
 
-# moved initial NodeValet callback into get-hard.sh to provide better detail
 silent_harden
+# NodeValet callbacks are embedded in get-hard.sh
 
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECTt"' Binaries ..."}' && echo -e " "
 install_binaries
@@ -764,6 +761,6 @@ configure_mns
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
-touch $INSTALLDIR/temp/vpsvaletreboot.txt
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
+
 restart_server

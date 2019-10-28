@@ -1,5 +1,5 @@
 #!/bin/bash
-# Wipe stuck masternode chains and force a full resync
+# Stop and disable a particular masternode
 
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
@@ -28,9 +28,6 @@ darkgray=$'\033[1;30m'  # dark gray
 black=$'\033[0;30m'  # black
 nocolor=$'\e[0m' # no color
 
-# extglob was necessary to make rm -- ! possible
-shopt -s extglob
-
 # read first argument to string
 i=$1
 
@@ -38,8 +35,8 @@ i=$1
 
 if [ -z "$i" ]
 then clear
-    echo -e "\n This scriptlet will trigger resync the blockchain of a particular node."
-    echo -e " It may take awhile. Which masternode would you like to resync? \n"
+    echo -e "\n This scriptlet will stop and disable a particular masternode."
+    echo -e " Which masternode would you like to disable? \n"
 
 fi
 while :; do
@@ -52,8 +49,8 @@ while :; do
 done
 
 echo -e "\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running resync.sh" | tee -a "$LOGFILE"
-echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
+echo -e " User has asked to disable masternode ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
@@ -61,17 +58,6 @@ echo -e " Disabling ${PROJECT}_n${i} now."
 sudo systemctl disable "${PROJECT}"_n${i}
 sudo systemctl stop "${PROJECT}"_n${i}
 sleep 2
-
-echo -e " Removing blockchain data except wallet.dat and masternode.conf."
-cd /var/lib/masternodes/"${PROJECT}"${i}
-rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
-sudo rm -rf !("wallet.dat"|"masternode.conf")
-sleep 2
-
-echo -e " Restarting masternode.\n"
-sudo systemctl enable "${PROJECT}"_n${i}
-sudo systemctl start "${PROJECT}"_n${i}
-echo -e " Resync initiated.\n"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating

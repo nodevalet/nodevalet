@@ -1,39 +1,17 @@
 #!/bin/bash
-# to be added to crontab to updatebinaries using any means necessary
+# attempt to bootstrap blockchain and sync; not yet working
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 PROJECT=$(cat $INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 
-# update .gitstring binary search string variable
-cd $INSTALLDIR/nodemaster/config/$PROJECT
-echo -e " \n$(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring"
-curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.gitstring
-
-# set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
-cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-
-# Pull GITAPI_URL from $PROJECT.env
-GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
 GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
-
-# Pull GIT URL from $PROJECT.env
-GIT_URL=$(grep ^GIT_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
-sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
 GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+GITSTRING=$(<$INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
-# Pull GITSTRING from $PROJECT.env
-GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
 if [ -e $INSTALLDIR/temp/updating ]
 	then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"

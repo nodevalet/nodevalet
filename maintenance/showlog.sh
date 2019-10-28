@@ -3,9 +3,11 @@
 
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
-MNS=$(cat $INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+HNAME=$(<$INFODIR/vpshostname.info)
 
 # verify that this is a NodeValet.io configured VPS
 if [ -z $PROJECT ]
@@ -18,8 +20,10 @@ else cd $INSTALLDIR
 fi
 
 clear
-echo -e "\n This script will now display the NodeValet2 installation log  *"
-echo -e " which is stored at $LOGFILE *"
-echo -e " **************************************************************\n"
+echo -e "\n ################################################################"
+echo -e " # This script will now display the NodeValet2 installation log #"
+echo -e " # which is stored at /var/tmp/nodevalet/logs/silentinstall.log #"
+echo -e " ################################################################\n"
+
 cat $LOGFILE
 echo -e "\n"
