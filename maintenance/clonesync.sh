@@ -1,11 +1,13 @@
 #!/bin/bash
 # Find a synced masternode, stop it, copy its blockchain, then restart them both.
 
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
