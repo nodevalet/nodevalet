@@ -31,14 +31,13 @@ function setup_environment() {
     # create root/installtemp if it doesn't exist
     if [ ! -d $INSTALLDIR ]
     then mkdir $INSTALLDIR
+        mkdir $INFODIR
+        mkdir $INSTALLDIR/logs
+        mkdir $INSTALLDIR/temp
+        touch $INSTALLDIR/logs/maintenance.log
+        touch $INSTALLDIR/logs/silentinstall.log
     else :
     fi
-
-    mkdir $INFODIR
-    mkdir $INSTALLDIR/logs
-    mkdir $INSTALLDIR/temp
-    touch $INSTALLDIR/logs/maintenance.log
-    touch $INSTALLDIR/logs/silentinstall.log
 
     # Create Log File and Begin
     clear
