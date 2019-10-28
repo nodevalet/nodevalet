@@ -1,7 +1,4 @@
 #!/bin/bash
-# Silently install masternodes and insert privkeys
-
-# echo " $(date +%m.%d.%Y_%H:%M:%S) : $MESSAGE" | tee -a "$LOGFILE"
 
 function setup_environment() {
     # Set Variables
@@ -288,9 +285,9 @@ elif [ "$ONLYNET" = 4 ]
     # Pull BLOCKEXP from $PROJECT.env
     BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
     if [ -n "$BLOCKEX" ]
-    then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-        sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-        BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+    then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+        sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+        BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
         echo -e " Block Explorer set to :" | tee -a "$LOGFILE"
         echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
     else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
