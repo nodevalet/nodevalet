@@ -698,9 +698,6 @@ EOT
         cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
 
-        # Set the not_synced flags before reboot
-        sudo bash /var/tmp/nodevalet/maintenance/cronchecksync1.sh
-
         clear
         echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
         cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
@@ -760,6 +757,9 @@ configure_mns
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
+
+# Set the not_synced flags before reboot
+sudo bash /var/tmp/nodevalet/maintenance/cronchecksync1.sh
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
 
 restart_server

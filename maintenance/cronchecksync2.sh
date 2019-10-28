@@ -43,8 +43,6 @@ nocolor=$'\e[0m' # no color
 # read first argument to string
 i=$1
 
-# if no argument was given, give instructions and ask for one
-
 if [ -z "$i" ]
 then echo -e "\n"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
@@ -55,21 +53,13 @@ fi
 
 function sync_check() {
     CNT=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockcount)
-    # echo -e "CNT is set to $CNT"
     HASH=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockhash "${CNT}")
-    #echo -e "HASH is set to $HASH"
     TIMELINE1=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblock "${HASH}" | grep '"time"')
     TIMELINE=$(echo "$TIMELINE1" | tr -dc '0-9')
     BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
-    # CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
-    # echo -e "TIMELINE is set to $TIMELINE"
     LTRIMTIME=${TIMELINE#*time\" : }
-    # echo -e "LTRIMTIME is set to $LTRIMTIME"
     NEWEST=${LTRIMTIME%%,*}
-    # echo -e "NEWEST is set to $NEWEST"
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
-    # echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
-    # check if current to within 2 minutes
     if ((TIMEDIF <= 120 && TIMEDIF >= -120))
     then echo -e " The blockchain is almost certainly synced.\n"
         SYNCED="yes"
@@ -81,7 +71,6 @@ function check_blocksync() {
 
     # check if blockchain of n1 is synced for 4 hours (14400 seconds) before reporting failure
     end=$((SECONDS+1))
-    # end=$((SECONDS+14400))
 
     while [ $SECONDS -lt $end ]; do
         # echo -e "Time $SECONDS"
@@ -91,12 +80,8 @@ function check_blocksync() {
 
         # if  masternode not running, echo masternode not running and break
         BLOCKS=$(grep "blocks" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
-        # CONNECTIONS=$(grep "connections" $INSTALLDIR/getinfo_n${i} | tr -dc '0-9')
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode $i Sync Status <-- ${nocolor}\n"
-
-        # echo -e "${white} Masternode n$i is currently synced through block: ${lightpurple}$BLOCKS${nocolor}\n"
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
-        # echo -e " The masternode has this many active connections:${yellow} ${CONNECTIONS}${nocolor}"
 
         if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; rm -rf $INSTALLDIR/getinfo_n${i} --force ; exit
 
@@ -105,9 +90,6 @@ function check_blocksync() {
 
         if [ "$SYNCED" = "yes" ]; then echo -e "${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}.\n"
-            # echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
-            # if the blockchain detects that it is NOT synced, then do these things:
-            # if a synced file exists, rename it for posterity
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
                 rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
@@ -116,14 +98,13 @@ function check_blocksync() {
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
-            # previous previous echo or convert it to replace _synced instead of appending to it
             
-            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh"
-            echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced."
-            
+            echo -e "${lightred} --> Masternode ${PROJECT}_n${i} is NOT synced${nocolor}\n"
+
             # add in logging for testing
             # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
             # echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
+
             rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
         fi
@@ -149,8 +130,8 @@ else : ; fi
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh"
-    echo -e "                    Masternode ${PROJECT}_n${i} is synced."
+    
+    echo -e "${lightgreen} --> Masternode ${PROJECT}_n${i} is synced${nocolor}\n"
 
     # add in logging for testing
     # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
