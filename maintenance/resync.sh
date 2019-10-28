@@ -57,21 +57,21 @@ echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  |
 
 touch $INSTALLDIR/temp/updating
 
-echo -e " Disabling ${PROJECT}_n${i} now."
-sudo systemctl disable "${PROJECT}"_n${i}
+echo -e "${lightred} Disabling ${PROJECT}_n${i} now.${nocolor}"
+sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n${i}
 sleep 2
 
-echo -e " Removing blockchain data except wallet.dat and masternode.conf."
+echo -e "${white} Removing blockchain data.${nocolor}"
 cd /var/lib/masternodes/"${PROJECT}"${i}
 rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
 sudo rm -rf !("wallet.dat"|"masternode.conf")
 sleep 2
 
-echo -e " Restarting masternode.\n"
-sudo systemctl enable "${PROJECT}"_n${i}
+echo -e "${lightgreen} Restarting masternode.${nocolor}"
+sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl start "${PROJECT}"_n${i}
-echo -e " Resync initiated.\n"
+echo -e "${lightcyan} Resync of ${PROJECT}_n${i} initiated.${nocolor}\n"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
