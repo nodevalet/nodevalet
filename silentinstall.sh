@@ -121,9 +121,8 @@ function setup_environment() {
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    # eventually switch over from MNODE_DAEMON to $INFODIR/vpsmnode_daemon.info
-    # cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+    rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON1
 
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
@@ -333,9 +332,9 @@ function install_binaries() {
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
     if [ -n "$GIT_API" ] ; then
-        echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-        sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-        GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+        echo "$GIT_API" > $INFODIR/vps.GIT_API.info
+        sed -i "s/GITAPI_URL=//" $INFODIR/vps.GIT_API.info
+        GITAPI_URL=$(<$INFODIR/vps.GIT_API.info)
         echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 
         # Try and install Binaries now

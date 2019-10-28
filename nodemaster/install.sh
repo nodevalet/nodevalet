@@ -570,7 +570,6 @@ function print_logo() {
     fi
 
 }
-
 #
 # /* no parameters, builds the required masternode binary from sources. Exits if already exists and "update" not given  */
 #
@@ -605,7 +604,7 @@ function build_mn_from_source() {
         # compilation starts here
         source "${SCRIPTPATH}"/config/"${CODENAME}"/"${CODENAME}".compile | pv -t -i0.1
     else
-        echo "* Daemon already in place at ${MNODE_DAEMON}, not compiling"
+        echo -e "* Daemon already in place at ${MNODE_DAEMON}, not compiling" | tee -a "$LOGFILE"
     fi
 
     # if it's not available after compilation, theres something wrong
