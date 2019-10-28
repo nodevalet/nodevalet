@@ -4,6 +4,7 @@
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INFODIR='/var/tmp/nvtemp'
+# NOTE: below is MNODE_DAEMOND not MNODE_DAEMON (don't break it!)
 MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
@@ -54,7 +55,7 @@ function showbanner() {
 ██║ ╚████║╚██████╔╝██████╔╝███████╗ ╚████╔╝ ██║  ██║███████╗███████╗   ██║
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝
 EOF
-    echo "$(tput sgr0)$(tput setaf 3)                Home of the 5 minute masternode installations!$(tput sgr0)"
+    echo "$(tput sgr0)$(tput setaf 3)                Home of 5 minute masternode installations!$(tput sgr0)"
     echo -e "\n"
 }
 
