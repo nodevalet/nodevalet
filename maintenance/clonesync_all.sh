@@ -68,7 +68,6 @@ true
 function checksync_source() {
 # wait for sync and then make sure masternode 1 has a fully-synced blockchain
     checksync 1
-    echo -e "\n"
     echo -e "${yellow} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}\n"
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
     sleep .5
@@ -86,10 +85,10 @@ function checksync_source() {
 function shutdown_mn1() {
 # stop and disable mn1
 echo -e "${yellow} Clonesync_all needs to shut down the Source masternode:${nocolor}"
-echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
+# echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
 sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n1
-echo -e " --> Masternode ${PROJECT}_n1 has been disabled.${nocolor}\n"
+echo -e " --> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
 function bootstrap() {
@@ -102,7 +101,6 @@ do
     sudo rm -rf !("wallet.dat"|"masternode.conf")
     sleep .5
 done
-echo -e "\n"
 # echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s).${nocolor}\n"
 
 echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
@@ -120,7 +118,7 @@ done
 
 function restart_mns() {
 # restart and re-enable all masternodes
-echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
+echo -e "\n${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
 for ((i=1;i<=$MNS;i++));
 do
     echo -e -n " --> Restarting masternode ${PROJECT}_n${i}..."
@@ -135,7 +133,7 @@ done
 
 function restore_crons() {
 # restore maintenance crons that were previously disabled
-    echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
+    echo -e "\n${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
     echo -e "  --> Check for & reboot if needed to install updates every 10 hours"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Make sure all daemon are running every 10 minutes"
