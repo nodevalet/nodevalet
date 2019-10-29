@@ -53,7 +53,7 @@ function shutdown_mns() {
 echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}"
 for ((i=2;i<=$MNS;i++));
 do
-    echo -e " Stopping and disabling masternode ${PROJECT}_n${i}..."
+    echo -e "${lightred}  Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
     systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl stop "${PROJECT}"_n${i}
 done
@@ -74,7 +74,7 @@ function checksync_source() {
     SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
     if [[ "${SOURCESYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
-        echo -e "${lightgreen} --> Setting Source masternode to n1${nocolor}\n"
+        echo -e "${lightcyan} --> Setting Source masternode to n1${nocolor}\n"
         s=1
     else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
@@ -121,7 +121,7 @@ function restart_mns() {
 echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
 for ((i=1;i<=$MNS;i++));
 do
-    echo -e -n "  Restarting masternode ${PROJECT}_n${i}..."
+    echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
     systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl start "${PROJECT}"_n${i}
     let "stime=5*$i"
@@ -134,11 +134,11 @@ echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\
 function restore_crons() {
 # restore maintenance crons that were previously disabled
     echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
-    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"
+    echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
-    echo -e "  --> Make sure all daemon are running every 10 minutes"
+    echo -e "${white}  --> Make sure all daemon are running every 10 minutes${nocolor}"
     (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
-    echo -e "  --> Check for stuck blocks every 30 minutes"
+    echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
     (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
 }
 
@@ -164,7 +164,7 @@ bootstrap
 restart_mns
 restore_crons
 
-echo -e "\n${lightgreen} Complete; Masternodes have been bootstrapped.${nocolor}\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Masternodes have been bootstrapped.\n" >> $LOGFILE
+echo -e "\n${lightgreen} Complete; all Masternodes have been bootstrapped.${nocolor}\n"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : all Masternodes have been bootstrapped.\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit
