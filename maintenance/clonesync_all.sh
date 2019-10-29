@@ -50,14 +50,14 @@ crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab 
 
 function shutdown_mns() {
 # shutdown all MNs except the first
-echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}\n"
+echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}"
 for ((i=2;i<=$MNS;i++));
 do
     echo -e " Stopping and disabling masternode ${PROJECT}_n${i}..."
     systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl stop "${PROJECT}"_n${i}
 done
-echo -e "\n --> Masternodes have been stopped and disabled\n"
+echo -e "${lightcyan} --> Masternodes have been stopped and disabled${nocolor}\n"
 }
 
 function adjust_swap() {
@@ -88,7 +88,7 @@ echo -e "${yellow} Clonesync_all needs to shut down the Source masternode:${noco
 # echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
 sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n1
-echo -e " --> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
+echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
 function bootstrap() {
@@ -96,44 +96,44 @@ function bootstrap() {
 echo -e "${yellow} Clonesync_all will now remove relevant blockchain data from target(s):${nocolor}"
 for ((t=2;t<=$MNS;t++));
 do 
-    echo -e "${lightred} --> Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
+    echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
     cd /var/lib/masternodes/"${PROJECT}"${t}
     sudo rm -rf !("wallet.dat"|"masternode.conf")
-    sleep .5
+    sleep .25
 done
-# echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s).${nocolor}\n"
+echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s)${nocolor}\n"
 
 echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
 for ((t=2;t<=$MNS;t++));
 do 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-    echo -e "${lightcyan} --> Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
+    echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
     cd /var/lib/masternodes/"${PROJECT}"${s}
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks    
 done
-# echo -e "\n${lightgreen} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
+echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
 
 function restart_mns() {
 # restart and re-enable all masternodes
-echo -e "\n${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
+echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
 for ((i=1;i<=$MNS;i++));
 do
-    echo -e -n " --> Restarting masternode ${PROJECT}_n${i}..."
+    echo -e -n "  Restarting masternode ${PROJECT}_n${i}..."
     systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl start "${PROJECT}"_n${i}
     let "stime=5*$i"
     echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
     sleep $stime
 done
-# echo -e "\n${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
+echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
 }
 
 function restore_crons() {
 # restore maintenance crons that were previously disabled
-    echo -e "\n${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
+    echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
     echo -e "  --> Check for & reboot if needed to install updates every 10 hours"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Make sure all daemon are running every 10 minutes"
