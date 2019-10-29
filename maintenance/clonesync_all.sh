@@ -1,0 +1,170 @@
+#!/bin/bash
+# Clonesync all masternodes, assumes 1 is fully synced
+
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+MNS=$(<$INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+HNAME=$(<$INFODIR/vpshostname.info)
+
+clear
+
+echo -e "\n"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
+echo -e " User is attempting to bootstrap all masternodes using MN1 as Source."  | tee -a "$LOGFILE"
+
+### define colors ###
+lightred=$'\033[1;31m'  # light red
+red=$'\033[0;31m'  # red
+lightgreen=$'\033[1;32m'  # light green
+green=$'\033[0;32m'  # green
+lightblue=$'\033[1;34m'  # light blue
+blue=$'\033[0;34m'  # blue
+lightpurple=$'\033[1;35m'  # light purple
+purple=$'\033[0;35m'  # purple
+lightcyan=$'\033[1;36m'  # light cyan
+cyan=$'\033[0;36m'  # cyan
+lightgray=$'\033[0;37m'  # light gray
+white=$'\033[1;37m'  # white
+brown=$'\033[0;33m'  # brown
+yellow=$'\033[1;33m'  # yellow
+darkgray=$'\033[1;30m'  # dark gray
+black=$'\033[0;30m'  # black
+nocolor=$'\e[0m' # no color
+
+# extglob was necessary to make rm -- ! possible
+# shopt -s extglob
+
+touch $INSTALLDIR/temp/updating
+
+function remove_crons() {
+# disable the crons that could cause problems
+crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
+crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
+crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
+}
+
+function shutdown_mns() {
+# shutdown all MNs except the first
+echo -e "${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}\n"
+for ((i=2;i<=$MNS;i++));
+do
+    echo -e "Stopping and disabling masternode ${PROJECT}_n${i}..."
+    systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+    systemctl stop "${PROJECT}"_n${i}
+done
+echo -e "\n --> masternodes have been stopped and disabled\n"
+}
+
+function adjust_swap() {
+# reserved for future user
+true
+}
+
+function checksync_source() {
+# wait for sync and then make sure masternode 1 has a fully-synced blockchain
+    checksync 1
+    echo -e "\n"
+    echo -e "${white} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}"
+    sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
+    sleep .5
+    SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
+    if [[ "${SOURCESYNC}" ]]
+    then echo -e "${lightgreen} masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
+        echo -e "${lightgreen} Setting Source masternode to 1${nocolor}\n"
+        s=1
+    else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
+        rm -f $INSTALLDIR/temp/updating
+        exit
+    fi
+}
+
+function shutdown_mn1() {
+# stop and disable mn1
+echo -e "${lightred}  Disabling ${PROJECT}_n1 now."
+sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
+sudo systemctl stop "${PROJECT}"_n1
+echo -e " masternode ${PROJECT}_n1 has been disabled.${nocolor}\n"
+}
+
+function bootstrap() {
+# copy blocks/chainstate/sporks from n1 to all masternodes
+echo -e "${yellow} Clonesync will now remove relevant blockchain data from target(s):${nocolor}\n"
+for ((t=2;t<=$MNS;t++));
+do 
+    echo -e "${lightred} Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
+    cd /var/lib/masternodes/"${PROJECT}"${t}
+    sudo rm -rf !("wallet.dat"|"masternode.conf")
+    sleep .5
+done
+echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s).${nocolor}\n"
+
+echo -e "${yellow} Clonesync_all will now apply MN1's blockchain data to target masternode(s):${nocolor}\n"
+for ((t=2;t<=$MNS;t++));
+do 
+    # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
+    echo -e "${lightcyan} Applying source blockchain data to ${PROJECT}_n$t...${nocolor}"
+    cd /var/lib/masternodes/"${PROJECT}"${s}
+    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks    
+done
+echo -e "\n${lightgreen} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
+}
+
+function restart_mns() {
+# restart and re-enable all masternodes
+echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}\n"
+for ((i=1;i<=$MNS;i++));
+do
+    echo -e -n "Restarting masternode ${PROJECT}_n${i}..."
+    systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+    systemctl start "${PROJECT}"_n${i}
+    let "stime=5*$i"
+    echo -e " waiting ${stime}s for it to restart."
+    sleep $stime
+done
+echo -e "\n${lightcyan} --> masternodes have been restarted and enabled${nocolor}\n"
+}
+
+function restore_crons() {
+# restore maintenance crons that were previously disabled
+    echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}\n"
+    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
+    echo -e "  --> Make sure all daemon are running every 10 minutes"
+    (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
+    echo -e "  --> Check for stuck blocks every 30 minutes"
+    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
+}
+
+# This file will contain if the chain is currently not synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_nosync  (eg. audax_n2_nosync)
+
+# This file will contain time of when the chain was fully synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_synced  (eg. audax_n2_synced)
+
+# This file will contain time of when the chain was last out-of-sync
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastosync  (eg. audax_n2_lastoutsync)
+
+# If no longer synced, this file will contain last time chain was synced
+# $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastnsync  (eg. audax_n2_lastnsync)
+
+# this is the actual start of the script
+remove_crons
+shutdown_mns
+adjust_swap
+checksync_source
+shutdown_mn1
+bootstrap
+restart_mns
+restore_crons
+
+echo -e "${lightgreen} Clonesync complete; masternodes have been restarted.${nocolor}\n"
+echo -e " Clonesync complete; masternodes have been restarted.\n" >> $LOGFILE
+rm -f $INSTALLDIR/temp/updating
+exit

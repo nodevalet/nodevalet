@@ -47,3 +47,21 @@ function prompt_for_confirmation() {
     fi
 }
 
+# manipulate display of text strings
+function text_demo() {
+PROJECT='HELium'
+# assign PROJECTt to be a title case version of PROJECT (Helium)
+PROJECTt=$(echo $PROJECT | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}')
+# display in all lowercase (helium)
+echo -e "${PROJECT,,}"
+# invert case of first character (hELium)
+echo -e "${PROJECTl~}"
+# invert case of all characters (helIUM)
+echo -e "${PROJECTl~~}"
+# capitalize all characters (HELIUM)
+echo -e "${PROJECTl^^}"
+
+echo $PROJECT | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}'
+
+
+}
