@@ -37,7 +37,7 @@ black=$'\033[0;30m'  # black
 nocolor=$'\e[0m' # no color
 
 # extglob was necessary to make rm -- ! possible
-# shopt -s extglob
+shopt -s extglob
 
 touch $INSTALLDIR/temp/updating
 
@@ -53,11 +53,11 @@ function shutdown_mns() {
 echo -e "${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}\n"
 for ((i=2;i<=$MNS;i++));
 do
-    echo -e "Stopping and disabling masternode ${PROJECT}_n${i}..."
+    echo -e " Stopping and disabling masternode ${PROJECT}_n${i}..."
     systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl stop "${PROJECT}"_n${i}
 done
-echo -e "\n --> masternodes have been stopped and disabled\n"
+echo -e "\n --> Masternodes have been stopped and disabled\n"
 }
 
 function adjust_swap() {
@@ -74,7 +74,7 @@ function checksync_source() {
     sleep .5
     SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
     if [[ "${SOURCESYNC}" ]]
-    then echo -e "${lightgreen} masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
+    then echo -e "${lightgreen} Masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
         echo -e "${lightgreen} Setting Source masternode to 1${nocolor}\n"
         s=1
     else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
@@ -85,15 +85,15 @@ function checksync_source() {
 
 function shutdown_mn1() {
 # stop and disable mn1
-echo -e "${lightred}  Disabling ${PROJECT}_n1 now."
+echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
 sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n1
-echo -e " masternode ${PROJECT}_n1 has been disabled.${nocolor}\n"
+echo -e " Masternode ${PROJECT}_n1 has been disabled.${nocolor}\n"
 }
 
 function bootstrap() {
 # copy blocks/chainstate/sporks from n1 to all masternodes
-echo -e "${yellow} Clonesync will now remove relevant blockchain data from target(s):${nocolor}\n"
+echo -e "${yellow} Clonesync_all will now remove relevant blockchain data from target(s):${nocolor}\n"
 for ((t=2;t<=$MNS;t++));
 do 
     echo -e "${lightred} Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
@@ -107,7 +107,7 @@ echo -e "${yellow} Clonesync_all will now apply MN1's blockchain data to target 
 for ((t=2;t<=$MNS;t++));
 do 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-    echo -e "${lightcyan} Applying source blockchain data to ${PROJECT}_n$t...${nocolor}"
+    echo -e "${lightcyan} Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
     cd /var/lib/masternodes/"${PROJECT}"${s}
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
@@ -121,14 +121,14 @@ function restart_mns() {
 echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}\n"
 for ((i=1;i<=$MNS;i++));
 do
-    echo -e -n "Restarting masternode ${PROJECT}_n${i}..."
+    echo -e -n " Restarting masternode ${PROJECT}_n${i}..."
     systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
     systemctl start "${PROJECT}"_n${i}
     let "stime=5*$i"
-    echo -e " waiting ${stime}s for it to restart."
+    echo -e " waiting${lightpurple} ${stime}s ${nocolor}for it to restart."
     sleep $stime
 done
-echo -e "\n${lightcyan} --> masternodes have been restarted and enabled${nocolor}\n"
+echo -e "\n${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
 }
 
 function restore_crons() {
