@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script will display the NodeValet installation log for your VPS
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 MNS=$(<$INFODIR/vpsnumber.info)
