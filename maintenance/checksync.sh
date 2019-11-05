@@ -124,6 +124,12 @@ function check_blocksync() {
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
+            # if clonesyncing, display warning not to interrupt it
+            if [ -e $INSTALLDIR/temp/clonesyncing ]
+            then echo -e " ${red}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
+                echo -e " ${lightred}Bootstrap will resume once your first blockchain is synced.${nocolor}\n"
+            else :
+            fi
             # insert a little humor
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"

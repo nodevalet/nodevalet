@@ -15,7 +15,7 @@ clear
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
-echo -e " User is attempting to bootstrap all masternodes using n1 as Source"  | tee -a "$LOGFILE"
+echo -e " --> User is attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -66,6 +66,7 @@ true
 }
 
 function checksync_source() {
+touch $INSTALLDIR/temp/clonesyncing
 # wait for sync and then make sure masternode 1 has a fully-synced blockchain
     checksync 1
     echo -e "${yellow} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}\n"
@@ -75,9 +76,11 @@ function checksync_source() {
     if [[ "${SOURCESYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
         echo -e "${lightcyan} --> Setting Source masternode to n1${nocolor}\n"
+        rm -f $INSTALLDIR/temp/clonesyncing
         s=1
     else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/clonesyncing
         exit
     fi
 }
@@ -165,6 +168,6 @@ restart_mns
 restore_crons
 
 echo -e "\n${lightgreen} Complete; all Masternodes have been bootstrapped.${nocolor}\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : all Masternodes have been bootstrapped.\n" >> $LOGFILE
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : All Masternodes have been bootstrapped!\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit
