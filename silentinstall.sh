@@ -41,7 +41,7 @@ function setup_environment() {
     echo -e "${white} ################################################################" | tee -a "$LOGFILE"
     echo -e " #    _   _           _    __     __    _      _     _          #" | tee -a "$LOGFILE"
     echo -e " #   | \ | | ___   __| | __\ \   / /_ _| | ___| |_  (_) ___     #" | tee -a "$LOGFILE"
-    echo -e " #   |  \| |/ _ \ / _` |/ _ \ \ / / _` | |/ _ \ __| | |/ _ \    #" | tee -a "$LOGFILE"
+    echo -e " #   |  \| |/ _ \ / _\` |/ _ \ \ / / _\` | |/ _ \ __| | |/ _ \    #" | tee -a "$LOGFILE"
     echo -e " #   | |\  | (_) | (_| |  __/\ V / (_| | |  __/ |_ _| | (_) |   #" | tee -a "$LOGFILE"
     echo -e " #   |_| \_|\___/ \__,_|\___| \_/ \__,_|_|\___|\__(_)_|\___/    #" | tee -a "$LOGFILE"
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
