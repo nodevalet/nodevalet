@@ -251,7 +251,7 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
             echo -e "${nocolor}"
-            echo -e "\n No problem.  The VPS will generate your masternode genkeys.${nocolor}"
+            echo -e "\n No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
         fi
     fi
 
@@ -288,7 +288,8 @@ elif [ "$ONLYNET" = 4 ]
                     echo -e "\n Please enter the transaction ID and index for masternode #$i"
                     echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
                     read -p "  --> " UTXID
-                    echo -e "\n You entered the address: ${UTXID} ${cyan}"
+                    echo -e "\n You entered the transaction ID and index:"
+                    echo -e " ${UTXID} ${cyan}"
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
@@ -563,8 +564,8 @@ EOT
 
                 # check if GENKEY variable is empty; if so stop script and report error
                 if [ ${#KEYXIST} = "0" ]
-                then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; engine likely still starting up" | tee -a "$LOGFILE"
-                    echo -e " --> Waiting for $SLEEPTIME seconds before trying again... loop $P" | tee -a "$LOGFILE"
+                then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; engine likely still starting up"
+                    echo -e " --> Waiting for $SLEEPTIME seconds before trying again... loop $P"
                     sleep $SLEEPTIME
                 else break
                 fi
@@ -637,7 +638,8 @@ EOT
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " Read TXID for MN$i from vpsmntxdata.info; set to $TX " >> $LOGFILE
+                echo -e " Read TXID for MN$i from vpsmntxdata.info; set to : " >> $LOGFILE
+                echo -e " $TX " >> $LOGFILE
 
             else
                 # CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
