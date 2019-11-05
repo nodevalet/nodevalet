@@ -252,6 +252,60 @@ elif [ "$ONLYNET" = 4 ]
         fi
     fi
 
+    # query to collect TXIDs if not detected
+    if [ -e $INFODIR/fullauto.info ]
+    then : echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
+    else
+        echo -e "\n If your project is fully supported by NodeValet, your VPS can likely retrieve the"
+        echo -e " masternodes' transaction IDs and indices from the blockchain via API. If you are "
+        echo -e " installing masternodes for a project that is not fully supported, then you are "
+        echo -e " able to provide your own transaction IDs and output indices. You can also skip "
+        echo -e " this step now and edit the masternode.conf file later to insert data as needed."
+        echo -e -n "${cyan}"
+        while :; do
+            echo -e "\n"
+            read -n 1 -s -r -p " Would you like to manually enter your own TXIDs now? y/n " GETTXIDS
+            if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
+            then
+                break
+            fi
+        done
+        echo -e -n "${nocolor}"
+
+        if [ "${GETTXIDS,,}" = "Y" ] || [ "${GETTXIDS,,}" = "y" ]
+        then echo -e " User selected to manually enter TXIDs for $MNS masternodes." >> $LOGFILE 2>&1
+                    echo -e "\n A transaction ID and index should look similar to this: "
+                    echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+                    VERIFY=
+            touch $INFODIR/vpsmntxdata.info
+            for ((i=1;i<=$MNS;i++));
+            do
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
+                    echo -e " Leave this field blank if this masternode is not yet funded."
+                    read -p "  --> " UTXID
+                    echo -e "\n You entered the address: ${UTXID} "
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        # save TXID to vpsmntxdata.info if length is greater than 5
+                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
+                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
+                        fi
+                        # echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+            done
+            echo -e " User manually entered TXIDs and indices for $MNS masternodes.\n" >> $LOGFILE 2>&1
+        else echo -e " User selected to have this VPS query TXIDs from NodeValet API.\n" >> $LOGFILE 2>&1
+            echo -e "${nocolor}"
+            echo -e "\n Understood. The VPS will query NodeValet's API for TXIDs.${cyan}"
+        fi
+    fi
+
     # create or assign customssh
     if [ -s $INFODIR/vpssshport.info ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
@@ -436,7 +490,7 @@ function add_cron() {
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
+    (crontab -l ; echo "5,35 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
     echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
