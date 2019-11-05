@@ -1,7 +1,4 @@
 #!/bin/bash
-# Silently install masternodes and insert privkeys
-
-# echo " $(date +%m.%d.%Y_%H:%M:%S) : $MESSAGE" | tee -a "$LOGFILE"
 
 function setup_environment() {
     # Set Variables
@@ -32,16 +29,12 @@ function setup_environment() {
     nocolor=$'\e[0m' # no color
 
     # create root/installtemp if it doesn't exist
-    if [ ! -d $INSTALLDIR ]
-    then mkdir $INSTALLDIR
-    else :
-    fi
-
-    mkdir $INFODIR
-    mkdir $INSTALLDIR/logs
-    mkdir $INSTALLDIR/temp
-    touch $INSTALLDIR/logs/maintenance.log
-    touch $INSTALLDIR/logs/silentinstall.log
+        mkdir $INSTALLDIR
+        mkdir $INFODIR
+        mkdir $INSTALLDIR/logs
+        mkdir $INSTALLDIR/temp
+        touch $INSTALLDIR/logs/maintenance.log
+        touch $INSTALLDIR/logs/silentinstall.log
 
     # Create Log File and Begin
     clear
@@ -121,10 +114,8 @@ function setup_environment() {
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    # eventually switch over from MNODE_DAEMON to $INFODIR/vpsmnode_daemon.info
-    # cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info ; rm $INSTALLDIR/temp/MNODE_DAEMON1
-    cat $INSTALLDIR/temp/MNODE_DAEMON > $INFODIR/vpsmnode_daemon.info
+    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+    rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
 
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
@@ -290,9 +281,9 @@ elif [ "$ONLYNET" = 4 ]
     # Pull BLOCKEXP from $PROJECT.env
     BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
     if [ -n "$BLOCKEX" ]
-    then echo "$BLOCKEX" > $INSTALLDIR/temp/BLOCKEXP
-        sed -i "s/BLOCKEXP=//" $INSTALLDIR/temp/BLOCKEXP
-        BLOCKEXP=$(<$INSTALLDIR/temp/BLOCKEXP)
+    then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+        sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+        BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
         echo -e " Block Explorer set to :" | tee -a "$LOGFILE"
         echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
     else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
@@ -334,9 +325,9 @@ function install_binaries() {
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
     if [ -n "$GIT_API" ] ; then
-        echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-        sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-        GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+        echo "$GIT_API" > $INFODIR/vps.GIT_API.info
+        sed -i "s/GITAPI_URL=//" $INFODIR/vps.GIT_API.info
+        GITAPI_URL=$(<$INFODIR/vps.GIT_API.info)
         echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
 
         # Try and install Binaries now
@@ -441,19 +432,19 @@ function add_cron() {
     # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
     echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/1 * * * * $INSTALLDIR/maintenance/postinstall_api.sh") | crontab - 2>/dev/null
+    (crontab -l ; echo "*/1 * * * * /var/tmp/nodevalet/maintenance/postinstall_api.sh") | crontab - > /dev/null 2>&1
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "1,31 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
+    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
     echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "59 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "2 */48 * * * $INSTALLDIR/maintenance/autoupdate.sh") | crontab -
+    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
     echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+    (crontab -l ; echo "@weekly /var/tmp/nodevalet/maintenance/cleardebuglog.sh") | crontab -
     echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/cronchecksync1.sh") | crontab -
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
 
     # Enable run permissions on all scripts
     chmod 0700 $INSTALLDIR/*.sh
@@ -474,6 +465,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
     sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
     sudo ln -s $INSTALLDIR/maintenance/clonesync.sh /usr/local/bin/clonesync
+    sudo ln -s $INSTALLDIR/maintenance/clonesync_all.sh /usr/local/bin/clonesync_all
 }
 
 function configure_mns() {
@@ -620,7 +612,8 @@ EOT
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
+                rm $INSTALLDIR/temp/API.response$i.json --force
+                
             fi
 
             # this is a pretty display of the received JSON; suitable for headless display
@@ -761,6 +754,9 @@ configure_mns
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
+
+# Set the not_synced flags before reboot
+sudo bash /var/tmp/nodevalet/maintenance/cronchecksync1.sh
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
 
 restart_server

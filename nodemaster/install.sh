@@ -3,9 +3,9 @@
 # Set Variables
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-# set mnode daemon name from project.env
-MNODE_DAEMOND=$(</var/tmp/nodevalet/temp/MNODE_DAEMON)
 INFODIR='/var/tmp/nvtemp'
+# NOTE: below is MNODE_DAEMOND not MNODE_DAEMON (don't break it!)
+MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
@@ -55,7 +55,7 @@ function showbanner() {
 ██║ ╚████║╚██████╔╝██████╔╝███████╗ ╚████╔╝ ██║  ██║███████╗███████╗   ██║
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝
 EOF
-    echo "$(tput sgr0)$(tput setaf 3)                Home of the 5 minute masternode installations!$(tput sgr0)"
+    echo "$(tput sgr0)$(tput setaf 3)                Home of 5 minute masternode installations!$(tput sgr0)"
     echo -e "\n"
 }
 
@@ -571,7 +571,6 @@ function print_logo() {
     fi
 
 }
-
 #
 # /* no parameters, builds the required masternode binary from sources. Exits if already exists and "update" not given  */
 #
@@ -606,7 +605,7 @@ function build_mn_from_source() {
         # compilation starts here
         source "${SCRIPTPATH}"/config/"${CODENAME}"/"${CODENAME}".compile | pv -t -i0.1
     else
-        echo "* Daemon already in place at ${MNODE_DAEMON}, not compiling"
+        echo -e "* Daemon already in place at ${MNODE_DAEMON}, not compiling" | tee -a "$LOGFILE"
     fi
 
     # if it's not available after compilation, theres something wrong
@@ -737,7 +736,7 @@ function prepare_mn_interfaces() {
             then
                 echo "IP for masternode already exists, skipping creation" &>> ${SCRIPT_LOGFILE}
             else
-                echo "Creating new IP address for ${CODENAME} masternode nr ${NUM}" &>> ${SCRIPT_LOGFILE}
+                echo "Creating new IP address for ${CODENAME} masternode nr ${NUM}" | tee -a ${SCRIPT_LOGFILE}
                 if [ "${NETWORK_CONFIG}" = "/etc/rc.local" ]; then
                     # need to put network config in front of "exit 0" in rc.local
                     sed -e '$i ip -6 addr add '"${IPV6_INT_BASE}"':'"${NETWORK_BASE_TAG}"'::'"${NUM}"'/64 dev '"${ETH_INTERFACE}"'\n' -i "${NETWORK_CONFIG}" &>> ${SCRIPT_LOGFILE}

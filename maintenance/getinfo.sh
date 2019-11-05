@@ -1,12 +1,14 @@
 #!/bin/bash
 # This script will give users the 'getinfo' of installed masternodes
 
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
@@ -54,6 +56,7 @@ else
 
     # Display 'getinfo' for only the masternode named
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${input}${nocolor}"
+    sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$input" > /dev/null 2>&1
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
@@ -75,10 +78,12 @@ fi
 for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${i}${nocolor}"
+    sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i" > /dev/null 2>&1
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
     cat GETINFO2
+   
     # check if file exists with name that contains both "audax_n1" and "synced"
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
     if [[ "${TARGETSYNC}" ]]

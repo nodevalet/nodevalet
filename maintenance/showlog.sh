@@ -1,12 +1,14 @@
 #!/bin/bash
 # This script will display the NodeValet installation log for your VPS
 
+LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
-LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # verify that this is a NodeValet.io configured VPS

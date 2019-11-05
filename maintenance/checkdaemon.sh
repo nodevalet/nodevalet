@@ -4,12 +4,14 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # extglob was necessary to make rm -- ! possible
@@ -37,7 +39,7 @@ do
     if [ "$previousBlock$" == "$currentBlock$" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
-        echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         systemctl stop "${PROJECT}"_n${i}
         sleep 5
         systemctl start "${PROJECT}"_n${i}

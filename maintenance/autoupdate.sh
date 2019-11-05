@@ -3,9 +3,12 @@
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(cat $INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+HNAME=$(<$INFODIR/vpshostname.info)
 
 # update .gitstring binary search string variable
 cd $INSTALLDIR/nodemaster/config/$PROJECT
@@ -18,19 +21,20 @@ echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
 sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INSTALLDIR/temp/MNODE_DAEMON ; rm $INSTALLDIR/temp/MNODE_DAEMON1
+cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_API" > $INSTALLDIR/temp/GIT_API
-sed -i "s/GITAPI_URL=//" $INSTALLDIR/temp/GIT_API
-GITAPI_URL=$(<$INSTALLDIR/temp/GIT_API)
+echo "$GIT_API" > $INFODIR/vps.GIT_API.info
+sed -i "s/GITAPI_URL=//" $INFODIR/vps.GIT_API.info
+GITAPI_URL=$(<$INFODIR/vps.GIT_API.info)
 
 # Pull GIT URL from $PROJECT.env
 GIT_URL=$(grep ^GIT_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
-echo "$GIT_URL" > $INSTALLDIR/temp/GIT_URL
-sed -i "s/GIT_URL=//" $INSTALLDIR/temp/GIT_URL
-GIT_URL=$(<$INSTALLDIR/temp/GIT_URL)
+echo "$GIT_URL" > $INFODIR/vps.GIT_URL.info
+sed -i "s/GIT_URL=//" $INFODIR/vps.GIT_URL.info
+GIT_URL=$(<$INFODIR/vps.GIT_URL.info)
 
 # Pull GITSTRING from $PROJECT.env
 GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)

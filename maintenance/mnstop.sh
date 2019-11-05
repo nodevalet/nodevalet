@@ -1,12 +1,14 @@
 #!/bin/bash
 # Stop and disable a particular masternode
 
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-PROJECT=$(<$INFODIR/vpscoin.info)
 MNS=$(<$INFODIR/vpsnumber.info)
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
@@ -55,9 +57,11 @@ echo -e " User has asked to disable masternode ${PROJECT}_n${i}.\n"  | tee -a "$
 touch $INSTALLDIR/temp/updating
 
 echo -e " Disabling ${PROJECT}_n${i} now."
-sudo systemctl disable "${PROJECT}"_n${i}
+sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n${i}
-sleep 2
+sleep .5
+
+echo -e " Masternode ${PROJECT}_n${i} has been disabled.\n"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
