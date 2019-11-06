@@ -2,12 +2,16 @@
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
-NodeValet lets you securily deploy up to 20 Masternodes on a VPS of your choice in a matter of minutes. Fully automated and with the convenience of a hosted solution. NodeValet Masternodes come pre installed with a variety of maintanance scripts that make sure your Masternode is always online, always secure and even handles wallet updates by itself.
+NodeValet lets you securely deploy multiple Masternodes on a VPS of your choice in a matter of minutes. Fully automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention.
 
-Self hosting your Masternode has a number of benefits in that it is way more cost effective and that you retain full control over your Masternode. It can be challenging to set up and maintain Masternodes yourself. By automating the installation, server hardening and maintenance process we give you the benefits of self hosting with the convenience of a hosted solution. Open source and free of charge. API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
+Self-hosting your Masternodes has a number of benefits.  For starters, it is way more cost-effective than paying someone else to do it.  The next best advantage is that you retain full control over your Masternodes so your collateral never leaves your wallet. It can be challenging to set up and maintain Masternodes by yourself, but with NodeValet’s automated VPS installations, you can rapidly deploy fully-autonomous and hardened virtual servers that require little to no maintenance without so much as touching a command prompt.  
+
+Are you a tinkerer who prefers a more hands-on approach? That works, too! Since the VPS which hosts your NodeValet Masternodes exists entirely within your own hosting account (presently at Vultr or Digital Ocean), you can log into it remotely with SSH whenever you want and make use of a full suite of power tools designed to help you get the information you need or make changes to your setup with only a minimal knowledge of Linux.  NodeValet gives you all the benefits of self-hosting with the additional convenience of a hosted solution. 
+
+API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your Masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
 For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io.
-We're working to add a variety of other Masternode coins to the service in the very near future. 
+We're working to add a variety of other Masternode coins to the service in the near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
 
@@ -18,7 +22,7 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 - Automatically generated masternode.conf, copy paste ready.
 - Automatic server hardening. Your VPS will be more secure than most.
 - Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
-- Automatic wallet updates. Your VPS will check your coin's github twice a day, and when it sees an update, install it.
+- Automatic wallet updates. Your VPS will check your coin's Github twice a day, and when it sees an update, install it.
 
 **Planned features**
 
@@ -39,7 +43,7 @@ https://medium.com/@AKcryptoGUY/easy-condominium-masternode-setup-using-nodevale
 
 Just because you won't have to log in to your VPS doesn't mean you can't :). To keep things easy we use Nodemaster to configure the actual Masternodes so everything is exactly where you'd expect it to be.
 
-NodeValet keeps its files in  `/var/tmp/nodevalet` and its logs in `/var/tmp/nodevalet/logs`
+NodeValet keeps its files in `/var/tmp/nodevalet` and its logs in `/var/tmp/nodevalet/logs`
 
 We've added a few small scripts to make the most common commands a lot easier. You can just enter these on the command line:
 
@@ -62,8 +66,3 @@ We've added a few small scripts to make the most common commands a lot easier. Y
 We may add more from time to time so stay tuned!
 
 Meanwhile, enjoy the service!
-
-
-
-
-
