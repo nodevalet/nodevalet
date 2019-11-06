@@ -2,11 +2,11 @@
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
-NodeValet lets you securely deploy multiple Masternodes on a VPS of your choice in a matter of minutes. Fully automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention.
+NodeValet helps you securely deploy multiple Masternodes on a VPS of your choosing in a matter of minutes. Fully-automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention. A true set-and-forget solution.
 
-Self-hosting your Masternodes has a number of benefits.  For starters, it is way more cost-effective than paying someone else to do it.  The next best advantage is that you retain full control over your Masternodes so your collateral never leaves your wallet. It can be challenging to set up and maintain Masternodes by yourself, but with NodeValet’s automated VPS installations, you can rapidly deploy fully-autonomous and hardened virtual servers that require little to no maintenance without so much as touching a command prompt.  
+Self-hosting your own Masternodes has a number of benefits. For starters, it is way more cost-effective than paying someone else to do it. The next best advantage is that you retain full control over your Masternodes so your collateral never leaves your wallet. It can be challenging to set up and maintain Masternodes by yourself, but with NodeValet’s automated VPS installations, you can rapidly deploy fully-autonomous and hardened virtual servers that require little to no maintenance without so much as touching a command prompt. 
 
-Are you a tinkerer who prefers a more hands-on approach? That works, too! Since the VPS which hosts your NodeValet Masternodes exists entirely within your own hosting account (presently at Vultr or Digital Ocean), you can log into it remotely with SSH whenever you want and make use of a full suite of power tools designed to help you get the information you need or make changes to your setup with only a minimal knowledge of Linux.  NodeValet gives you all the benefits of self-hosting with the additional convenience of a hosted solution. 
+Are you a tinkerer who prefers a more hands-on approach? That works, too! Since the VPS which hosts your NodeValet Masternodes exists entirely within your own hosting account (presently at Vultr or Digital Ocean), you can log into it remotely with SSH whenever you want and use our full suite of power tools to quickly get the information you need or make changes to your masternodes with only a minimal knowledge of Linux. NodeValet gives you all the benefits of self-hosting with the additional convenience of a hosted solution. 
 
 API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your Masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
@@ -26,7 +26,7 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 
 **Planned features**
 
-- Full integration with "headless" installation. This will allow you to use our service while bypassing the API requirement.  (tinfoil hat mode)  
+- Full integration with "headless" installation. This will allow you to use our service while bypassing the API requirement. (tinfoil hat mode) 
 - On demand system updates. This will allow the user to update their NodeValet Masternode with the latest features without compromising server security.
 
 # Guides
@@ -47,21 +47,21 @@ NodeValet keeps its files in `/var/tmp/nodevalet` and its logs in `/var/tmp/node
 
 We've added a few small scripts to make the most common commands a lot easier. You can just enter these on the command line:
 
-`autoupdate` runs the autoupdate script to check for new binaries (rather than wait for the scheduled check)  
-`checkdaemon` will check if all masternodes are correctly synced  
-`checksync` will return the syncing status of all masternodes  
-`clonesync` can be used to bootstrap a masternode and fully sync its chain from another masternode  
-`getinfo 1` returns a summarized `getinfo` of masternode (1, 2, 3 etc) `getinfo` shows all  
-`killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on  
-`makerun` checks if all installed masternodes are running  
-`masternodestatus 1`  returns the `masternodestatus` of masternode (1, 2, 3 etc) `masternodestatus` returns all  
-`mnstart 1` will re-enable and restart a particular masternode (1, 2, 3 etc) after you have disabled it  
-`mnstop 1` will disable and stop a particular masternode (1, 2, 3 etc)  
-`mulligan` erase all masternode data and NodeValet files on this VPS; useful to repurpose VPS  
-`rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)  
-`resync 1` deletes blockchain data for node (1, 2, 3, etc) and forces a resync  
-`showlog` will display the installation log  
-`showmlog` will display the maintenance log  
+`autoupdate` runs the autoupdate script to check for new binaries (rather than wait for the scheduled check) 
+`checkdaemon` will check if all masternodes are correctly synced 
+`checksync` will return the syncing status of all masternodes 
+`clonesync` can be used to bootstrap a masternode and fully sync its chain from another masternode 
+`getinfo 1` returns a summarized `getinfo` of masternode (1, 2, 3 etc) `getinfo` shows all 
+`killswitch` turns off all masternodes. Use `activate_masternodes_COIN` to turn them back on 
+`makerun` checks if all installed masternodes are running 
+`masternodestatus 1` returns the `masternodestatus` of masternode (1, 2, 3 etc) `masternodestatus` returns all 
+`mnstart 1` will re-enable and restart a particular masternode (1, 2, 3 etc) after you have disabled it 
+`mnstop 1` will disable and stop a particular masternode (1, 2, 3 etc) 
+`mulligan` erase all masternode data and NodeValet files on this VPS; useful to repurpose VPS 
+`rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check) 
+`resync 1` deletes blockchain data for node (1, 2, 3, etc) and forces a resync 
+`showlog` will display the installation log 
+`showmlog` will display the maintenance log 
 
 We may add more from time to time so stay tuned!
 
