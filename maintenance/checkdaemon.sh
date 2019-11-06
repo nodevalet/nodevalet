@@ -36,7 +36,12 @@ do
     previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
     currentBlock=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount)
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
-    if [ "$previousBlock$" == "$currentBlock$" ]
+    
+    if [ "-1" == "$currentBlock" ]
+    then
+        echo -e " currentBlock is -1; daemon is verifying blocks or starting up\n"
+
+    elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
@@ -57,7 +62,7 @@ do
             currentBlock=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount)
             /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
             if [ "$previousBlock$" == "$currentBlock$" ]; then
-                echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
+                echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
                 echo -e " I have restarted the MN $T time(s) so far and it did not help. \n" | tee -a "$LOGFILE"
 
             else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
@@ -70,7 +75,7 @@ do
         if [ ! "$FIXED" == "yes" ]; then
 
             unset $FIXED
-            echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
+            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
             echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
             sudo systemctl disable "${PROJECT}"_n${i}
             sudo systemctl stop "${PROJECT}"_n${i}
