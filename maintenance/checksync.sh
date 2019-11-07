@@ -126,7 +126,7 @@ function check_blocksync() {
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
-            then echo -e " ${red}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
+            then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
                 echo -e " ${lightred}Bootstrap will resume once your first blockchain is synced.${nocolor}\n"
             else :
             fi
