@@ -47,7 +47,7 @@ function setup_environment() {
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
     echo -e " ################################################################" | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"    
-    echo -e " ----------------------------------------------------------------${nocolor}" | tee -a "$LOGFILE"
+    echo -e " -----------------------------------------------------${nocolor}" | tee -a "$LOGFILE"
 
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
@@ -605,7 +605,7 @@ EOT
             if [ "${PROJECT,,}" = "smart" ] ; then
                 sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
-                echo -e " Privkey in ${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
+                echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
             else
                 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
@@ -638,7 +638,7 @@ EOT
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " Read TXID for MN$i from vpsmntxdata.info; set to : " >> $LOGFILE
+                echo -e " Read transaction ID for MN$i from vpsmntxdata.info; set to : " >> $LOGFILE
                 echo -e " $TX " >> $LOGFILE
 
             else
