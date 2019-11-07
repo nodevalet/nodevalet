@@ -134,7 +134,7 @@ else echo -e " Clonesync will now attempt to clone the blockchain "
     sudo systemctl enable "${PROJECT}"_n${t} > /dev/null 2>&1
     sudo systemctl start "${PROJECT}"_n${t}
 
-    echo -e "${lightgreen} Clonesync complete; masternodes have been restarted.${nocolor}\n" | tee -a "$LOGFILE"
+    echo -e "${lightgreen} Clonesync complete; Masternodes have been restarted.${nocolor}\n" | tee -a "$LOGFILE"
 
     # echo -e " Unsetting -update flag"
     rm -f $INSTALLDIR/temp/updating
