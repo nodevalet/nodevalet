@@ -152,7 +152,7 @@ elif [ "$ONLYNET" = 4 ]
             testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
             if [[ $lenMN -ne ${#testvar} ]]
             then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
-                # length would be the same if $MNS was a number
+            # length would be the same if $MNS was a number
 
         elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
@@ -200,10 +200,9 @@ elif [ "$ONLYNET" = 4 ]
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-            echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
-            echo -e "\n"
+            # echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
+            echo -e " -> Masternode $i address is: $MNADDP \n"
         done
-        # echo -e " User manually entered $MNS masternode addresses." >> $LOGFILE 2>&1
     fi
 
     # query to generate new genkeys or query for user input
