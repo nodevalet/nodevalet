@@ -40,15 +40,15 @@ GIT_URL=$(<$INFODIR/vps.GIT_URL.info)
 GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
 if [ -e $INSTALLDIR/temp/updating ]
-	then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"
+	then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"
 		echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
 		rm -f $INSTALLDIR/temp/updating
 fi
 
 function update_binaries() {
 #check for updates and install binaries if necessary
-echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
-echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Autoupdate is looking for new $PROJECTt tags"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate is looking for new $PROJECTt tags"
 
 if [ ! -d $INSTALLDIR/temp/bin ]; then mkdir $INSTALLDIR/temp/bin ; fi
 cd $INSTALLDIR/temp/bin
