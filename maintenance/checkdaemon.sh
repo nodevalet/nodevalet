@@ -18,7 +18,7 @@ HNAME=$(<$INFODIR/vpshostname.info)
 shopt -s extglob
 
 if [ -e "$INSTALLDIR/temp/updating" ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$LOGFILE"
     echo -e " It looks like I'm currently running other tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
     exit
 fi
