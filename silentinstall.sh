@@ -114,7 +114,6 @@ function setup_environment() {
         done
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
-        echo -e " \n"
     fi
 
     # set mnode daemon name from project.env
