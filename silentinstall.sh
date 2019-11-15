@@ -201,6 +201,7 @@ elif [ "$ONLYNET" = 4 ]
                 read -p "  --> " MNADDP
                 echo -e "\n You entered the address: ${MNADDP} "
                 read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
+                echo " "
                 if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
                 then break
                 fi
