@@ -106,13 +106,12 @@ function setup_environment() {
             then APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
                 curl -s "$APITEST" > $INSTALLDIR/temp/API.test.json
                 APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
-                ! [[ "${APITESTRESPONSE}" == "Invalid key" ]] && echo "NodeValet API Key is valid" && rm -f $INSTALLDIR/temp/API.test.json && break
+                ! [[ "${APITESTRESPONSE}" == "Invalid key" ]] && echo "NodeValet API Key is valid${nocolor}" && rm -f $INSTALLDIR/temp/API.test.json && break
                 echo -e "${lightred}The API Key you entered is invalid.${nocolor}"
                 echo -e "${lightred} User entered an invalid key.${nocolor}" >> $LOGFILE
             else echo " "
             fi
         done
-        echo -e -n "${nocolor}"
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
         echo -e " \n"
