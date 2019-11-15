@@ -107,10 +107,10 @@ function setup_environment() {
                 curl -s "$APITEST" > $INSTALLDIR/temp/API.test.json
                 APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
                 ! [[ "${APITESTRESPONSE}" == "Invalid key" ]] && echo "NodeValet API Key is valid" && rm -f $INSTALLDIR/temp/API.test.json && break
-                echo "Key is invalid or NodeValet server is not responding. Please try again.\n"
-                echo -e "${lightred} User entered an invalid key or NodeValet is not responding${nocolor}" >> $LOGFILE
+                echo -e "${lightred}Key is invalid or NodeValet is down.${nocolor}\n Please try again.\n"
+                echo -e "${lightred} User entered an invalid key or NodeValet is down${nocolor}" >> $LOGFILE
             else echo " "
-
+            fi
         done
         echo -e -n "${nocolor}"
         echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
