@@ -763,41 +763,47 @@ EOT
         cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
 
-        clear
-        echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
-        cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-
         # remove blank lines from installation log file and replace original
         grep -v -e '^[[:space:]]*$' "$LOGFILE" > $INSTALLDIR/logs/install.log
         mv $INSTALLDIR/logs/install.log "$LOGFILE"
-        # echo -e "\n"  >> "$LOGFILE"
 
-        if [ ! -s $INFODIR/fullauto.info ]
-        then cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-            update-rc.d postinstall_api.sh defaults  2>/dev/null
-            echo -e " Please follow the steps below to complete your masternode setup: "
-            echo -e " 1. Please copy the above file and paste it into the masternode.conf "
-            echo -e "    file on your local wallet. (insert txid info to end of each line) "
-            echo -e " 2. Reboot the local wallet: type 'reboot' to reboot this VPS and "
-            echo -e "    begin syncing the blockchain. "
-            echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
-            echo -e "    and then you may click Start Missing to start your new masternodes. "
-            echo -e " 4. If starting any masternodes fails, you may need to start them from "
-            echo -e "    debug console using 'startmasternode alias 0 MN1'  where you replace "
-            echo -e "    MN1 with the alias of your masternode. Some wallets don't always"
-            echo -e "    recognize IPv6 addresses. \n"
-            read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
-    else echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE" ;fi
     fi
 }
 
 function restart_server() {
-    echo -e " \n"
-    echo -e "Going to restart server to complete installation... " | tee -a "$LOGFILE"
+    clear
+    echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
+    cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
+
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
+
+    if [ -s $INFODIR/fullauto.info ]
+
+    then 
+    echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
+    echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
     shutdown -r now "Server is going down for upgrade."
+    
+    else
+            echo -e " Please follow the steps below to complete your masternode setup: "
+            echo -e " 1. Please copy the above file and paste it into the masternode.conf "
+            echo -e "    file on your local wallet. (insert txid info to end of each line) "
+            echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
+            echo -e "    installation and begin syncing the blockchain. "
+            echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
+            echo -e "    and then you may click Start Missing to start your new masternodes. "
+            echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
+            echo -e "    you may need to start the masternodes in your local wallet again.\n"
+            # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
+            # need to replace this with a timed restart, notice to copy and paste .conf
+
+            echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
+            touch $INSTALLDIR/temp/vpsvaletreboot.txt
+            shutdown -r +1 "Server is going down for upgrade in 1 minute."
+    
+    fi
 }
 
 # This is where the script actually starts
@@ -819,7 +825,6 @@ add_cron
 
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$MNS"' '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 configure_mns
-# [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Masternode Configuration is Complete ..."}' && echo -e " "
 
 # create file to signal cron that reboot has occurred
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
