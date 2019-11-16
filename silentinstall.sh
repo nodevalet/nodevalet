@@ -522,7 +522,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
     sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
-    sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showmconf
+    sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showconf
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
     sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
     sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
