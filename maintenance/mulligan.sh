@@ -105,6 +105,11 @@ function search_and_destroy() {
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
 
+        echo -e "${yellow}------------------------------------------------------- "
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling swap file"
+        echo -e "------------------------------------------------------- ${white}\n"
+        sudo swapoff -a -v > /dev/null 2>&1 && sudo rm /swapfile && sudo cp /etc/fstab /etc/fstab.bak && sudo sed -i '/\/swapfile/d' /etc/fstab
+
         echo -e "${yellow}------------------------------------------------------------------ "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
         echo -e "------------------------------------------------------------------ ${white}\n"
