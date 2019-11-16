@@ -458,14 +458,11 @@ function install_mns() {
 
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_DAEMON" > /dev/null
-
         then
-
             # report back to mother
             if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
 
         else
-
             for ((H=1;H<=10;H++));
             do
                 if ps -A | grep "$MNODE_DAEMON" > /dev/null
@@ -477,7 +474,7 @@ function install_mns() {
 
                     if [ "${H}" = "10" ]
                     then echo " "
-                        echo -e "After 10 seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
+                        echo -e "After $H (H) seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
                         echo -e "so we are going to abort this installation now. \n" | tee -a "$LOGFILE"
                         echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
                         if [ -e "$INFODIR"/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start after 10 seconds"}' && echo -e " " ; fi
@@ -487,7 +484,6 @@ function install_mns() {
                 fi
             done
         fi
-
     fi
 }
 
@@ -589,8 +585,8 @@ EOT
         for ((i=1;i<=$MNS;i++));
         do
             # get or iterate mnprefixes
-            if [ -s $INFODIR/vpsmnprefix.info ] ; then
-                echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
+            if [ -s $INFODIR/vpsmnprefix.info ] 
+            then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
             else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/temp/mnaliases
             fi
 
@@ -608,7 +604,8 @@ EOT
             GENKEYVAR=$(cat $INSTALLDIR/temp/MNPRIVKEY$i)
 
             # insert new genkey into project_n$i.conf files (special case for smartnodes)
-            if [ "${PROJECT,,}" = "smart" ] ; then
+            if [ "${PROJECT,,}" = "smart" ]
+            then
                 sed -i "s/^smartnodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
@@ -775,18 +772,15 @@ function restart_server() {
     clear
     echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
 
     if [ -s $INFODIR/fullauto.info ]
-
     then
         echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
         echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
         shutdown -r now "Server is going down for upgrade."
-
     else
         echo -e " Please follow the steps below to complete your masternode setup: "
         echo -e " 1. Please copy the above file and paste it into the masternode.conf "
@@ -798,12 +792,9 @@ function restart_server() {
         echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
         echo -e "    you may need to start the masternodes in your local wallet again.\n"
         # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
-        # need to replace this with a timed restart, notice to copy and paste .conf
-
         echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
         shutdown -r +1 "Server is going down for upgrade in 1 minute."
-
     fi
 }
 
