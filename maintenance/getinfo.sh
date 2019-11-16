@@ -83,7 +83,7 @@ do
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
     cat GETINFO2
-   
+
     # check if file exists with name that contains both "audax_n1" and "synced"
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
     if [[ "${TARGETSYNC}" ]]

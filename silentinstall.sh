@@ -29,12 +29,12 @@ function setup_environment() {
     nocolor=$'\e[0m' # no color
 
     # create root/installtemp if it doesn't exist
-        mkdir $INSTALLDIR
-        mkdir $INFODIR
-        mkdir $INSTALLDIR/logs
-        mkdir $INSTALLDIR/temp
-        touch $INSTALLDIR/logs/maintenance.log
-        touch $INSTALLDIR/logs/silentinstall.log
+    mkdir $INSTALLDIR
+    mkdir $INFODIR
+    mkdir $INSTALLDIR/logs
+    mkdir $INSTALLDIR/temp
+    touch $INSTALLDIR/logs/maintenance.log
+    touch $INSTALLDIR/logs/silentinstall.log
 
     # Create Log File and Begin
     clear
@@ -46,7 +46,7 @@ function setup_environment() {
     echo -e " #   |_| \_|\___/ \__,_|\___| \_/ \__,_|_|\___|\__(_)_|\___/    #" | tee -a "$LOGFILE"
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
     echo -e " ################################################################" | tee -a "$LOGFILE"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"    
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e " -----------------------------------------------------${nocolor}" | tee -a "$LOGFILE"
 
     # read or set project name
@@ -102,7 +102,7 @@ function setup_environment() {
             read -p "  --> " VPSAPI
             echo -e "\n You entered this API Key: ${VPSAPI} "
             read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
-            if [[ $VERIFY == "y" || $VERIFY == "Y" ]] 
+            if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
             then APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
                 curl -s "$APITEST" > $INSTALLDIR/temp/API.test.json
                 APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
@@ -157,7 +157,7 @@ elif [ "$ONLYNET" = 4 ]
             testvar=$(echo "$MNS" | tr -dc '[:digit:]')   # remove non-numeric chars from $MNS
             if [[ $lenMN -ne ${#testvar} ]]
             then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
-            # length would be the same if $MNS was a number
+                # length would be the same if $MNS was a number
 
         elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
@@ -282,9 +282,9 @@ elif [ "$ONLYNET" = 4 ]
 
         if [ "${GETTXIDS,,}" = "Y" ] || [ "${GETTXIDS,,}" = "y" ]
         then echo -e " User selected to manually enter TXIDs for $MNS masternodes" >> $LOGFILE 2>&1
-                    echo -e "\n\n A transaction ID and index should look pretty similar to this: "
-                    echo -e "${yellow}   b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
-                    VERIFY=
+            echo -e "\n\n A transaction ID and index should look pretty similar to this: "
+            echo -e "${yellow}   b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+            VERIFY=
             touch $INFODIR/vpsmntxdata.info
             for ((i=1;i<=$MNS;i++));
             do
@@ -522,6 +522,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
     sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
+    sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showmconf
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
     sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
     sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
@@ -677,7 +678,7 @@ EOT
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
                 echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
                 rm $INSTALLDIR/temp/API.response$i.json --force
-                
+
             fi
 
             # this is a pretty display of the received JSON; suitable for headless display
@@ -715,10 +716,10 @@ EOT
 
             # create the masternode.conf output that is returned to consumer
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
-            
+
             # Set the not_synced flags for each masternode before reboot
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
-            
+
             # round 1: cleanup and declutter
             rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i
             rm $INSTALLDIR/temp/MNALIAS$i ; rm $INSTALLDIR/temp/TXID$i ; rm $INSTALLDIR/temp/"${PROJECT}"Ds --force ; rm $INSTALLDIR/temp/DELIMETER
@@ -780,29 +781,29 @@ function restart_server() {
 
     if [ -s $INFODIR/fullauto.info ]
 
-    then 
-    echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
-    echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
-    touch $INSTALLDIR/temp/vpsvaletreboot.txt
-    shutdown -r now "Server is going down for upgrade."
-    
-    else
-            echo -e " Please follow the steps below to complete your masternode setup: "
-            echo -e " 1. Please copy the above file and paste it into the masternode.conf "
-            echo -e "    file on your local wallet. (insert txid info to end of each line) "
-            echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
-            echo -e "    installation and begin syncing the blockchain. "
-            echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
-            echo -e "    and then you may click Start Missing to start your new masternodes. "
-            echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
-            echo -e "    you may need to start the masternodes in your local wallet again.\n"
-            # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
-            # need to replace this with a timed restart, notice to copy and paste .conf
+    then
+        echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
+        echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
+        touch $INSTALLDIR/temp/vpsvaletreboot.txt
+        shutdown -r now "Server is going down for upgrade."
 
-            echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
-            touch $INSTALLDIR/temp/vpsvaletreboot.txt
-            shutdown -r +1 "Server is going down for upgrade in 1 minute."
-    
+    else
+        echo -e " Please follow the steps below to complete your masternode setup: "
+        echo -e " 1. Please copy the above file and paste it into the masternode.conf "
+        echo -e "    file on your local wallet. (insert txid info to end of each line) "
+        echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
+        echo -e "    installation and begin syncing the blockchain. "
+        echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
+        echo -e "    and then you may click Start Missing to start your new masternodes. "
+        echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
+        echo -e "    you may need to start the masternodes in your local wallet again.\n"
+        # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
+        # need to replace this with a timed restart, notice to copy and paste .conf
+
+        echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
+        touch $INSTALLDIR/temp/vpsvaletreboot.txt
+        shutdown -r +1 "Server is going down for upgrade in 1 minute."
+
     fi
 }
 

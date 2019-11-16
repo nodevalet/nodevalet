@@ -42,32 +42,32 @@ shopt -s extglob
 touch $INSTALLDIR/temp/updating
 
 function remove_crons() {
-# disable the crons that could cause problems
-crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
-crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
-crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
+    # disable the crons that could cause problems
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
 }
 
 function shutdown_mns() {
-# shutdown all MNs except the first
-echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}"
-for ((i=2;i<=$MNS;i++));
-do
-    echo -e "${lightred}  Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
-    systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-    systemctl stop "${PROJECT}"_n${i}
-done
-echo -e "${lightcyan} --> Masternodes have been stopped and disabled${nocolor}\n"
+    # shutdown all MNs except the first
+    echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}"
+    for ((i=2;i<=$MNS;i++));
+    do
+        echo -e "${lightred}  Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
+        systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+        systemctl stop "${PROJECT}"_n${i}
+    done
+    echo -e "${lightcyan} --> Masternodes have been stopped and disabled${nocolor}\n"
 }
 
 function adjust_swap() {
-# reserved for future user
-true
+    # reserved for future user
+    true
 }
 
 function checksync_source() {
-touch $INSTALLDIR/temp/clonesyncing
-# wait for sync and then make sure masternode 1 has a fully-synced blockchain
+    touch $INSTALLDIR/temp/clonesyncing
+    # wait for sync and then make sure masternode 1 has a fully-synced blockchain
     checksync 1
     echo -e "${yellow} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}\n"
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
@@ -86,56 +86,56 @@ touch $INSTALLDIR/temp/clonesyncing
 }
 
 function shutdown_mn1() {
-# stop and disable mn1
-echo -e "${yellow} Clonesync_all needs to shut down the Source masternode:${nocolor}"
-# echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
-sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
-sudo systemctl stop "${PROJECT}"_n1
-echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
+    # stop and disable mn1
+    echo -e "${yellow} Clonesync_all needs to shut down the Source masternode:${nocolor}"
+    # echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
+    sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
+    sudo systemctl stop "${PROJECT}"_n1
+    echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
 function bootstrap() {
-# copy blocks/chainstate/sporks from n1 to all masternodes
-echo -e "${yellow} Clonesync_all will now remove relevant blockchain data from target(s):${nocolor}"
-for ((t=2;t<=$MNS;t++));
-do 
-    echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
-    cd /var/lib/masternodes/"${PROJECT}"${t}
-    sudo rm -rf !("wallet.dat"|"masternode.conf")
-    sleep .25
-done
-echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s)${nocolor}\n"
+    # copy blocks/chainstate/sporks from n1 to all masternodes
+    echo -e "${yellow} Clonesync_all will now remove relevant blockchain data from target(s):${nocolor}"
+    for ((t=2;t<=$MNS;t++));
+    do
+        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
+        cd /var/lib/masternodes/"${PROJECT}"${t}
+        sudo rm -rf !("wallet.dat"|"masternode.conf")
+        sleep .25
+    done
+    echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s)${nocolor}\n"
 
-echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
-for ((t=2;t<=$MNS;t++));
-do 
-    # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-    echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
-    cd /var/lib/masternodes/"${PROJECT}"${s}
-    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
-    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
-    cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks    
-done
-echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
+    echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
+    for ((t=2;t<=$MNS;t++));
+    do
+        # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
+        echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
+        cd /var/lib/masternodes/"${PROJECT}"${s}
+        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+    done
+    echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
 
 function restart_mns() {
-# restart and re-enable all masternodes
-echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
-for ((i=1;i<=$MNS;i++));
-do
-    echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
-    systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
-    systemctl start "${PROJECT}"_n${i}
-    let "stime=5*$i"
-    echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
-    sleep $stime
-done
-echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
+    # restart and re-enable all masternodes
+    echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
+    for ((i=1;i<=$MNS;i++));
+    do
+        echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
+        systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+        systemctl start "${PROJECT}"_n${i}
+        let "stime=5*$i"
+        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
+        sleep $stime
+    done
+    echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
 }
 
 function restore_crons() {
-# restore maintenance crons that were previously disabled
+    # restore maintenance crons that were previously disabled
     echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
     echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
