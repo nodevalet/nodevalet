@@ -112,7 +112,7 @@ function setup_environment() {
             else echo " "
             fi
         done
-        echo -e "$VPSAPI" >> $INFODIR/vpsapi.info
+        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
     fi
 
