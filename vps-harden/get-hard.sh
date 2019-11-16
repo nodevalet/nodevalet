@@ -1145,7 +1145,7 @@ function install_complete() {
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " Installation log saved to" $LOGFILE | tee -a "$LOGFILE"
     echo -e " Before modification, your SSH config was backed up to" | tee -a "$LOGFILE"
-    echo -e " --> $SSHDFILE.$BTIME.bak"				| tee -a "$LOGFILE"
+    echo -e " --> $SSHDFILE.$BTIME.bak ${nocolor}"				| tee -a "$LOGFILE"
     # echo -e -n "${lightred}"
     # echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
     # echo -e " | NOTE: Please create a new connection to test SSH | " | tee -a "$LOGFILE"
