@@ -517,6 +517,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
     sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
     sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
+    sudo ln -s $INSTALLDIR/maintenance/bootstrap.sh /usr/local/bin/bootstrap
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
     sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showconf
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
