@@ -115,7 +115,7 @@ function bootstrap() {
         cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
         cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
         
-        echo -e "${lightcyan} --> The 1st masternode has been bootstrapped\n"
+        echo -e "${lightcyan} --> The 1st masternode has been bootstrapped${nocolor}\n"
 
         # cd  "$(\ls -1dt ./*/ | head -n 1)"
         # find . -mindepth 2 -type f -print -exec mv {} . \;
@@ -123,7 +123,7 @@ function bootstrap() {
         echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
         activate_masternodes_${PROJECT}
         sleep 2
-    else echo -e " No bootstrap file is detected \n"
+    else echo -e " No bootstrap file is detected${nocolor}\n"
         exit
     fi
 }
