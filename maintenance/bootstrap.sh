@@ -65,10 +65,7 @@ function bootstrap() {
 # this downloads the bootstrap file into the current folder
 # curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap | cut -d '"' -f 4 | wget -qi -
 
-    CURVERSION=$(cat $INSTALLDIR/temp/currentversion)
-    NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
-
-    if curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap
+    if curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
 
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected a $PROJECTt bootstrap file" | tee -a "$LOGFILE"
 
@@ -92,11 +89,6 @@ function bootstrap() {
         else unzip "$BOOTSTRAPZIP"
         fi
         rm -f "$BOOTSTRAPZIP"
-
-        # set correct permissions
-        # chown -R masternode $INSTALLDIR/temp/bootstrap
-        # chgrp -R masternode $INSTALLDIR/temp/bootstrap
-        # chmod -R 700 $INSTALLDIR/temp/bootstrap
     
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
@@ -104,7 +96,7 @@ function bootstrap() {
         # need to shutdown 1st masternode
         shutdown_mn1
 
-        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$1...${nocolor}"
+        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"1
         sudo rm -rf !("wallet.dat"|"masternode.conf")
         sleep .25
@@ -114,14 +106,19 @@ function bootstrap() {
         cp -rp $INSTALLDIR/temp/bootstrap/blocks /var/lib/masternodes/"${PROJECT}"1/blocks
         cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
         cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
-        
+    
+        # remove bootstrap blockchain
+        rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
+
         echo -e "${lightcyan} --> The 1st masternode has been bootstrapped${nocolor}\n"
 
+        # this was previously used to navigate to the right folder in case of empty root folders
         # cd  "$(\ls -1dt ./*/ | head -n 1)"
         # find . -mindepth 2 -type f -print -exec mv {} . \;
 
         echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
-        activate_masternodes_${PROJECT}
+        sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
+        sudo systemctl start "${PROJECT}"_n1
         sleep 2
     else echo -e " No bootstrap file is detected${nocolor}\n"
         exit
