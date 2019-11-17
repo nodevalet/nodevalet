@@ -94,10 +94,13 @@ function bootstrap() {
         rm -f "$BOOTSTRAPZIP"
 
         # set correct permissions
-        chown -R masternode $INSTALLDIR/temp/bootstrap
-        chgrp -R masternode $INSTALLDIR/temp/bootstrap
-        chmod -R 600 $INSTALLDIR/temp/bootstrap
+        # chown -R masternode $INSTALLDIR/temp/bootstrap
+        # chgrp -R masternode $INSTALLDIR/temp/bootstrap
+        # chmod -R 700 $INSTALLDIR/temp/bootstrap
     
+        chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
+        chmod -R g=u $INSTALLDIR/temp/bootstrap
+
         # need to shutdown 1st masternode
         shutdown_mn1
 
