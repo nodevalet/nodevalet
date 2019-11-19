@@ -69,7 +69,8 @@ function bootstrap() {
 
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected a $PROJECTt bootstrap file" | tee -a "$LOGFILE"
 
-        echo -e " ** Attempting to install $PROJECTt bootstrap ** \n" | tee -a "$LOGFILE"
+        echo -e " --> Downloading and installing $PROJECTt bootstrap" | tee -a "$LOGFILE"
+        echo -e " "
         touch $INSTALLDIR/temp/updating
         rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
         mkdir $INSTALLDIR/temp/bootstrap
@@ -116,7 +117,8 @@ function bootstrap() {
         # cd  "$(\ls -1dt ./*/ | head -n 1)"
         # find . -mindepth 2 -type f -print -exec mv {} . \;
 
-        echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
+        echo -e " --> Restarting $PROJECTt masternode n1 \n" | tee -a "$LOGFILE"
+        # echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
         sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
         sudo systemctl start "${PROJECT}"_n1
         sleep 2

@@ -364,8 +364,8 @@ function silent_harden() {
         bash get-hard.sh
     fi
     echo -e " Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
-    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet
-    # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet | tee -a "$LOGFILE"
+    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
+    # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
     echo -e "Inserting random Chuck Norris joke to keep things spicy\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
@@ -798,6 +798,8 @@ function restart_server() {
         echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
         shutdown -r +1 "Server is going down for upgrade in 1 minute."
+        # Schedule bootstrap for 2 minutes from now (after reboot)
+        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +3 minutes
     fi
 }
 
