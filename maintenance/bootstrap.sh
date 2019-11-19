@@ -128,5 +128,5 @@ function bootstrap() {
 # this is where the bootstrap sequence begins
 bootstrap
 rm -rf $INSTALLDIR/temp/updating
-
+bash $INSTALLDIR/maintenance/clonesync_all.sh
 exit
