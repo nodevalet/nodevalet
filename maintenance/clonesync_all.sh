@@ -15,7 +15,7 @@ clear
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
-echo -e " --> User is attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
+echo -e " --> Attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -167,7 +167,7 @@ bootstrap
 restart_mns
 restore_crons
 
-echo -e "\n${lightgreen} Complete; all Masternodes have been bootstrapped.${nocolor}\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : All Masternodes have been bootstrapped!\n" >> $LOGFILE
+echo -e "\n${lightgreen} Complete; Masternodes have all been bootstrapped.${nocolor}\n"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Masternodes have all been bootstrapped!\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit

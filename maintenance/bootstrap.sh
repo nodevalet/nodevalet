@@ -65,11 +65,13 @@ function bootstrap() {
 # this downloads the bootstrap file into the current folder
 # curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap | cut -d '"' -f 4 | wget -qi -
 
+    
+    # add a check to see if blockchain is already synced, if it is, exit
+    
     if curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
 
-    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected a $PROJECTt bootstrap file" | tee -a "$LOGFILE"
-
-        echo -e " --> Downloading and installing $PROJECTt bootstrap" | tee -a "$LOGFILE"
+    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt bootstrap file" | tee -a "$LOGFILE"
+        echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
         touch $INSTALLDIR/temp/updating
         rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
@@ -117,7 +119,7 @@ function bootstrap() {
         # cd  "$(\ls -1dt ./*/ | head -n 1)"
         # find . -mindepth 2 -type f -print -exec mv {} . \;
 
-        echo -e " --> Restarting $PROJECTt masternode n1 \n" | tee -a "$LOGFILE"
+        echo -e " --> Restarting $PROJECTt Masternode n1 \n" | tee -a "$LOGFILE"
         # echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
         sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
         sudo systemctl start "${PROJECT}"_n1
