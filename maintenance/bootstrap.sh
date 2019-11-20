@@ -88,10 +88,16 @@ function bootstrap() {
 
         if [[ $BOOTSTRAPZIP == *.gz ]]
         then tar -xzf "$BOOTSTRAPZIP"
-        else unzip "$BOOTSTRAPZIP"
+        elif [[ $BOOTSTRAPZIP == *.zip ]]
+        then unzip "$BOOTSTRAPZIP"
+        elif [[ $BOOTSTRAPZIP == *.dat ]]
+        then chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
+        chmod -R g=u $INSTALLDIR/temp/bootstrap
+        cp -p $INSTALLDIR/temp/bootstrap/$BOOTSTRAPZIP /var/lib/masternodes/"${PROJECT}"1/
+        else :
         fi
+
         rm -f "$BOOTSTRAPZIP"
-    
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
 
@@ -109,6 +115,9 @@ function bootstrap() {
         cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
         cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
     
+
+
+
         # remove bootstrap blockchain
         rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
 

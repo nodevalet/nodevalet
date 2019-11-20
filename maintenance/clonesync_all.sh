@@ -115,6 +115,11 @@ function bootstrap() {
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+        # copy weird bootstraps like Phore
+        if [ -s /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat ]
+        then cp -p /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat /var/lib/masternodes/"${PROJECT}${t}"/
+        else :
+        fi
     done
     echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
