@@ -565,9 +565,10 @@ function print_logo() {
     # print ascii banner if a logo exists
     echo -e "* Starting the compilation process for ${CODENAME}, stay tuned"
     if [ -f "${SCRIPTPATH}/assets/$CODENAME.jpg" ]; then
-        jp2a -b --colors --width=56 "${SCRIPTPATH}"/assets/"${CODENAME}".jpg
+        jp2a -b --colors --height=21 "${SCRIPTPATH}"/assets/"${CODENAME}".jpg
     else
-        jp2a -b --colors --width=56 "${SCRIPTPATH}"/assets/default.jpg
+        jp2a -b --colors --height=21 "${SCRIPTPATH}"/assets/NodeValet.jpg
+        # jp2a -b --colors --width=56 "${SCRIPTPATH}"/assets/default.jpg
     fi
 
 }

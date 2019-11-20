@@ -1,6 +1,5 @@
 #!/bin/bash
-# attempt to bootstrap blockchain and sync; not yet working
-# This is nothing more than the autoupdate file at this point
+# attempt to bootstrap blockchain and then clonesync_all
 
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
