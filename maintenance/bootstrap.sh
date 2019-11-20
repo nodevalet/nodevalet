@@ -106,7 +106,7 @@ function bootstrap() {
 
         echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"1
-        sudo rm -rf !("wallet.dat"|"masternode.conf")
+        sudo rm -rf !("wallet.dat"|"masternode.conf"|"bootstrap.dat")
         sleep .25
 
         # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
@@ -114,9 +114,6 @@ function bootstrap() {
         cp -rp $INSTALLDIR/temp/bootstrap/blocks /var/lib/masternodes/"${PROJECT}"1/blocks
         cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
         cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
-    
-
-
 
         # remove bootstrap blockchain
         rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1

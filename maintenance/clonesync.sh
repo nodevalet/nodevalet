@@ -126,6 +126,12 @@ else echo -e " Clonesync will now attempt to clone the blockchain "
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
 
+    # copy weird bootstraps like Phore
+    if [ -s /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat ]
+    then cp -p /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat /var/lib/masternodes/"${PROJECT}${t}"/
+    else :
+    fi
+
     echo -e "${white} Restarting Source Masternode ${PROJECT}_n${s}.${nocolor}"
     sudo systemctl enable "${PROJECT}"_n${s} > /dev/null 2>&1
     sudo systemctl start "${PROJECT}"_n${s}
