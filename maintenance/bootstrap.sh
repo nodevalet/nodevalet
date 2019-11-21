@@ -209,6 +209,7 @@ function bootstrap() {
         sudo systemctl start "${PROJECT}"_n1
         sleep 2
     else echo -e " No bootstrap file is detected${nocolor}\n"
+        checksync 1
         exit
     fi
 }
