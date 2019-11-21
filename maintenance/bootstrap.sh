@@ -69,7 +69,7 @@ function bootstrap() {
 
 
     # make provisions for snapshot files instead of bootstraps
-    if curl -s $GITAPI_URL | grep browser_download_url | grep snapshot
+    if curl -s $GITAPI_URL | grep browser_download_url | grep Snapshot | grep .zip
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt snapshot file" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
