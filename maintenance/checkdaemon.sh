@@ -34,9 +34,21 @@ do
 
     echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
     previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-    currentBlock=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount)
+    if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+    then previousBlock='null'
+    fi
+
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
-    if [ "$previousBlock$" == "$currentBlock$" ]
+    currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
+    
+    if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+    then currentBlock='null'
+    fi
+
+    if [ "$currentBlock" == "-1" ]
+    then
+        echo -e " Current block is $currentBlock; masternode appears to be starting up\n" 
+    elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
@@ -44,7 +56,7 @@ do
         sleep 5
         systemctl start "${PROJECT}"_n${i}
 
-        for ((T=1;T<=9;T++));
+        for ((T=1;T<=5;T++));
         do
             # wait 5 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
             echo -e " Pausing for 5 minutes to let instance start and resume syncing"
@@ -54,8 +66,18 @@ do
             sleep 300
             echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
             previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-            currentBlock=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount)
+
+            if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+            then previousBlock='null'
+            fi
+
             /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+            currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
+
+            if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+            then currentBlock='null'
+            fi
+
             if [ "$previousBlock$" == "$currentBlock$" ]; then
                 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
                 echo -e " I have restarted the MN $T time(s) so far and it did not help. \n" | tee -a "$LOGFILE"
@@ -72,14 +94,16 @@ do
             unset $FIXED
             echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
             echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
-            sudo systemctl disable "${PROJECT}"_n${i}
-            sudo systemctl stop "${PROJECT}"_n${i}
-            sleep 5
-            cd /var/lib/masternodes/"${PROJECT}"${i}
-            sudo rm -rf !("wallet.dat"|"masternode.conf")
-            sleep 5
-            sudo systemctl enable "${PROJECT}"_n${i}
-            sudo systemctl start "${PROJECT}"_n${i}
+            # use clonesync rather than fully resync the chain
+            clonesync $i
+            # sudo systemctl disable "${PROJECT}"_n${i}
+            # sudo systemctl stop "${PROJECT}"_n${i}
+            # sleep 5
+            # cd /var/lib/masternodes/"${PROJECT}"${i}
+            # sudo rm -rf !("wallet.dat"|"masternode.conf")
+            # sleep 5
+            # sudo systemctl enable "${PROJECT}"_n${i}
+            # sudo systemctl start "${PROJECT}"_n${i}
 
         else unset $FIXED
             echo " Glad to see that worked, exiting loop for this MN "
