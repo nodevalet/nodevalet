@@ -33,11 +33,12 @@ nocolor=$'\e[0m' # no color
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
-if [ -e "$INSTALLDIR/temp/updating" ]
-then echo -e " ${nocolor}$(date +%m.%d.%Y_%H:%M:%S) : Running getinfo.sh"
-    echo -e " It looks like I'm busy with something else; sorry.\n"
-    exit
-fi
+# disable this-- is it necessary?
+# if [ -e "$INSTALLDIR/temp/updating" ]
+# then echo -e " ${nocolor}$(date +%m.%d.%Y_%H:%M:%S) : Running getinfo.sh"
+#    echo -e " It looks like I'm busy with something else; sorry.\n"
+#    exit
+# fi
 
 # read first argument to string
 input=$1

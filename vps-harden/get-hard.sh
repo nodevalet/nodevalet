@@ -22,7 +22,7 @@ EOF
 }
 
 # ###### SECTIONS ######
-# 1. CREATE SWAP / if no swap exists, create 2 GB swap
+# 1. CREATE SWAP / if no swap exists, create 4 GB swap
 # 2. UPDATE AND UPGRADE / update operating system & pkgs
 # 3. INSTALL FAVORED PACKAGES / useful tools & utilities
 # 4. INSTALL CRYPTO PACKAGES / common crypto packages
@@ -146,11 +146,11 @@ function create_swap() {
         # sleep 2
         echo -e -n "${nocolor}"
     else
-        # set swap to twice the physical RAM but not less than 2GB
+        # set swap to twice the physical RAM but not less than 4GB
         PHYSRAM=$(grep MemTotal /proc/meminfo | awk '{print int($2 / 1024 / 1024 + 0.5)}')
         let "SWAPSIZE=2*$PHYSRAM"
         (($SWAPSIZE >= 1 && $SWAPSIZE >= 31)) && SWAPSIZE=31
-        (($SWAPSIZE <= 2)) && SWAPSIZE=2
+        (($SWAPSIZE <= 4)) && SWAPSIZE=4
 
         fallocate -l ${SWAPSIZE}G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
         echo -e -n "${lightgreen}"

@@ -53,6 +53,24 @@ function shutdown_mn1() {
     echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
+function remove_crons() {
+    # disable the crons that could cause problems
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
+}
+
+function restore_crons() {
+    # restore maintenance crons that were previously disabled
+    echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
+    echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
+    echo -e "${white}  --> Make sure all daemons are running every 10 minutes${nocolor}"
+    (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
+    echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
+    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
+}
+
 function bootstrap() {
     #check for updates and install binaries if necessary
     echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running bootstrap function"
@@ -70,7 +88,8 @@ function bootstrap() {
 
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
-    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt snapshot file" | tee -a "$LOGFILE"
+    then remove_crons 
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt snapshot file" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
         touch $INSTALLDIR/temp/updating
@@ -197,5 +216,6 @@ function bootstrap() {
 # this is where the bootstrap sequence begins
 bootstrap
 rm -rf $INSTALLDIR/temp/updating
+restore_crons
 bash $INSTALLDIR/maintenance/clonesync_all.sh
 exit

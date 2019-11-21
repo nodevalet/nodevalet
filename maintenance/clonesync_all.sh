@@ -81,6 +81,8 @@ function checksync_source() {
     else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/clonesyncing
+        restore_crons
+        activate_masternodes_"$PROJECT"
         exit
     fi
 }
