@@ -28,21 +28,18 @@ echo -e "\n"
 for ((i=1;i<=$MNS;i++));
 do
 
-    if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
-    then echo '1' > $INSTALLDIR/temp/blockcount${i}
-    fi
-
     echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
-    previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-    if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+    if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then previousBlock='null'
+    else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
     fi
 
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
     currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
     
-    if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+    if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then currentBlock='null'
+    else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
     fi
 
     if [ "$currentBlock" == "-1" ]
@@ -65,22 +62,21 @@ do
             echo -e " $INSTALLDIR/temp/updating before other scriptlets will work."
             sleep 300
             echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
-            previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
 
-            if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+            if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
             then previousBlock='null'
+            else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
             fi
 
             /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
-            currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-
-            if [ ! -e "$INSTALLDIR/temp/blockcount$i" ]
+            if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
             then currentBlock='null'
+            else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
             fi
 
             if [ "$previousBlock$" == "$currentBlock$" ]; then
                 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
-                echo -e " I have restarted the MN $T time(s) so far and it did not help. \n" | tee -a "$LOGFILE"
+                echo -e " I have restarted the MN once and waited 5 minutes $T time(s). \n" | tee -a "$LOGFILE"
 
             else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
                 echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"
