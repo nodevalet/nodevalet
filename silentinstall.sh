@@ -363,7 +363,7 @@ function silent_harden() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e " Installing jq and jp2a and figlet and unzip packages" >> $LOGFILE
+    echo -e " Installing jq and jp2a and figlet and unzip and at packages" >> $LOGFILE
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
