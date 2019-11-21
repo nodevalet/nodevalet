@@ -81,6 +81,7 @@ function sync_check() {
     # check if current to within 1.5 minutes
     if ((TIMEDIF <= 90 && TIMEDIF >= -90))
     then echo -e " The blockchain is almost certainly synced.\n"
+        echo -e "$(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
         SYNCED="yes"
     else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
         SYNCED="no"
@@ -142,8 +143,7 @@ function check_blocksync() {
         # exit the script because syncing did not occur
         rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
-
-else : ; fi
+    else : ; fi
 
     #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
     #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
