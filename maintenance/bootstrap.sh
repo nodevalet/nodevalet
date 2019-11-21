@@ -66,9 +66,68 @@ function bootstrap() {
 
     
     # add a check to see if blockchain is already synced, if it is, exit
-    
-    if curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
 
+
+    # make provisions for snapshot files instead of bootstraps
+    if curl -s $GITAPI_URL | grep browser_download_url | grep snapshot
+    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt snapshot file" | tee -a "$LOGFILE"
+        echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
+        echo -e " "
+        touch $INSTALLDIR/temp/updating
+        rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
+        mkdir $INSTALLDIR/temp/bootstrap
+        cd $INSTALLDIR/temp/bootstrap
+
+        # download bootstrap file
+        curl -s "$GITAPI_URL" \
+            | grep browser_download_url \
+            | grep bootstrap \
+            | cut -d '"' -f 4 \
+            | wget -qi -
+
+        BOOTSTRAPZIP="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+
+        if [[ $BOOTSTRAPZIP == *.gz ]]
+        then tar -xzf "$BOOTSTRAPZIP"
+        elif [[ $BOOTSTRAPZIP == *.zip ]]
+        then unzip "$BOOTSTRAPZIP"
+        else :
+        fi
+
+        rm -f "$BOOTSTRAPZIP"
+        chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
+        chmod -R g=u $INSTALLDIR/temp/bootstrap
+
+        # need to shutdown 1st masternode
+        shutdown_mn1
+
+        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
+        cd /var/lib/masternodes/"${PROJECT}"1
+        sudo rm -rf !("wallet.dat"|"masternode.conf")
+        sleep .25
+
+        # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
+        echo -e "${white}  Copying bootstrap data to ${PROJECT}_n1...${nocolor}"
+        cp -rp $INSTALLDIR/temp/bootstrap/blocks /var/lib/masternodes/"${PROJECT}"1/blocks
+        cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
+        cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
+
+        # remove bootstrap blockchain
+        rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
+
+        echo -e "${lightcyan} --> The 1st masternode has been bootstrapped${nocolor}\n"
+
+        # this was previously used to navigate to the right folder in case of empty root folders
+        # cd  "$(\ls -1dt ./*/ | head -n 1)"
+        # find . -mindepth 2 -type f -print -exec mv {} . \;
+
+        echo -e " --> Restarting $PROJECTt Masternode n1 \n" | tee -a "$LOGFILE"
+        # echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
+        sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
+        sudo systemctl start "${PROJECT}"_n1
+        sleep 2
+
+    elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt bootstrap file" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
