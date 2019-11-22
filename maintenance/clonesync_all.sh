@@ -46,6 +46,8 @@ function remove_crons() {
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/autoupdate.sh'  | crontab -
 }
 
 function shutdown_mns() {
@@ -150,6 +152,10 @@ function restore_crons() {
     (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
     (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
+    echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
+    echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"
+    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
 }
 
 # This file will contain if the chain is currently not synced
