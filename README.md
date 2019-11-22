@@ -45,7 +45,7 @@ Just because you won't have to log in to your VPS doesn't mean you can't :). To 
 
 NodeValet keeps its files in `/var/tmp/nodevalet` and its logs in `/var/tmp/nodevalet/logs`
 
-We've added a few small scripts to make the most common commands a lot easier. You can just enter these on the command line:
+We've added a few small scriptlets to make the most common commands a lot easier. You can simply enter these on the command line:
 
 `autoupdate` runs the autoupdate script to check for new binaries (rather than wait for the scheduled check)  
 `checkdaemon` will check if all masternodes are correctly synced  
