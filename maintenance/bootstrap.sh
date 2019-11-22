@@ -148,7 +148,8 @@ function bootstrap() {
         sleep 2
 
     elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
-    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt bootstrap file" | tee -a "$LOGFILE"
+    then remove_crons 
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt bootstrap file" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
         touch $INSTALLDIR/temp/updating
