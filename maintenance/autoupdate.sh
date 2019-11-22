@@ -10,6 +10,25 @@ PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
+### define colors ###
+lightred=$'\033[1;31m'  # light red
+red=$'\033[0;31m'  # red
+lightgreen=$'\033[1;32m'  # light green
+green=$'\033[0;32m'  # green
+lightblue=$'\033[1;34m'  # light blue
+blue=$'\033[0;34m'  # blue
+lightpurple=$'\033[1;35m'  # light purple
+purple=$'\033[0;35m'  # purple
+lightcyan=$'\033[1;36m'  # light cyan
+cyan=$'\033[0;36m'  # cyan
+lightgray=$'\033[0;37m'  # light gray
+white=$'\033[1;37m'  # white
+brown=$'\033[0;33m'  # brown
+yellow=$'\033[1;33m'  # yellow
+darkgray=$'\033[1;30m'  # dark gray
+black=$'\033[0;30m'  # black
+nocolor=$'\e[0m' # no color
+
 # update .gitstring binary search string variable and .env
 cd $INSTALLDIR/nodemaster/config/$PROJECT
 echo -e " \n$(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"
@@ -60,7 +79,7 @@ function update_binaries() {
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
         echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
         echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
-        echo -e " ** Attempting to install new $PROJECTt binaries ** \n" | tee -a "$LOGFILE"
+        echo -e "${lightcyan} ** Attempting to install new $PROJECTt binaries ** ${nocolor}\n" | tee -a "$LOGFILE"
         touch $INSTALLDIR/temp/updating
         systemctl stop $PROJECT*
         if [ ! -d /usr/local/bin/backup ]; then mkdir /usr/local/bin/backup ; fi
@@ -96,7 +115,7 @@ function update_binaries() {
         sleep 2
         check_project
 
-    else echo -e " No new version is detected \n"
+    else echo -e "${lightcyan} No new version is detected ${nocolor}\n"
         exit
     fi
 }
@@ -160,16 +179,16 @@ function check_project() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "${lightcyan} $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
+    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
-        echo -e "  --> ${PROJECTt}d was successfully updated, restarting VPS \n" | tee -a "$LOGFILE"
+        echo -e "${lightgreen}  --> ${PROJECTt}d was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
         rm -f $INSTALLDIR/temp/updating
         reboot
         exit
 
-    else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist..." | tee -a "$LOGFILE"
-        echo -e " ** This update step failed, trying to autocorrect ... \n" | tee -a "$LOGFILE"
+    else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist...${nocolor}" | tee -a "$LOGFILE"
+        echo -e "${yellow}  ** This update step failed, trying to autocorrect ... ${nocolor}\n" | tee -a "$LOGFILE"
     fi
 }
 
@@ -178,7 +197,7 @@ function check_restore() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "${lightcyan} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
+    then echo -e "${yellow} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
         echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
         reboot
@@ -186,7 +205,7 @@ function check_restore() {
 
     else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
         echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
-        echo -e "  --> I'm all out of options; your VPS may need service \n " | tee -a "$LOGFILE"
+        echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
         reboot
     fi
