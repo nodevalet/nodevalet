@@ -95,6 +95,7 @@ function shutdown_mn1() {
     # echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
     sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
     sudo systemctl stop "${PROJECT}"_n1
+    rm -f $INSTALLDIR/temp/"${PROJECT}"_n1_synced
     echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
@@ -119,11 +120,11 @@ function bootstrap() {
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
-        # copy weird bootstraps like Phore
-        if [ -s /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat ]
-        then cp -p /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat /var/lib/masternodes/"${PROJECT}${t}"/
-        else :
-        fi
+        # copy weird bootstraps like Phore; edit: don't do thiS! No need to copy bootstrap.dat since blocks are unpacked
+        # if [ -s /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat ]
+        # then cp -p /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat /var/lib/masternodes/"${PROJECT}${t}"/
+        # else :
+        # fi
     done
     echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
