@@ -31,7 +31,7 @@ nocolor=$'\e[0m' # no color
 
 # update .gitstring binary search string variable and .env
 cd $INSTALLDIR/nodemaster/config/$PROJECT
-echo -e " \n$(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"
+echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"
 curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.gitstring
 curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
 
@@ -67,8 +67,8 @@ fi
 
 function update_binaries() {
     #check for updates and install binaries if necessary
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate is looking for new $PROJECTt tags"
+    # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
+    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate is looking for new $PROJECTt tags"
 
     if [ ! -d $INSTALLDIR/temp/bin ]; then mkdir $INSTALLDIR/temp/bin ; fi
     cd $INSTALLDIR/temp/bin
@@ -84,11 +84,11 @@ function update_binaries() {
         touch $INSTALLDIR/temp/updating
         systemctl stop $PROJECT*
         if [ ! -d /usr/local/bin/backup ]; then mkdir /usr/local/bin/backup ; fi
-        mkdir 2>/dev/null
+        # mkdir 2>/dev/null
+        
         # echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
-
         cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
-        rm /usr/local/bin/${PROJECT}*
+        rm /usr/local/bin/${PROJECT}* 
 
         curl -s "$GITAPI_URL" \
             | grep browser_download_url \
@@ -182,7 +182,7 @@ function check_project() {
     if [[ "${dEXIST}" ]]
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : ${MNODE_DAEMON} exists..." | tee -a "$LOGFILE"
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
-        echo -e "${lightgreen}  --> ${PROJECTt}d was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
+        echo -e "${lightgreen}  --> ${PROJECTt} was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
         rm -f $INSTALLDIR/temp/updating
         reboot

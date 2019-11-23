@@ -60,8 +60,15 @@ function text_demo() {
     echo -e "${PROJECTl~~}"
     # capitalize all characters (HELIUM)
     echo -e "${PROJECTl^^}"
-
     echo $PROJECT | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}'
 
-
 }
+
+ALPHABET='abcdefghijklmnopqrstuvwxyz'
+echo -e ${#ALPHABET}
+# out is 26
+
+if [ ${#NEWVERSION} != 0 ]
+then echo "String has more than 0 length"
+else echo "String has 0 length"
+fi
