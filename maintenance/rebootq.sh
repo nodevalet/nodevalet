@@ -5,6 +5,7 @@
 
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+MNS=$(<$INFODIR/vpsnumber.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -43,8 +44,16 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
 
     # this echo writes the packages requiring reboot to the log
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
-
+    
     rm $INSTALLDIR/temp/REBOOTREQ
+    touch $INSTALLDIR/temp/updating
+    for ((i=1;i<=$MNS;i++));
+    do
+        echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
+        # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+        systemctl stop "${PROJECT}"_n${i}
+    done
+    rm -f $INSTALLDIR/temp/updating
     sudo reboot
 
 else
