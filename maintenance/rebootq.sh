@@ -3,10 +3,15 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
 
-INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 MNS=$(<$INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -50,7 +55,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     touch $INSTALLDIR/temp/updating
     for ((i=1;i<=$MNS;i++));
     do
-        echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
+        echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
         # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl stop "${PROJECT}"_n${i}
     done
