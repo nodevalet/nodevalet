@@ -60,7 +60,7 @@ echo -e "\n Restarting masternode ${PROJECT}_n${i}."
 sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl start "${PROJECT}"_n${i}
 
-echo -e "${lightgreen} User has started and enabled Masternode ${PROJECT}_n${i}.${nocolor}"  | tee -a "$LOGFILE"
+echo -e "${lightgreen} User has started and enabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
