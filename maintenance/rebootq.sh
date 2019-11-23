@@ -5,7 +5,7 @@
 
 INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-MNS=$(<$INFODIR/vpsnumber.info)
+MNS=$(</var/tmp/nvtemp/vpsnumber.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
