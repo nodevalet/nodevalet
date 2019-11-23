@@ -53,7 +53,6 @@ done
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstart.sh" | tee -a "$LOGFILE"
-echo -e " User has asked to re-enable masternode ${PROJECT}_n${i}."  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
@@ -61,7 +60,7 @@ echo -e "\n Restarting masternode ${PROJECT}_n${i}."
 sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl start "${PROJECT}"_n${i}
 
-echo -e " Masternode ${PROJECT}_n${i} has been re-enabled.\n"  | tee -a "$LOGFILE"
+echo -e "${lightgreen} User has started and enabled Masternode ${PROJECT}_n${i}.${nocolor}"  | tee -a "$LOGFILE"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating

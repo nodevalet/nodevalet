@@ -53,7 +53,6 @@ done
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
-echo -e " User has asked to disable masternode ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
@@ -62,7 +61,7 @@ sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n${i}
 sleep .5
 
-echo -e " Masternode ${PROJECT}_n${i} has been disabled.\n"
+echo -e "${lightred} User has manually disabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating

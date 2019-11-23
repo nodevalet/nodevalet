@@ -44,15 +44,15 @@ t=$1
 
 if [ -z "$t" ]
 then clear
-    echo -e "\n This scriptlet will copy a synced blockchain from a fully-synced "
-    echo -e " Source Masternode. Which masternode would you like to resync? \n"
+    echo -e "\n${lightcyan} This scriptlet will copy a synced blockchain from a fully-synced "
+    echo -e " Source Masternode. Which masternode would you like to resync? ${nocolor}\n"
 fi
 
 while :; do
     if [ -z "$t" ] ; then read -p " --> " t ; fi
-    [[ $t =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...\n"; t=""; continue; }
+    [[ $t =~ ^[0-9]+$ ]] || { printf "${lightred}"; echo -e "\n --> I only recognize numbers; enter a number between 1 and $MNS...\n"; t=""; printf "${nocolor}"; continue; }
     if (($t >= 1 && $t <= $MNS)); then break
-    else echo -e "\n --> I don't have a masternode $t; enter a number between 1 and $MNS.\n"
+    else echo -e "\n${lightred} --> I don't have a masternode $t; enter a number between 1 and $MNS.${nocolor}\n"
         t=""
     fi
 done
@@ -64,10 +64,10 @@ sleep 1
 # check if file exists with name that contains both "audax_n1" and "synced"
 TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
 if [[ "${TARGETSYNC}" ]]
-then echo -e "${lightgreen}* Masternode ${PROJECT}_n${t} is already synced *${nocolor}\n"
+then echo -e "\n${lightgreen}* Masternode ${PROJECT}_n${t} is already synced *${nocolor}\n"
     rm -rf $INSTALLDIR/temp/updating
     exit
-else echo -e "${lightcyan} Masternode ${PROJECT}_n${t} is not synced and will be clonesynced${nocolor}\n"
+else echo -e "\n${lightcyan} Masternode ${PROJECT}_n${t} is not synced and will be clonesynced${nocolor}\n"
 fi
 
 # Search for first fully-synced masternode and assign that number to $s
@@ -99,8 +99,8 @@ then echo -e " Unable to locate valid Source Masternode, stopping.\n" | tee -a "
     rm -rf $INSTALLDIR/temp/updating
     exit
 
-else echo -e " Clonesync will now attempt to clone the blockchain "
-    echo -e " from ${PROJECT}_n${s} to ${PROJECT}_n${t}.  Best of luck!"
+else echo -e "${lightcyan} Clonesync will now attempt to clone the blockchain "
+    echo -e " from ${PROJECT}_n${s} to ${PROJECT}_n${t}.  Best of luck!${nocolor}"
 
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh" >> "$LOGFILE"
     echo -e " Going to clone ${PROJECT}_n${s}'s blockchain onto ${PROJECT}_n${t}." >> "$LOGFILE"
