@@ -75,7 +75,8 @@ function update_binaries() {
     rm -r -f $PROJECT*
     CURVERSION=$(cat $INSTALLDIR/temp/currentversion)
     NEWVERSION="$(curl -s $GITAPI_URL | grep tag_name)"
-    if [ "$CURVERSION" != "$NEWVERSION" ]
+    # if versions not equal AND current version is not empty
+    if [ "$CURVERSION" != "$NEWVERSION" ] && [ "$CURVERSION" ]
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate detected new $PROJECTt tags" | tee -a "$LOGFILE"
         echo -e " Installed version is : $CURVERSION" | tee -a "$LOGFILE"
         echo -e " New version detected : $NEWVERSION" | tee -a "$LOGFILE"
