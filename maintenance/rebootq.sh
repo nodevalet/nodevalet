@@ -36,18 +36,15 @@ cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
 if grep -q "restart required" "$INSTALLDIR/temp/REBOOTREQ"
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot" | tee -a "$LOGFILE"
-    echo -e " ${yellow}The following packages require a reboot to install updates:${nocolor}" | tee -a "$LOGFILE"
+    echo -e " ${yellow}Server will restart now to install the following update(s):${nocolor}" | tee -a "$LOGFILE"
 
     # this sed removes the line "*** System restart required ***" from the REBOOTREQ
     sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 
     # this echo writes the packages requiring reboot to the log
-    echo -e "${lightred} --> "
-    echo -e -n "$(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}" | tee -a "$LOGFILE"
+    echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    echo -e " ${yellow}Server will reboot immediately to complete required updates${nocolor} \n" | tee -a "$LOGFILE"
-    # shutdown -r +5 " Server will restart in 5 minutes to complete required updates"
     sudo reboot
 
 else
