@@ -781,8 +781,8 @@ function restart_server() {
         echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
         echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
-        # Schedule bootstrap for 1 minutes from now (after reboot)
-        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
+        # Schedule bootstrap for 2 minutes from now (after reboot)
+        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +2 minutes
         shutdown -r now "Server is going down for upgrade."
     else
         echo -e " Please follow the steps below to complete your masternode setup: "

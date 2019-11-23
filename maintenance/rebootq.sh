@@ -44,7 +44,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
 
     # this echo writes the packages requiring reboot to the log
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
-    
+
     rm $INSTALLDIR/temp/REBOOTREQ
     touch $INSTALLDIR/temp/updating
     for ((i=1;i<=$MNS;i++));
@@ -54,7 +54,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
         systemctl stop "${PROJECT}"_n${i}
     done
     rm -f $INSTALLDIR/temp/updating
-    sudo reboot
+    shutdown -r now "Server is going down for upgrade."
 
 else
     echo -e " No reboot is required at this time\n"
