@@ -95,7 +95,7 @@ function bootstrap() {
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
     then remove_crons 
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt snapshot file" | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
         touch $INSTALLDIR/temp/updating
@@ -155,7 +155,7 @@ function bootstrap() {
 
     elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
     then remove_crons 
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Bootstrap.sh detected $PROJECTt bootstrap file" | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt bootstrap file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
         touch $INSTALLDIR/temp/updating
@@ -215,7 +215,7 @@ function bootstrap() {
         sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
         sudo systemctl start "${PROJECT}"_n1
         sleep 2
-    else echo -e " No bootstrap file is detected${nocolor}\n"
+    else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
         checksync 1
         exit
     fi
