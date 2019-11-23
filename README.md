@@ -47,7 +47,8 @@ NodeValet keeps its files in `/var/tmp/nodevalet` and its logs in `/var/tmp/node
 
 We've added a few small scriptlets to make the most common commands a lot easier. You can simply enter these on the command line:
 
-`autoupdate` runs the autoupdate script to check for new binaries (rather than wait for the scheduled check)  
+`showconf` will display the masternode.conf file to be installed in your local wallet  
+`autoupdate` checks for new binaries and automatically installs them  
 `checkdaemon` will check if all masternodes are correctly synced  
 `checksync` will return the syncing status of all masternodes  
 `clonesync` can be used to bootstrap a masternode and fully sync its chain from another masternode  
@@ -58,7 +59,7 @@ We've added a few small scriptlets to make the most common commands a lot easier
 `mnstart 1` will re-enable and restart a particular masternode (1, 2, 3 etc) after you have disabled it  
 `mnstop 1` will disable and stop a particular masternode (1, 2, 3 etc)  
 `mulligan` erase all masternode data and NodeValet files on this VPS; useful to repurpose VPS  
-`rebootq` checks if recent system updates require a reboot. (rather than wait for the scheduled check)  
+`rebootq` checks if recent system updates require a reboot 
 `resync 1` deletes blockchain data for node (1, 2, 3, etc) and forces a resync  
 `showlog` will display the installation log  
 `showmlog` will display the maintenance log  

@@ -39,12 +39,13 @@ if [ -z "$i" ]
 then clear
     echo -e "\n This scriptlet will stop and disable a particular masternode."
     echo -e " Which masternode would you like to disable? \n"
-
 fi
+
 while :; do
     if [ -z "$i" ] ; then read -p " --> " i ; fi
     [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...\n"; i=""; continue; }
-    if (($i >= 1 && $i <= $MNS)); then break
+    if (($i >= 1 && $i <= $MNS))
+    then break
     else echo -e "\n --> I don't have a masternode $i; enter a number between 1 and $MNS.\n"
         i=""
     fi

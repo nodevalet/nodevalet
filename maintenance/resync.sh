@@ -42,8 +42,8 @@ if [ -z "$i" ]
 then clear
     echo -e "\n This scriptlet will trigger resync the blockchain of a particular node."
     echo -e " It may take awhile. Which masternode would you like to resync? \n"
-
 fi
+
 while :; do
     if [ -z "$i" ] ; then read -p " --> " i ; fi
     [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...\n"; i=""; continue; }

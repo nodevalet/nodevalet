@@ -62,9 +62,8 @@ function sync_check() {
     LTRIMTIME=${TIMELINE#*time\" : }
     NEWEST=${LTRIMTIME%%,*}
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
-    if ((TIMEDIF <= 120 && TIMEDIF >= -120))
-    then echo -e " The blockchain is almost certainly synced.\n"
-        SYNCED="yes"
+    if ((TIMEDIF <= 300 && TIMEDIF >= -300))
+    then echo -e " The blockchain is almost certainly synced.\n" && SYNCED="yes"
     else SYNCED="no"
     fi
 }
