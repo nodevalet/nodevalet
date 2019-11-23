@@ -184,8 +184,14 @@ function check_project() {
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
         echo -e "${lightgreen}  --> ${PROJECTt} was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+        for ((i=1;i<=$MNS;i++));
+        do
+            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+            systemctl stop "${PROJECT}"_n${i}
+        done
         rm -f $INSTALLDIR/temp/updating
-        reboot
+        shutdown -r now "Server is going down for upgrade."
         exit
 
     else echo -e "${lightred} $(date +%m.%d.%Y_%H:%M:%S) : ERROR : ${MNODE_DAEMON} does not exist...${nocolor}" | tee -a "$LOGFILE"
@@ -200,15 +206,27 @@ function check_restore() {
     if [[ "${dEXIST}" ]]
     then echo -e "${yellow} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
         echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
+        for ((i=1;i<=$MNS;i++));
+        do
+            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+            systemctl stop "${PROJECT}"_n${i}
+        done
         rm -f $INSTALLDIR/temp/updating
-        reboot
+        shutdown -r now "Server is going down for upgrade."
         exit
 
     else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
         echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
         echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
+        for ((i=1;i<=$MNS;i++));
+        do
+            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+            systemctl stop "${PROJECT}"_n${i}
+        done
         rm -f $INSTALLDIR/temp/updating
-        reboot
+        shutdown -r now "Server is going down for upgrade."
     fi
 }
 
