@@ -74,7 +74,6 @@ function setup_environment() {
             else echo -e " ${lightred}--> $PROJECT is not supported, try again.${nocolor}"
             fi
         done
-        # echo -e " \n"
     fi
 
     # set hostname variable to the name planted by install script
@@ -124,7 +123,6 @@ function setup_environment() {
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
     cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
-
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
@@ -143,7 +141,7 @@ function setup_environment() {
     then MNS=$(<$INFODIR/vpsnumber.info)
         echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
         # check memory and set max MNS appropriately then prompt user how many they would like to build
-elif [ "$ONLYNET" = 4 ]
+    elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 300}')
@@ -158,18 +156,14 @@ elif [ "$ONLYNET" = 4 ]
             if [[ $lenMN -ne ${#testvar} ]]
             then echo -e "\n ${lightred}$MNS is not even a number, enter only numbers.${nocolor}"
                 # length would be the same if $MNS was a number
-
         elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
-
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
                 touch $INFODIR/vpsnumber.info
                 echo -e "${MNS}" > $INFODIR/vpsnumber.info
                 break   # exit the loop
-
             fi
         done
-
     fi
 
     # create or assign mnprefix
@@ -206,7 +200,6 @@ elif [ "$ONLYNET" = 4 ]
                 fi
             done
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-            # echo -e " -> Masternode $i address is: $MNADDP" >> $LOGFILE
             echo -e " -> Masternode $i address is: $MNADDP \n"
         done
     fi
@@ -555,11 +548,11 @@ EOT
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+                else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
