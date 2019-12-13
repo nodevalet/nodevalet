@@ -62,12 +62,13 @@ else
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
     cat GETINFO2
+    GETINFO3=$(cat GETINFO2)
     rm -f GETINFO
     rm -f GETINFO2
 
     # check if file exists with name that contains both "audax_n1" and "synced"
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${input}" | grep "synced")
-    if [[ "${TARGETSYNC}" ]]
+    if [[ "${TARGETSYNC}" ]] && [[ "${GETINFO3}" ]]
     then echo -e "${lightgreen}                     Masternode ${PROJECT}_n${input} is synced.${nocolor}\n"
     else echo -e "${lightred}                     Masternode ${PROJECT}_n${input} is not synced.${nocolor}\n"
     fi
