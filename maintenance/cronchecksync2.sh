@@ -92,6 +92,9 @@ function check_blocksync() {
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
             else :
             fi
+        echo -e "\n Restarting masternode ${PROJECT}_n${i}."
+        sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+        sudo systemctl start "${PROJECT}"_n${i}
         exit
         else sync_check
         fi
