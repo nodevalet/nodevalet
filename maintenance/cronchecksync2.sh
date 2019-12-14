@@ -85,7 +85,7 @@ function check_blocksync() {
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
 
         if [ "$BLOCKS" == "1" ]
-        then echo -e "${lightred} Masternode is starting up${nocolor}\n" 
+        then echo -e "${lightred} Masternode ${i} is starting up${nocolor}\n" 
         rm -rf $INSTALLDIR/getinfo_n${i} --force 
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
@@ -94,7 +94,7 @@ function check_blocksync() {
             fi
         exit
         elif ! [ "$BLOCKS" ]
-        then echo -e "${lightred} Masternode is not running${nocolor}\n" 
+        then echo -e "${lightred} Masternode ${i} is not running${nocolor}\n" 
         rm -rf $INSTALLDIR/getinfo_n${i} --force 
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
