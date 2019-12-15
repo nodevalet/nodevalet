@@ -52,7 +52,6 @@ then echo -e "\n"
     exit
 fi
 
-
 function sync_check() {
     CNT=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockcount)
     HASH=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockhash "${CNT}")
@@ -121,10 +120,6 @@ function check_blocksync() {
 
             echo -e "${lightred} --> Masternode ${PROJECT}_n${i} is NOT synced${nocolor}\n"
 
-            # add in logging for testing
-            # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-            # echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
-
             rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
         fi
@@ -152,11 +147,6 @@ else : ; fi
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
 
     echo -e "${lightgreen} --> Masternode ${PROJECT}_n${i} is synced${nocolor}\n"
-
-    # add in logging for testing
-    # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-    # echo -e "                    Masternode ${PROJECT}_n${i} is synced."  | tee -a "$LOGFILE"
-
 
     # This file will contain if the chain is currently not synced
     # $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync  (eg. audax_n2_nosync)

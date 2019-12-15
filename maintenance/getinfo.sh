@@ -98,4 +98,3 @@ rm -f GETINFO
 rm -f GETINFO2
 
 exit
-
