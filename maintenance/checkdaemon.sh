@@ -91,7 +91,7 @@ do
             echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
             echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
             # use clonesync rather than fully resync the chain
-            clonesync $i
+            sudo bash $INSTALLDIR/maintenance/clonesync.sh $i
             # sudo systemctl disable "${PROJECT}"_n${i}
             # sudo systemctl stop "${PROJECT}"_n${i}
             # sleep 5
