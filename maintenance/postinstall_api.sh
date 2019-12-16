@@ -16,6 +16,9 @@ function final_message() {
         else HNAME=$(hostname)
         fi
 
+        # Schedule bootstrap for 2 minutes from now (after reboot)
+        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +2 minutes
+
         # log successful reboot
         echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
 
