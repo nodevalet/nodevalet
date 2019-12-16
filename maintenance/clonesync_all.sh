@@ -107,7 +107,7 @@ function bootstrap() {
         echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"${t}
         sudo rm -rf !("wallet.dat"|"masternode.conf")
-        sleep .25
+        sleep 2
     done
     echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s)${nocolor}\n"
 
@@ -120,11 +120,6 @@ function bootstrap() {
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
         cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
-        # copy weird bootstraps like Phore; edit: don't do thiS! No need to copy bootstrap.dat since blocks are unpacked
-        # if [ -s /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat ]
-        # then cp -p /var/lib/masternodes/"${PROJECT}${s}"/bootstrap.dat /var/lib/masternodes/"${PROJECT}${t}"/
-        # else :
-        # fi
     done
     echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }

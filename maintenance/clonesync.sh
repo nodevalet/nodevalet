@@ -120,10 +120,12 @@ else echo -e "${lightcyan} Clonesync will now attempt to clone the blockchain "
     sleep 2
 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-    echo -e "${lightcyan} Copying source blockchain data (blocks/chainstate/sporks)${nocolor}\n"
     cd /var/lib/masternodes/"${PROJECT}"${s}
+    echo -e "${lightcyan} Copying source blockchain data (blocks/chainstate/blocks)${nocolor}"
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+    echo -e "${lightcyan} Copying source blockchain data (blocks/chainstate/chainstate)${nocolor}"
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+    echo -e "${lightcyan} Copying source blockchain data (blocks/chainstate/sporks)${nocolor}\n"
     cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
 
     # copy weird bootstraps like Phore
