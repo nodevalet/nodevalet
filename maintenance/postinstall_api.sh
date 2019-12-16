@@ -17,7 +17,7 @@ function final_message() {
         fi
 
         # Schedule bootstrap for 2 minutes from now (after reboot)
-        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +2 minutes
+        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
         echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"

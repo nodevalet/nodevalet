@@ -57,7 +57,9 @@ else
 
     # Display 'getinfo' for only the masternode named
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${input}${nocolor}"
+    touch $INSTALLDIR/temp/gettinginfo
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$input" > /dev/null 2>&1
+    rm -f $INSTALLDIR/temp/gettinginfo
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
@@ -80,7 +82,9 @@ fi
 for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${i}${nocolor}"
+    touch $INSTALLDIR/temp/gettinginfo
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i" > /dev/null 2>&1
+    rm -f $INSTALLDIR/temp/gettinginfo
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
