@@ -48,6 +48,7 @@ function remove_crons() {
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/autoupdate.sh'  | crontab -
+    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/cronchecksync1.sh'  | crontab -
 }
 
 function shutdown_mns() {
@@ -152,6 +153,8 @@ function restore_crons() {
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"
     (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
+    echo -e "${white}  --> Check if chains are syncing or synced every 5 minutes${nocolor}"
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
 }
 
 # This file will contain if the chain is currently not synced
