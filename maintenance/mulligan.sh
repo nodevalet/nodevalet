@@ -90,6 +90,7 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
         echo -e "-------------------------------------------------------------------- ${white}\n"
         rm -rf /var/lib/masternodes
+        rm -rf /etc/masternodes
 
         echo -e "${lightgreen}----------------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Masternodes have been stopped and destroyed"
