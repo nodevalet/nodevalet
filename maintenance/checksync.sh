@@ -139,7 +139,7 @@ function check_blocksync() {
         fi
     done
 
-    if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode did not sync in the allowed time${nocolor}\n" | tee -a "$LOGFILE"
+    if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode n$i did not sync in the allowed time${nocolor}\n" | tee -a "$LOGFILE"
         # exit the script because syncing did not occur
         rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
