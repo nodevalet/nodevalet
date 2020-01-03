@@ -74,7 +74,7 @@ function checksync_source() {
     checksync 1
     echo -e "${yellow} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}\n"
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
-    sleep .5
+    sleep 1
     SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
     if [[ "${SOURCESYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
