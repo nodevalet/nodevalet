@@ -89,7 +89,7 @@ elif [[ "${SOURCESYNC}" ]]
         echo -e "${lightgreen} Setting Source Masternode to $i${nocolor}\n"
         break
 
-    else echo -e "${lightred} Masternode ${PROJECT}_n${t} is not synced so it is not a valid source.${nocolor}\n"
+    else echo -e "${lightred} Masternode ${PROJECT}_n${i} is not synced so it is not a valid source.${nocolor}\n"
     fi
 done
 
