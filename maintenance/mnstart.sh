@@ -58,8 +58,8 @@ touch $INSTALLDIR/temp/updating
 
 echo -e "\n Restarting masternode ${PROJECT}_n${i}."
 sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
-sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf start
-
+sudo systemctl start "${PROJECT}"_n${i}
+ 
 echo -e "${lightgreen} User has started and enabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 # echo -e " Unsetting -update flag \n"
