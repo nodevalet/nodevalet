@@ -22,7 +22,7 @@ EOF
 }
 
 # ###### SECTIONS ######
-# 1. CREATE SWAP / if no swap exists, create 2 GB swap
+# 1. CREATE SWAP / if no swap exists, create 4 GB swap
 # 2. UPDATE AND UPGRADE / update operating system & pkgs
 # 3. INSTALL FAVORED PACKAGES / useful tools & utilities
 # 4. INSTALL CRYPTO PACKAGES / common crypto packages
@@ -146,7 +146,13 @@ function create_swap() {
         # sleep 2
         echo -e -n "${nocolor}"
     else
-        fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
+        # set swap to twice the physical RAM but not less than 4GB
+        PHYSRAM=$(grep MemTotal /proc/meminfo | awk '{print int($2 / 1024 / 1024 + 0.5)}')
+        let "SWAPSIZE=2*$PHYSRAM"
+        (($SWAPSIZE >= 1 && $SWAPSIZE >= 31)) && SWAPSIZE=31
+        (($SWAPSIZE <= 4)) && SWAPSIZE=4
+
+        fallocate -l ${SWAPSIZE}G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
         echo -e -n "${lightgreen}"
         echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
@@ -328,7 +334,7 @@ function add_user() {
         echo -e " Great; let's set one up now... \n"
         echo -e -n "${cyan}"
         read -p " Enter New Username: " UNAME
-        while [[ "$UNAME" =~ [^0-9A-Za-z]+ ]] || [ -z $UNAME ]; do echo -e "\n"
+        while [[ "$UNAME" =~ [^0-9A-Za-z]+ ]] || [ -z "$UNAME" ]; do echo -e "\n"
             echo -e -n "${lightred}"
             read -p " --> Please enter a username that contains only letters or numbers: " UNAME
             echo -e -n "${nocolor}"
@@ -337,7 +343,7 @@ function add_user() {
         echo -e -n "${yellow}"
         echo  -e " User elected to create a new user named ${UNAME,,}. \n" >> $LOGFILE 2>&1
         echo -e -n "${cyan}"
-        id -u ${UNAME,,} >> $LOGFILE > /dev/null 2>&1
+        id -u "${UNAME,,}" >> $LOGFILE > /dev/null 2>&1
         if [ $? -eq 0 ]
         then
             clear
@@ -350,21 +356,21 @@ function add_user() {
             echo -e -n "${cyan}"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             echo -e -n "${nocolor}"
-            adduser --gecos "" ${UNAME,,} | tee -a "$LOGFILE"
-            usermod -aG sudo ${UNAME,,} | tee -a "$LOGFILE"
+            adduser --gecos "" "${UNAME,,}" | tee -a "$LOGFILE"
+            usermod -aG sudo "${UNAME,,}" | tee -a "$LOGFILE"
             echo -e -n "${lightgreen}"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : '${UNAME,,}' added to SUDO group" | tee -a "$LOGFILE"
             echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
             # copy SSH keys if they exist
             if [ -n /root/.ssh/authorized_keys ]
-            then mkdir /home/${UNAME,,}/.ssh
-                chmod 700 /home/${UNAME,,}/.ssh
+            then mkdir /home/"${UNAME,,}"/.ssh
+                chmod 700 /home/"${UNAME,,}"/.ssh
                 # copy root SSH key to new non-root user
-                cp /root/.ssh/authorized_keys /home/${UNAME,,}/.ssh
+                cp /root/.ssh/authorized_keys /home/"${UNAME,,}"/.ssh
                 # fix permissions on RSA key
-                chmod 400 /home/${UNAME,,}/.ssh/authorized_keys
-                chown ${UNAME,,}:${UNAME,,} /home/${UNAME,,} -R
+                chmod 400 /home/"${UNAME,,}"/.ssh/authorized_keys
+                chown "${UNAME,,}":"${UNAME,,}" /home/"${UNAME,,}" -R
                 echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : SSH keys were copied to ${UNAME,,}'s profile" | tee -a "$LOGFILE"
             else echo -e -n "${yellow}"
                 echo " $(date +%m.%d.%Y_%H:%M:%S) : RSA keys not present for root, so none were copied." | tee -a "$LOGFILE"
@@ -430,7 +436,7 @@ function collect_sshd() {
     done
     # Take a backup of the existing config
     BTIME=$(date +%F_%R)
-    cat $SSHDFILE > $SSHDFILE.$BTIME.bak
+    cat $SSHDFILE > $SSHDFILE."$BTIME".bak
     echo -e "\n"
     echo -e -n "${yellow}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
@@ -486,7 +492,7 @@ function prompt_rootlogin {
         echo -e " improve security. Disable root login if you don't need it.\n"
         echo -e -n "${yellow}"
         echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " Your root login settings are: " $ROOTLOGINP  | tee -a "$LOGFILE"
+        echo -e " Your root login settings are: " "$ROOTLOGINP"  | tee -a "$LOGFILE"
         echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
         echo -e -n "${cyan}"
         ROOTLOGIN="n"
@@ -543,7 +549,7 @@ function prompt_rootlogin {
     clear
     echo -e -n "${yellow}"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " Your root login settings are:" $ROOTLOGINP | tee -a "$LOGFILE"
+    echo -e " Your root login settings are:" "$ROOTLOGINP" | tee -a "$LOGFILE"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${nocolor}"
 }
@@ -682,7 +688,7 @@ function ufw_config() {
         echo -e -n "${nocolor}"
     done
     echo -e "\n"
-    if [ ${FIREWALLP,,} = "yes" ] || [ ${FIREWALLP,,} = "y" ]
+    if [ "${FIREWALLP,,}" = "yes" ] || [ "${FIREWALLP,,}" = "y" ]
     then	echo -e -n "${nocolor}"
         # make sure ufw is installed #
         apt-get install ufw -qqy >> $LOGFILE 2>&1
@@ -1058,7 +1064,7 @@ function restart_sshd() {
     then
         # insert a pause or delay to add suspense
         systemctl restart sshd
-        if [ $FIREWALLP = "yes" ] || [ $FIREWALLP = "y" ]
+        if [ "$FIREWALLP" = "yes" ] || [ "$FIREWALLP" = "y" ]
         then ufw --force enable | tee -a "$LOGFILE"
             echo -e " \n" | tee -a "$LOGFILE"
         else :
@@ -1070,7 +1076,7 @@ function restart_sshd() {
             echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : SSHD restart complete" | tee -a "$LOGFILE"
             echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
             echo -e -n "${nocolor}"
-            if [ $FIREWALLP = "yes" ] || [ $FIREWALLP = "y" ]
+            if [ "$FIREWALLP" = "yes" ] || [ "$FIREWALLP" = "y" ]
             echo -e -n "${lightgreen}"
             then echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : UFW firewall enabled" | tee -a "$LOGFILE"
                 echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
@@ -1110,19 +1116,19 @@ function install_complete() {
     echo -e "  * * * Save these important login variables! * * *  " | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${yellow}"
-    echo -e " --> Your SSH port for remote access is" $SSHPORTIS	| tee -a "$LOGFILE"
-    echo -e " --> Root login settings are:" $ROOTLOGINP | tee -a "$LOGFILE"
+    echo -e " --> Your SSH port for remote access is" "$SSHPORTIS"	| tee -a "$LOGFILE"
+    echo -e " --> Root login settings are:" "$ROOTLOGINP" | tee -a "$LOGFILE"
     echo -e -n "${white}"
     if [ -n "${UNAME,,}" ]
-    then echo -e " We created a non-root user named (lower case):" ${UNAME,,} | tee -a "$LOGFILE"
+    then echo -e " We created a non-root user named (lower case):" "${UNAME,,}" | tee -a "$LOGFILE"
     else echo -e " A new user was not created during the setup process" | tee -a "$LOGFILE"
     fi
     echo -e -n "${nocolor}"
     echo -e -n "${white}"
     PASSWDAUTH=$(sed -n -e '/PasswordAuthentication /p' $SSHDFILE)
-    echo " PasswordAuthentication settings:" $PASSWDAUTH | tee -a "$LOGFILE"
+    echo " PasswordAuthentication settings:" "$PASSWDAUTH" | tee -a "$LOGFILE"
     echo -e -n "${lightcyan}"
-    if [ ${FIREWALLP,,} = "yes" ] || [ ${FIREWALLP,,} = "y" ]
+    if [ "${FIREWALLP,,}" = "yes" ] || [ "${FIREWALLP,,}" = "y" ]
     then echo -e " --> UFW was installed and basic firewall rules were added" | tee -a "$LOGFILE"
     else echo -e " --> UFW was not installed or configured" | tee -a "$LOGFILE"
     fi
@@ -1139,13 +1145,13 @@ function install_complete() {
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " Installation log saved to" $LOGFILE | tee -a "$LOGFILE"
     echo -e " Before modification, your SSH config was backed up to" | tee -a "$LOGFILE"
-    echo -e " --> $SSHDFILE.$BTIME.bak"				| tee -a "$LOGFILE"
-    echo -e -n "${lightred}"
-    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " | NOTE: Please create a new connection to test SSH | " | tee -a "$LOGFILE"
-    echo -e " |       settings before you close this session     | " | tee -a "$LOGFILE"
-    echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e -n "${nocolor}"
+    echo -e " --> $SSHDFILE.$BTIME.bak ${nocolor}"				| tee -a "$LOGFILE"
+    # echo -e -n "${lightred}"
+    # echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+    # echo -e " | NOTE: Please create a new connection to test SSH | " | tee -a "$LOGFILE"
+    # echo -e " |       settings before you close this session     | " | tee -a "$LOGFILE"
+    # echo -e " ---------------------------------------------------- " | tee -a "$LOGFILE"
+    # echo -e -n "${nocolor}"
 }
 
 function display_banner() {

@@ -3,11 +3,37 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
 
-INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
+INSTALLDIR='/var/tmp/nodevalet'
+INFODIR='/var/tmp/nvtemp'
+MNS=$(<$INFODIR/vpsnumber.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECTl=${PROJECT,,}
+PROJECTt=${PROJECTl~}
+MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+HNAME=$(<$INFODIR/vpshostname.info)
+
+### define colors ###
+lightred=$'\033[1;31m'  # light red
+red=$'\033[0;31m'  # red
+lightgreen=$'\033[1;32m'  # light green
+green=$'\033[0;32m'  # green
+lightblue=$'\033[1;34m'  # light blue
+blue=$'\033[0;34m'  # blue
+lightpurple=$'\033[1;35m'  # light purple
+purple=$'\033[0;35m'  # purple
+lightcyan=$'\033[1;36m'  # light cyan
+cyan=$'\033[0;36m'  # cyan
+lightgray=$'\033[0;37m'  # light gray
+white=$'\033[1;37m'  # white
+brown=$'\033[0;33m'  # brown
+yellow=$'\033[1;33m'  # yellow
+darkgray=$'\033[1;30m'  # dark gray
+black=$'\033[0;30m'  # black
+nocolor=$'\e[0m' # no color
 
 if [ -e $INSTALLDIR/temp/updating ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running rebootq.sh" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running rebootq.sh" | tee -a "$LOGFILE"
     echo -e " It looks like I'm busy with other tasks; skipping reboot check.\n"  | tee -a "$LOGFILE"
     exit
 fi
@@ -16,19 +42,25 @@ fi
 cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
 if grep -q "restart required" "$INSTALLDIR/temp/REBOOTREQ"
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot" | tee -a "$LOGFILE"
-    echo -e " The following packages require a reboot to install updates:" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot" | tee -a "$LOGFILE"
+    echo -e " ${yellow}Server will restart now to install the following update(s):${nocolor}" | tee -a "$LOGFILE"
 
     # this sed removes the line "*** System restart required ***" from the REBOOTREQ
     sed -i '/restart required/d' $INSTALLDIR/temp/REBOOTREQ
 
     # this echo writes the packages requiring reboot to the log
-    echo -e "$(cat ${INSTALLDIR}/temp/REBOOTREQ)" | tee -a "$LOGFILE"
+    echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    echo -e " Server will reboot immediately to complete required updates \n" | tee -a "$LOGFILE"
-    # shutdown -r +5 " Server will restart in 5 minutes to complete required updates"
-    sudo reboot
+    touch $INSTALLDIR/temp/updating
+    for ((i=1;i<=$MNS;i++));
+    do
+        echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+        # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+        systemctl stop "${PROJECT}"_n${i}
+    done
+    rm -f $INSTALLDIR/temp/updating
+    shutdown -r now "Server is going down for upgrade."
 
 else
     echo -e " No reboot is required at this time\n"

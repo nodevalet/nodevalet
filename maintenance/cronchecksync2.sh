@@ -52,7 +52,6 @@ then echo -e "\n"
     exit
 fi
 
-
 function sync_check() {
     CNT=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockcount)
     HASH=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getblockhash "${CNT}")
@@ -62,9 +61,8 @@ function sync_check() {
     LTRIMTIME=${TIMELINE#*time\" : }
     NEWEST=${LTRIMTIME%%,*}
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
-    if ((TIMEDIF <= 120 && TIMEDIF >= -120))
-    then echo -e " The blockchain is almost certainly synced.\n"
-        SYNCED="yes"
+    if ((TIMEDIF <= 300 && TIMEDIF >= -300))
+    then echo -e " The blockchain is almost certainly synced.\n" && SYNCED="yes"
     else SYNCED="no"
     fi
 }
@@ -85,8 +83,32 @@ function check_blocksync() {
         echo -e "\n${lightcyan}    --> $PROJECTt Masternode $i Sync Status <-- ${nocolor}\n"
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
 
-        if ((BLOCKS <= 1 )) ; then echo -e "${lightred} Masternode is not syncing\n" ; rm -rf $INSTALLDIR/getinfo_n${i} --force ; exit
-
+        if [ "$BLOCKS" == "1" ]
+        then echo -e "${lightred} Masternode ${i} is starting up${nocolor}\n" 
+        rm -rf $INSTALLDIR/getinfo_n${i} --force 
+            if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+            then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
+            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+            else :
+            fi
+        exit
+        elif ! [ "$BLOCKS" ]
+        then echo -e "${lightred} Masternode ${i} is not running${nocolor}\n" 
+        rm -rf $INSTALLDIR/getinfo_n${i} --force 
+            if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+            then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
+            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+            else :
+            fi
+  
+        if [ -e "$INSTALLDIR/temp/gettinginfo" ]
+        then exit
+        else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Re-enabling masternode ${PROJECT}_n${i}.\n" | tee -a "$LOGFILE"
+        sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+        sudo systemctl start "${PROJECT}"_n${i}
+        exit
+        fi
+        
         else sync_check
         fi
 
@@ -100,12 +122,8 @@ function check_blocksync() {
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
-            
-            echo -e "${lightred} --> Masternode ${PROJECT}_n${i} is NOT synced${nocolor}\n"
 
-            # add in logging for testing
-            # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-            # echo -e "                    Masternode ${PROJECT}_n${i} is NOT synced." | tee -a "$LOGFILE"
+            echo -e "${lightred} --> Masternode ${PROJECT}_n${i} is NOT synced${nocolor}\n"
 
             rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
@@ -132,13 +150,8 @@ else : ; fi
     touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
     rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
-    
+
     echo -e "${lightgreen} --> Masternode ${PROJECT}_n${i} is synced${nocolor}\n"
-
-    # add in logging for testing
-    # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync2.sh" | tee -a "$LOGFILE"
-    # echo -e "                    Masternode ${PROJECT}_n${i} is synced."  | tee -a "$LOGFILE"
-
 
     # This file will contain if the chain is currently not synced
     # $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync  (eg. audax_n2_nosync)

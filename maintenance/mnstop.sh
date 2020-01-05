@@ -39,12 +39,13 @@ if [ -z "$i" ]
 then clear
     echo -e "\n This scriptlet will stop and disable a particular masternode."
     echo -e " Which masternode would you like to disable? \n"
-
 fi
+
 while :; do
     if [ -z "$i" ] ; then read -p " --> " i ; fi
     [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...\n"; i=""; continue; }
-    if (($i >= 1 && $i <= $MNS)); then break
+    if (($i >= 1 && $i <= $MNS))
+    then break
     else echo -e "\n --> I don't have a masternode $i; enter a number between 1 and $MNS.\n"
         i=""
     fi
@@ -52,16 +53,15 @@ done
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
-echo -e " User has asked to disable masternode ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
 echo -e " Disabling ${PROJECT}_n${i} now."
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-sudo systemctl stop "${PROJECT}"_n${i}
+sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
 sleep .5
 
-echo -e " Masternode ${PROJECT}_n${i} has been disabled.\n"
+echo -e "${lightred} User has manually disabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating

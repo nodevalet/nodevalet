@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will display the NodeValet installation log for your VPS
+# This script will display the NodeValet masternode.conf for your VPS
 
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INSTALLDIR='/var/tmp/nodevalet'
@@ -15,17 +15,13 @@ HNAME=$(<$INFODIR/vpshostname.info)
 if [ -z $PROJECT ]
 then clear
     echo -e "\n This is not a VPS that was configured by NodeValet and"
-    echo -e " as a result, there is no installation log to display. \n"
+    echo -e " as a result, there is no masternode.conf to display. \n"
     echo -e "\n Did you expect something different? Let us know.\n"
     exit
 else cd $INSTALLDIR
 fi
 
 clear
-echo -e "\n ################################################################"
-echo -e " # This script will now display the NodeValet2 installation log #"
-echo -e " # which is stored at /var/tmp/nodevalet/logs/silentinstall.log #"
-# echo -e " ################################################################"
-
-cat $LOGFILE
+echo -e "\n"
+cat $INSTALLDIR/masternode.conf
 echo -e "\n"

@@ -33,11 +33,12 @@ nocolor=$'\e[0m' # no color
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
-if [ -e "$INSTALLDIR/temp/updating" ]
-then echo -e " ${nocolor}$(date +%m.%d.%Y_%H:%M:%S) : Running getinfo.sh"
-    echo -e " It looks like I'm busy with something else; sorry.\n"
-    exit
-fi
+# disable this-- is it necessary?
+# if [ -e "$INSTALLDIR/temp/updating" ]
+# then echo -e " ${nocolor}$(date +%m.%d.%Y_%H:%M:%S) : Running getinfo.sh"
+#    echo -e " It looks like I'm busy with something else; sorry.\n"
+#    exit
+# fi
 
 # read first argument to string
 input=$1
@@ -56,17 +57,20 @@ else
 
     # Display 'getinfo' for only the masternode named
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${input}${nocolor}"
+    touch $INSTALLDIR/temp/gettinginfo
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$input" > /dev/null 2>&1
+    rm -f $INSTALLDIR/temp/gettinginfo
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
     cat GETINFO2
+    GETINFO3=$(cat GETINFO2)
     rm -f GETINFO
     rm -f GETINFO2
 
     # check if file exists with name that contains both "audax_n1" and "synced"
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${input}" | grep "synced")
-    if [[ "${TARGETSYNC}" ]]
+    if [[ "${TARGETSYNC}" ]] && [[ "${GETINFO3}" ]]
     then echo -e "${lightgreen}                     Masternode ${PROJECT}_n${input} is synced.${nocolor}\n"
     else echo -e "${lightred}                     Masternode ${PROJECT}_n${input} is not synced.${nocolor}\n"
     fi
@@ -78,12 +82,14 @@ fi
 for ((i=1;i<=$MNS;i++));
 do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Displaying select 'getinfo' from Masternode${lightcyan} ${PROJECT}_n${i}${nocolor}"
+    touch $INSTALLDIR/temp/gettinginfo
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i" > /dev/null 2>&1
+    rm -f $INSTALLDIR/temp/gettinginfo
     GETINFO=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getinfo)
     echo -e "$GETINFO" > GETINFO
     sed '/version\|blocks\|connections/!d' GETINFO > GETINFO2
     cat GETINFO2
-   
+
     # check if file exists with name that contains both "audax_n1" and "synced"
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
     if [[ "${TARGETSYNC}" ]]
@@ -96,4 +102,3 @@ rm -f GETINFO
 rm -f GETINFO2
 
 exit
-

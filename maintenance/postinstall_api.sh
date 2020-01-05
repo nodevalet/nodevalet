@@ -16,9 +16,12 @@ function final_message() {
         else HNAME=$(hostname)
         fi
 
+        # Schedule bootstrap for 2 minutes from now (after reboot)
+        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
+
         # log successful reboot
-        echo -e "Server has restarted after masternode install"  | tee -a "$LOGFILE"
-        echo -e "Sending masternode.return data to mother"  | tee -a "$LOGFILE"
+        echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
+
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
 
@@ -31,7 +34,6 @@ function final_message() {
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SERVER REBOOTED SUCCESSFULLY " | tee -a "$LOGFILE"
     else :
     fi
 }

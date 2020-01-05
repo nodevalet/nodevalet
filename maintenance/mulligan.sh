@@ -90,6 +90,7 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
         echo -e "-------------------------------------------------------------------- ${white}\n"
         rm -rf /var/lib/masternodes
+        rm -rf /etc/masternodes
 
         echo -e "${lightgreen}----------------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Masternodes have been stopped and destroyed"
@@ -104,6 +105,11 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
+
+        echo -e "${yellow}-------------------------------------------------------- "
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling swap file"
+        echo -e "-------------------------------------------------------- ${white}\n"
+        sudo swapoff -a -v > /dev/null 2>&1 && sudo rm /swapfile && sudo cp /etc/fstab /etc/fstab.bak && sudo sed -i '/\/swapfile/d' /etc/fstab
 
         echo -e "${yellow}------------------------------------------------------------------ "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
