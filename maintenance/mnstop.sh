@@ -58,7 +58,7 @@ touch $INSTALLDIR/temp/updating
 
 echo -e " Disabling ${PROJECT}_n${i} now."
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-sudo systemctl stop "${PROJECT}"_n${i}
+sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
 sleep .5
 
 echo -e "${lightred} User has manually disabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
