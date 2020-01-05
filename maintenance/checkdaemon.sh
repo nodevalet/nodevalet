@@ -35,16 +35,6 @@ do
     fi
 
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
-    currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-    
-    if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
-    then currentBlock='null'
-    else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
-    fi
-
-    if [ "$currentBlock" == "-1" ]
-    then
-        echo -e " Current block is $currentBlock; masternode appears to be starting up\n" 
     elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
@@ -76,7 +66,6 @@ do
 
             if [ "$previousBlock$" == "$currentBlock$" ]; then
                 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
-                echo -e " I have restarted the MN once and waited 5 minutes $T time(s). \n" | tee -a "$LOGFILE"
 
             else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
                 echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"
@@ -88,7 +77,7 @@ do
         if [ ! "$FIXED" == "yes" ]; then
 
             unset $FIXED
-            echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
+            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
             echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
             # use clonesync rather than fully resync the chain
             sudo bash $INSTALLDIR/maintenance/clonesync.sh $i
