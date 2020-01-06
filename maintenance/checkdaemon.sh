@@ -23,26 +23,42 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$L
     exit
 fi
 touch $INSTALLDIR/temp/updating
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
+# echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 echo -e "\n"
 for ((i=1;i<=$MNS;i++));
 do
 
     echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
-echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$LOGFILE"
     if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then previousBlock='null'
     else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
     fi
 
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
+    currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
+    
+    if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
+    then currentBlock='null'
+    else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
+    fi
+
+    if [ "$currentBlock" == "-1" ]
+    then
+        echo -e " Current block is $currentBlock; masternode appears to be starting up\n" 
     elif [ "$previousBlock" == "$currentBlock" ]
     then
-        echo -e " Previous block is $previousBlock and current block is $currentBlock; same"
+        echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         systemctl stop "${PROJECT}"_n${i}
-        sleep 5
+
+# display countdown timer on screen   
+seconds=5; date1=$((`date +%s` + $seconds)); 
+while [ "$date1" -ge `date +%s` ]; do 
+  echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+  sleep 0.5
+done
+
         systemctl start "${PROJECT}"_n${i}
 
         for ((T=1;T<=5;T++));
@@ -51,8 +67,15 @@ echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$
             echo -e " Pausing for 5 minutes to let instance start and resume syncing"
             echo -e " It is not recommended that you cancel or interrupt or you will"
             echo -e " be left in maintenance mode and will have to delete the file :"
-            echo -e " $INSTALLDIR/temp/updating before other scriptlets will work."
-            sleep 300
+            echo -e " $INSTALLDIR/temp/updating before other scriptlets will work.\n"
+
+# display countdown timer on screen   
+seconds=300; date1=$((`date +%s` + $seconds)); 
+while [ "$date1" -ge `date +%s` ]; do 
+  echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+  sleep 0.5
+done
+
             echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 
             if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
@@ -68,6 +91,7 @@ echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$
 
             if [ "$previousBlock$" == "$currentBlock$" ]; then
                 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
+                echo -e " I have restarted the MN once and waited 5 minutes $T time(s). \n" | tee -a "$LOGFILE"
 
             else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
                 echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"
@@ -79,7 +103,7 @@ echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$
         if [ ! "$FIXED" == "yes" ]; then
 
             unset $FIXED
-            echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
             echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
             # use clonesync rather than fully resync the chain
             sudo bash $INSTALLDIR/maintenance/clonesync.sh $i
@@ -98,11 +122,11 @@ echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$
 
     else echo -e " Previous block is $previousBlock and current block is $currentBlock."
         echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
-echo -e " ${PROJECT}_n${i} appears to be syncing normally."  | tee -a "$LOGFILE"
+
     fi
 
 done
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
-echo -e " Unsetting -update flag."  | tee -a "$LOGFILE"
+#echo -e " Unsetting -update flag."  | tee -a "$LOGFILE"
