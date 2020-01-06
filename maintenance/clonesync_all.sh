@@ -133,9 +133,15 @@ function restart_mns() {
         echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
-        let "stime=5*$i"
+        let "stime=3*$i"
         echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
-        sleep $stime
+        
+        # display countdown timer on screen   
+        seconds=$stime; date1=$((`date +%s` + $seconds)); 
+        while [ "$date1" -ge `date +%s` ]; do 
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+            sleep 0.5
+        done
     done
     echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
 }
