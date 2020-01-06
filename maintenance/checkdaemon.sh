@@ -30,6 +30,7 @@ for ((i=1;i<=$MNS;i++));
 do
 
     echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
+echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"  | tee -a "$LOGFILE"
     if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then previousBlock='null'
     else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
@@ -97,9 +98,11 @@ do
 
     else echo -e " Previous block is $previousBlock and current block is $currentBlock."
         echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
+echo -e " ${PROJECT}_n${i} appears to be syncing normally."  | tee -a "$LOGFILE"
     fi
 
 done
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
+echo -e " Unsetting -update flag."  | tee -a "$LOGFILE"
