@@ -23,7 +23,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$L
     exit
 fi
 touch $INSTALLDIR/temp/updating
-# echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 echo -e "\n"
 for ((i=1;i<=$MNS;i++));
@@ -49,7 +49,8 @@ do
     elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck."  | tee -a "$LOGFILE"
+        echo -e " "
         systemctl stop "${PROJECT}"_n${i}
 
 # display countdown timer on screen   

@@ -36,6 +36,7 @@ nocolor=$'\e[0m' # no color
 shopt -s extglob
 
 touch $INSTALLDIR/temp/updating
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 # read first argument to string
 t=$1
