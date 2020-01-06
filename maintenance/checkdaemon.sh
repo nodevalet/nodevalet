@@ -23,6 +23,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$L
     exit
 fi
 touch $INSTALLDIR/temp/updating
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 echo -e "\n"
 for ((i=1;i<=$MNS;i++));
