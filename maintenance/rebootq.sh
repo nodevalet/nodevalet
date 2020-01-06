@@ -52,14 +52,13 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    touch $INSTALLDIR/temp/updating
-    for ((i=1;i<=$MNS;i++));
-    do
-        echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-        # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-        systemctl stop "${PROJECT}"_n${i}
-    done
-    rm -f $INSTALLDIR/temp/updating
+    # touch $INSTALLDIR/temp/updating
+    # for ((i=1;i<=$MNS;i++));
+    # do
+        # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+        # systemctl stop "${PROJECT}"_n${i}
+    # done
+    # rm -f $INSTALLDIR/temp/updating
     shutdown -r now "Server is going down for upgrade."
 
 else
