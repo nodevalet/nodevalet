@@ -46,7 +46,6 @@ function remove_crons() {
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/autoupdate.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/cronchecksync1.sh'  | crontab -
 }
@@ -133,9 +132,15 @@ function restart_mns() {
         echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
-        let "stime=5*$i"
+        let "stime=3*$i"
         echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
-        sleep $stime
+        
+        # display countdown timer on screen   
+        seconds=$stime; date1=$((`date +%s` + $seconds)); 
+        while [ "$date1" -ge `date +%s` ]; do 
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+            sleep 0.5
+        done
     done
     echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
 }
@@ -149,8 +154,6 @@ function restore_crons() {
     (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
     (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
-    echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
-    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"
     (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
     echo -e "${white}  --> Check if chains are syncing or synced every 5 minutes${nocolor}"

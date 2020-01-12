@@ -126,11 +126,12 @@ function check_distro() {
 function install_packages() {
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-    #dEXIST=`ls /usr/local/bin | grep ${MNODE_DAEMOND}`
-    #if [ "$dEXIST" = ${MNODE_DAEMOND} ] ; then
-    if [ -f "${MNODE_DAEMON}" ] ; then
-        echo -e "Binaries for ${CODENAME} already exist, no need to download crypto packages" | tee -a ${SCRIPT_LOGFILE}
-    else echo -e "Did not find binaries for ${CODENAME} so downloading crypto packages" | tee -a ${SCRIPT_LOGFILE}
+    dEXISTT=$(ls /usr/local/bin | grep "${MNODE_DAEMOND}")
+
+    if [[ "${dEXISTT}" ]]
+    then echo -e "${lightcyan}Binaries for ${PROJECTt} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
+    else echo -e "${lightred}Did not find binaries for ${PROJECTt} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
+        echo -e "${lightred}${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a ${SCRIPT_LOGFILE}
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
         # development and build packages
         # these are common on all cryptos
@@ -577,7 +578,7 @@ function print_logo() {
 #
 function build_mn_from_source() {
     # daemon not found compile it
-    if [ ! -f "${MNODE_DAEMON}" ] || [ "$update" -eq 1 ]; then
+    if  [[ ! "${dEXISTT}" ]] || [ "$update" -eq 1 ]; then
         # create code directory if it doesn't exist
         if [ ! -d "${SCRIPTPATH}"/"${CODE_DIR}" ]; then
             mkdir -p "${SCRIPTPATH}"/"${CODE_DIR}"              &>> ${SCRIPT_LOGFILE}
@@ -610,7 +611,8 @@ function build_mn_from_source() {
     fi
 
     # if it's not available after compilation, theres something wrong
-    if [ ! -f "${MNODE_DAEMON}" ]; then
+    dEXISTT=$(ls /usr/local/bin | grep "${MNODE_DAEMOND}")
+    if [ ! "${dEXISTT}" ]; then
         echo "COMPILATION FAILED! Please open an issue at https://github.com/masternodes/vps/issues. Thank you!"
 		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Compiling the wallet failed  ..."}' && echo -e " " ; fi
         exit 1
