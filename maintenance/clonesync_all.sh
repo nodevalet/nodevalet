@@ -183,6 +183,6 @@ restart_mns
 restore_crons
 
 echo -e "\n${lightgreen} Complete; Masternodes have all been bootstrapped.${nocolor}\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternodes have all been bootstrapped!${nocolor}\n" >> $LOGFILE
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}All Masternodes have been bootstrapped!${nocolor}\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit

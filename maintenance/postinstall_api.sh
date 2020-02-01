@@ -20,7 +20,8 @@ function final_message() {
         # echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
-        echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has restarted after installation \e[0m \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
