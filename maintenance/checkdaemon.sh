@@ -17,11 +17,17 @@ HNAME=$(<$INFODIR/vpshostname.info)
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
+if [ -e "$INSTALLDIR/temp/bootstrapping" ]
+then echo -e " Skipping checkdaemon.sh because bootstrap is in progress.\n"
+    exit
+fi
+
 if [ -e "$INSTALLDIR/temp/updating" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$LOGFILE"
     echo -e " It looks like I'm currently running other tasks; skipping daemon check.\n"  | tee -a "$LOGFILE"
     exit
 fi
+
 touch $INSTALLDIR/temp/updating
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
