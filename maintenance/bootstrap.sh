@@ -54,7 +54,7 @@ function shutdown_mn1() {
 }
 
 function remove_crons() {
-    # disable the crons that could cause problems
+    # temporarily disable the crons that could cause problems
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
