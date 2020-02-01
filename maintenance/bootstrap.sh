@@ -54,7 +54,7 @@ function shutdown_mn1() {
 }
 
 function remove_crons() {
-    # disable the crons that could cause problems
+    # temporarily disable the crons that could cause problems
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
     crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
@@ -121,6 +121,8 @@ function bootstrap() {
         fi
 
         rm -f "$BOOTSTRAPZIP"
+
+        # take ownership of bootstrap files and folders
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
 
@@ -184,6 +186,8 @@ function bootstrap() {
         fi
 
         rm -f "$BOOTSTRAPZIP"
+
+        # take ownership of bootstrap files and folders
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
 

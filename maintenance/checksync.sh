@@ -90,9 +90,9 @@ function sync_check() {
 
 function check_blocksync() {
 
-    # check if blockchain of n1 is synced for 4 hours (14400 seconds) before reporting failure
-    end=$((SECONDS+14400))
-    # end=$((SECONDS+14400))
+    # check if blockchain of n1 is synced for 24 hours (86400 seconds) before reporting failure
+    end=$((SECONDS+86400))
+    # end=$((SECONDS+86400))
 
     while [ $SECONDS -lt $end ]; do
         # echo -e "Time $SECONDS"
