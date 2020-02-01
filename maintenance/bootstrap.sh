@@ -121,6 +121,8 @@ function bootstrap() {
         fi
 
         rm -f "$BOOTSTRAPZIP"
+
+        # take ownership of bootstrap files and folders
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
 
@@ -184,6 +186,8 @@ function bootstrap() {
         fi
 
         rm -f "$BOOTSTRAPZIP"
+
+        # take ownership of bootstrap files and folders
         chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
         chmod -R g=u $INSTALLDIR/temp/bootstrap
 
