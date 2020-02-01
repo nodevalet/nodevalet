@@ -16,8 +16,8 @@ function final_message() {
         else HNAME=$(hostname)
         fi
 
-        # Schedule bootstrap for 2 minutes from now (after reboot)
-        echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
+        # Schedule bootstrap for 1 minutes from now (after reboot)-- disabled because it doesn't work on DO
+        # echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
         echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
@@ -34,6 +34,11 @@ function final_message() {
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
+
+        # Check for bootstrap file and install it if available
+        cd $INSTALLDIR/maintenance || exit
+        sudo bash bootstrap.sh
+
     else :
     fi
 }
