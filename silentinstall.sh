@@ -771,7 +771,7 @@ function restart_server() {
 
     if [ -s $INFODIR/fullauto.info ]
     then
-        echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
+        # echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
         echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
         shutdown -r now "Server is going down for upgrade."
@@ -786,7 +786,7 @@ function restart_server() {
         echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
         echo -e "    you may need to start the masternodes in your local wallet again.\n"
         # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
-        echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minutes * * ${nocolor}\n"
+        echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minute * * ${nocolor}\n"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
         shutdown -r +1 "Server is going down for upgrade in 1 minute."
     fi
