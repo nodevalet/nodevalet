@@ -483,8 +483,9 @@ function install_mns() {
 function add_cron() {
     # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-    echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/1 * * * * /var/tmp/nodevalet/maintenance/postinstall_api.sh") | crontab - > /dev/null 2>&1
+    # remove this because we placed it in /etc/init.d/ on reboot
+    # echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
+    # (crontab -l ; echo "*/1 * * * * /var/tmp/nodevalet/maintenance/postinstall_api.sh") | crontab - > /dev/null 2>&1
     echo -e "  --> Make sure all daemon are running every 5 minutes"  | tee -a "$LOGFILE"
     (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
