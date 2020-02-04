@@ -39,7 +39,9 @@ function final_message() {
         # Check for bootstrap file and install it if available
         cd $INSTALLDIR/maintenance || exit    
         touch $INSTALLDIR/temp/bootstrapping
+        touch $INSTALLDIR/temp/lastnsync
         sudo bash bootstrap.sh
+        rm $INSTALLDIR/temp/lastnsync
         rm $INSTALLDIR/temp/bootstrapping
 
     else :
