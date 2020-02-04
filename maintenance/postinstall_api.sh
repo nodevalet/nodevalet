@@ -41,8 +41,8 @@ function final_message() {
         touch $INSTALLDIR/temp/bootstrapping
         touch $INSTALLDIR/temp/lastnsync
         sudo bash bootstrap.sh
-        rm $INSTALLDIR/temp/lastnsync
-        rm $INSTALLDIR/temp/bootstrapping
+        # rm $INSTALLDIR/temp/bootstrapping --force
+        # rm $INSTALLDIR/temp/lastnsync --force
 
     else :
     fi
