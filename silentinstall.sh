@@ -727,8 +727,12 @@ EOT
 
         [ -e $INFODIR/fullauto.info ] && echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE"
         # convert masternode.conf to one delineated line separated using | and ||
+        
         # echo -e "complete" > $INSTALLDIR/temp/complete
-        echo -e "complete|${VPSAPI}" > $INSTALLDIR/temp/complete
+            if [ -e $INFODIR/fullauto.info ]
+            then echo -e "complete|${VPSAPI}|guidedui" > $INSTALLDIR/temp/complete
+            else echo -e "complete|${VPSAPI}|headless" > $INSTALLDIR/temp/complete
+            fi 
 
         # comment out lines that contain no txid or index
         # sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
