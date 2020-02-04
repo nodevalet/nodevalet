@@ -230,6 +230,8 @@ function bootstrap() {
         sleep 2
     else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
         checksync 1
+        rm $INSTALLDIR/temp/bootstrapping --force
+        rm $INSTALLDIR/temp/lastnsync --force
         exit
     fi
 }
