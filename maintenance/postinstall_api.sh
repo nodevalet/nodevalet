@@ -35,15 +35,11 @@ function final_message() {
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
-
-        # create file to signal that bootstrap is running
-        touch $INSTALLDIR/temp/bootstrapping
-
+    
         # Check for bootstrap file and install it if available
-        cd $INSTALLDIR/maintenance || exit
+        cd $INSTALLDIR/maintenance || exit    
+        touch $INSTALLDIR/temp/bootstrapping
         sudo bash bootstrap.sh
-
-        # create file to signal that bootstrap has finished
         rm $INSTALLDIR/temp/bootstrapping
 
     else :

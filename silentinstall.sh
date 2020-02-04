@@ -648,8 +648,9 @@ EOT
                 # store NoveValets response in a local file
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
 
-                # display original curl API response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+                # log and display original curl API and response
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet sent the following API curl <--"   | tee -a "$LOGFILE"
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " curl -s $CURLAPI \n"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
                 # read curl API response into variable
                 APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
