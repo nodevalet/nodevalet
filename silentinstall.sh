@@ -366,7 +366,7 @@ function silent_harden() {
 
 function install_binaries() {
 
-    #make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
+    # make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
     if [ "${PROJECT,,}" = "bitsend" ]
     then echo -e "Bitsend detected, initiating funky installation process...\n"
         # insert specific steps here
@@ -375,7 +375,7 @@ function install_binaries() {
         apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libboost-system1.58.0 libboost1.58-all-dev libdb4.8++ libdb4.8 libdb4.8-dev libdb4.8++-dev libevent-pthreads-2.0-5
     fi
 
-    #check for binaries and install if found
+    # check for binaries and install if found
     echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env

@@ -45,6 +45,17 @@ nocolor=$'\e[0m' # no color
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
+function check_if_synced() {
+    # check if all masternodes are already synced
+    dSYNCED=$(ls /var/tmp/nodevalet/temp | grep lastnsync)
+
+    if [[ "${dSYNCED}" ]]
+    then echo -e "${lightred} One or more masternodes are not synced.${nocolor}\n"
+    else echo -e "${lightcyan} All masternodes seem to be synced, no need to bootstrap.${nocolor}\n"
+    exit
+    fi
+}
+
 function shutdown_mn1() {
     # stop and disable mn1
     echo -e "${yellow} Bootstrap needs to shut down the 1st masternode:${nocolor}"
@@ -87,11 +98,7 @@ function bootstrap() {
 
 # this downloads the bootstrap file into the current folder
 # curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap | cut -d '"' -f 4 | wget -qi -
-
     
-    # add a check to see if blockchain is already synced, if it is, exit
-
-
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
     then remove_crons 
@@ -226,6 +233,7 @@ function bootstrap() {
 }
 
 # this is where the bootstrap sequence begins
+check_if_synced
 bootstrap
 rm -rf $INSTALLDIR/temp/updating
 restore_crons
