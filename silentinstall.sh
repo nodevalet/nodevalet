@@ -650,7 +650,7 @@ EOT
 
                 # log and display original curl API and response
                 [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet sent the following API curl <--"   | tee -a "$LOGFILE"
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " curl -s $CURLAPI \n"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo -e " curl -s $CURLAPI \n"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
                 # read curl API response into variable
                 APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
