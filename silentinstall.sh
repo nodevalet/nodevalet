@@ -710,8 +710,9 @@ EOT
             # create the masternode.conf output that is returned to consumer
             paste -d ' ' $INSTALLDIR/temp/MNALIAS$i $INSTALLDIR/temp/IPADDR$i $INSTALLDIR/temp/GENKEY$i $INSTALLDIR/temp/TXID$i >> $INSTALLDIR/masternode.conf
 
-            # Set the not_synced flags for each masternode before reboot
+            # Set the nosync flag for each masternode on creation
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S) -- first created" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
 
             # round 1: cleanup and declutter
             rm $INSTALLDIR/temp/GENKEY${i}FIN ; rm $INSTALLDIR/temp/GENKEY$i ; rm $INSTALLDIR/temp/IPADDR$i ; rm $INSTALLDIR/temp/MNADD$i

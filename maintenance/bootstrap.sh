@@ -53,7 +53,6 @@ function check_if_synced() {
     then echo -e "${lightred} One or more masternodes are not synced.${nocolor}\n"
     else echo -e "${lightcyan} All masternodes seem to be synced, no need to bootstrap.${nocolor}\n"
         rm $INSTALLDIR/temp/bootstrapping --force
-        rm $INSTALLDIR/temp/lastnsync --force
         exit
     fi
 }
@@ -231,7 +230,6 @@ elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
     else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
         checksync 1
         rm $INSTALLDIR/temp/bootstrapping --force
-        rm $INSTALLDIR/temp/lastnsync --force
         exit
     fi
 }
@@ -243,5 +241,4 @@ rm -rf $INSTALLDIR/temp/updating
 restore_crons
 bash $INSTALLDIR/maintenance/clonesync_all.sh
 rm $INSTALLDIR/temp/bootstrapping --force
-rm $INSTALLDIR/temp/lastnsync --force
 exit
