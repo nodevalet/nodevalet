@@ -47,7 +47,7 @@ shopt -s extglob
 
 function check_if_synced() {
     # check if all masternodes are already synced
-    dSYNCED=$(ls /var/tmp/nodevalet/temp | grep lastnsync)
+    dSYNCED=$(ls /var/tmp/nodevalet/temp | grep nosync)
 
     if [[ "${dSYNCED}" ]]
     then echo -e "${lightred} One or more masternodes are not synced.${nocolor}\n"
