@@ -55,8 +55,8 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     # touch $INSTALLDIR/temp/updating
     # for ((i=1;i<=$MNS;i++));
     # do
-        # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-        # systemctl stop "${PROJECT}"_n${i}
+    # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+    # systemctl stop "${PROJECT}"_n${i}
     # done
     # rm -f $INSTALLDIR/temp/updating
     shutdown -r now "Server is going down for upgrade."

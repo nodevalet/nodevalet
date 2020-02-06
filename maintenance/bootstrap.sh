@@ -52,9 +52,9 @@ function check_if_synced() {
     if [[ "${dSYNCED}" ]]
     then echo -e "${lightred} One or more masternodes are not synced.${nocolor}\n"
     else echo -e "${lightcyan} All masternodes seem to be synced, no need to bootstrap.${nocolor}\n"
-    rm $INSTALLDIR/temp/bootstrapping --force
-    rm $INSTALLDIR/temp/lastnsync --force
-    exit
+        rm $INSTALLDIR/temp/bootstrapping --force
+        rm $INSTALLDIR/temp/lastnsync --force
+        exit
     fi
 }
 
@@ -95,15 +95,15 @@ function bootstrap() {
     echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running bootstrap function"
     echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Bootstrap is looking for $PROJECTt bootstrap"
 
-# curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep tag_name
-# https://api.github.com/repos/theaudaxproject/audax/releases/latest
+    # curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep tag_name
+    # https://api.github.com/repos/theaudaxproject/audax/releases/latest
 
-# this downloads the bootstrap file into the current folder
-# curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap | cut -d '"' -f 4 | wget -qi -
-    
+    # this downloads the bootstrap file into the current folder
+    # curl -s https://api.github.com/repos/theaudaxproject/audax/releases/latest | grep browser_download_url | grep bootstrap | cut -d '"' -f 4 | wget -qi -
+
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
-    then remove_crons 
+    then remove_crons
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -124,7 +124,7 @@ function bootstrap() {
 
         if [[ $BOOTSTRAPZIP == *.gz ]]
         then tar -xzf "$BOOTSTRAPZIP"
-        elif [[ $BOOTSTRAPZIP == *.zip ]]
+    elif [[ $BOOTSTRAPZIP == *.zip ]]
         then unzip "$BOOTSTRAPZIP"
         else :
         fi
@@ -164,8 +164,8 @@ function bootstrap() {
         sudo systemctl start "${PROJECT}"_n1
         sleep 2
 
-    elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
-    then remove_crons 
+elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
+    then remove_crons
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt bootstrap file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -185,12 +185,12 @@ function bootstrap() {
 
         if [[ $BOOTSTRAPZIP == *.gz ]]
         then tar -xzf "$BOOTSTRAPZIP"
-        elif [[ $BOOTSTRAPZIP == *.zip ]]
+    elif [[ $BOOTSTRAPZIP == *.zip ]]
         then unzip "$BOOTSTRAPZIP"
-        elif [[ $BOOTSTRAPZIP == *.dat ]]
+    elif [[ $BOOTSTRAPZIP == *.dat ]]
         then chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
-        chmod -R g=u $INSTALLDIR/temp/bootstrap
-        cp -p $INSTALLDIR/temp/bootstrap/$BOOTSTRAPZIP /var/lib/masternodes/"${PROJECT}"1/
+            chmod -R g=u $INSTALLDIR/temp/bootstrap
+            cp -p $INSTALLDIR/temp/bootstrap/$BOOTSTRAPZIP /var/lib/masternodes/"${PROJECT}"1/
         else :
         fi
 

@@ -70,7 +70,7 @@ for ((i=1;i<=$MNS;i++));
 do
 
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Checking masternode status of ${PROJECT}_n${i}"
-    if [ "${PROJECT,,}" = "smart" ] 
+    if [ "${PROJECT,,}" = "smart" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf smartnode status)
     else MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf masternode status)
     fi

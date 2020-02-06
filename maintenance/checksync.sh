@@ -143,7 +143,7 @@ function check_blocksync() {
         # exit the script because syncing did not occur
         rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
-    else : ; fi
+else : ; fi
 
     #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
     #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"

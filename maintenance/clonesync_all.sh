@@ -134,11 +134,11 @@ function restart_mns() {
         systemctl start "${PROJECT}"_n${i}
         let "stime=3*$i"
         echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
-        
-        # display countdown timer on screen   
-        seconds=$stime; date1=$((`date +%s` + $seconds)); 
-        while [ "$date1" -ge `date +%s` ]; do 
-            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+
+        # display countdown timer on screen
+        seconds=$stime; date1=$((`date +%s` + $seconds));
+        while [ "$date1" -ge `date +%s` ]; do
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
             sleep 0.5
         done
     done

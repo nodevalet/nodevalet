@@ -85,10 +85,10 @@ function update_binaries() {
         systemctl stop $PROJECT*
         if [ ! -d /usr/local/bin/backup ]; then mkdir /usr/local/bin/backup ; fi
         # mkdir 2>/dev/null
-        
+
         # echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
         cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
-        rm /usr/local/bin/${PROJECT}* 
+        rm /usr/local/bin/${PROJECT}*
 
         curl -s "$GITAPI_URL" \
             | grep browser_download_url \

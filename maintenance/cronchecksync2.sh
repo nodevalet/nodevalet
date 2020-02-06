@@ -84,31 +84,31 @@ function check_blocksync() {
         echo -e " The current number of synced blocks is:${yellow} ${BLOCKS}${nocolor}"
 
         if [ "$BLOCKS" == "1" ]
-        then echo -e "${lightred} Masternode ${i} is starting up${nocolor}\n" 
-        rm -rf $INSTALLDIR/getinfo_n${i} --force 
+        then echo -e "${lightred} Masternode ${i} is starting up${nocolor}\n"
+            rm -rf $INSTALLDIR/getinfo_n${i} --force
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
-            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+                rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
             else :
             fi
-        exit
-        elif ! [ "$BLOCKS" ]
-        then echo -e "${lightred} Masternode ${i} is not running${nocolor}\n" 
-        rm -rf $INSTALLDIR/getinfo_n${i} --force 
+            exit
+    elif ! [ "$BLOCKS" ]
+        then echo -e "${lightred} Masternode ${i} is not running${nocolor}\n"
+            rm -rf $INSTALLDIR/getinfo_n${i} --force
             if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
             then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
-            rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+                rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
             else :
             fi
-  
-        if [ -e "$INSTALLDIR/temp/gettinginfo" ]
-        then exit
-        else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Re-enabling masternode ${PROJECT}_n${i}.\n" | tee -a "$LOGFILE"
-        sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
-        sudo systemctl start "${PROJECT}"_n${i}
-        exit
-        fi
-        
+
+            if [ -e "$INSTALLDIR/temp/gettinginfo" ]
+            then exit
+            else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Re-enabling masternode ${PROJECT}_n${i}.\n" | tee -a "$LOGFILE"
+                sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+                sudo systemctl start "${PROJECT}"_n${i}
+                exit
+            fi
+
         else sync_check
         fi
 
