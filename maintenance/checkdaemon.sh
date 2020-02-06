@@ -60,7 +60,7 @@ do
 elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck."  | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         echo -e " "
         systemctl stop "${PROJECT}"_n${i}
 
@@ -129,7 +129,7 @@ elif [ "$previousBlock" == "$currentBlock" ]
             # sudo systemctl start "${PROJECT}"_n${i}
 
         else unset $FIXED
-            echo " Glad to see that worked, exiting loop for this MN "
+            echo -e " Glad to see that worked, exiting loop for this MN \n"
         fi
 
     else echo -e " Previous block is $previousBlock and current block is $currentBlock."
