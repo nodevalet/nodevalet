@@ -29,6 +29,11 @@ darkgray=$'\033[1;30m'  # dark gray
 black=$'\033[0;30m'  # black
 nocolor=$'\e[0m' # no color
 
+if [ -e "$INSTALLDIR/temp/shuttingdown" ]
+then echo -e " Skipping autoupdate.sh because the server is shutting down.\n" | tee -a "$LOGFILE"
+    exit
+fi
+
 # update .gitstring binary search string variable and .env
 cd $INSTALLDIR/nodemaster/config/$PROJECT
 echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"
@@ -184,6 +189,7 @@ function check_project() {
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
         echo -e "${lightgreen}  --> ${PROJECTt} was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+        touch $INSTALLDIR/temp/shuttingdown
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -191,6 +197,7 @@ function check_project() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
         exit
 
@@ -213,12 +220,14 @@ function check_restore() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
         exit
 
     else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
         echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
         echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
+        touch $INSTALLDIR/temp/shuttingdown
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -226,6 +235,7 @@ function check_restore() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
     fi
 }
