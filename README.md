@@ -16,7 +16,7 @@ Are you a tinkerer who prefers a more hands-on approach? That works, too! Since 
 
 API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your Masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
-For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io.
+For now NodeValet supports Helium, Audax, Phore, and PIVX. To try it out please head over to https://nodevalet.io.
 We're working to add a variety of other Masternode coins to the service in the near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
