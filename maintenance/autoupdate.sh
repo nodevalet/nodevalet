@@ -34,6 +34,11 @@ then echo -e " Skipping autoupdate.sh because the server is shutting down.\n" | 
     exit
 fi
 
+# remove activating flag if it exists
+if [ -e "$INSTALLDIR/temp/activating" ]
+then rm $INSTALLDIR/temp/activating
+fi
+
 # update .gitstring binary search string variable and .env
 cd $INSTALLDIR/nodemaster/config/$PROJECT
 echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"

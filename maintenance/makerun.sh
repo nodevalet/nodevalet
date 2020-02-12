@@ -38,6 +38,8 @@ EXP_DAEMON=$(cat $INFODIR/vpsnumber.info)
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
+    touch $INSTALLDIR/temp/activating
     bash /usr/local/bin/activate_masternodes_"$PROJECT"
+    rm $INSTALLDIR/temp/activating
 else echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
 fi

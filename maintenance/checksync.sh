@@ -11,6 +11,11 @@ PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
+if [ -e "$INSTALLDIR/temp/activating" ]
+then echo -e " Skipping checksync.sh because the server is activating masternodes.\n"
+    exit
+fi
+
 # set hostname variable to the name planted by API installation script
 if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
 then HNAME=$(<$INFODIR/vpshostname.info)
