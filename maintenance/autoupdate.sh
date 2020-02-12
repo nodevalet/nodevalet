@@ -36,7 +36,8 @@ fi
 
 # remove activating flag if it exists
 if [ -e "$INSTALLDIR/temp/activating" ]
-then rm $INSTALLDIR/temp/activating
+then sleep 1800
+rm $INSTALLDIR/temp/activating
 fi
 
 # update .gitstring binary search string variable and .env
