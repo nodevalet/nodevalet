@@ -795,6 +795,7 @@ function restart_server() {
         # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
         echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minute * * ${nocolor}\n"
         touch $INSTALLDIR/temp/vpsvaletreboot.txt
+        curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
         shutdown -r +1 "Server is going down for upgrade in 1 minute."
     fi
 }
