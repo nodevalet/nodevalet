@@ -265,7 +265,8 @@ function setup_environment() {
         echo -e -n "${cyan}"
         while :; do
             echo -e "\n"
-            read -n 1 -s -r -p " Would you like to manually enter your own TXIDs now? y/n " GETTXIDS
+            echo -e " Would you like to manually enter your own TXIDs now? y/n "
+            read -n 1 -s -r -p " --> the correct answer is usually NO " GETTXIDS
             if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
             then
                 break
