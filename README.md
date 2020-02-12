@@ -24,9 +24,9 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 # Features
 
 - 5 minute, 'one click' install through our web GUI. No need to login to your VPS.
-- No logging. We don't save as much as a cookie. Not retaining info means there is nothing there to be hacked.
-- Automatically generated masternode.conf, copy paste ready.
+- We never ask for your personal info so there is nothing to be hacked.
 - Automatic server hardening. Your VPS will be more secure than most.
+- Automatically generated masternode.conf, copy paste ready into your local wallet.
 - Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's Github twice a day, and when it sees an update, install it.
 
