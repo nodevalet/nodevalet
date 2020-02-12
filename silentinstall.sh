@@ -770,6 +770,7 @@ EOT
 }
 
 function restart_server() {
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     clear
     echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
@@ -786,6 +787,7 @@ function restart_server() {
     echo -e "    you may need to start the masternodes in your local wallet again.\n"
     echo -e "${lightred} * * Note: This VPS will now automatically restart * * ${nocolor}\n"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
+    sleep .5
     shutdown -r now "Server is going down for upgrade."
 }
 
