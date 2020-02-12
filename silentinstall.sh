@@ -361,7 +361,7 @@ function silent_harden() {
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
-    echo -e "Inserting random Chuck Norris joke to keep things spicy\n" | tee -a "$LOGFILE"
+    echo -e "Inserting random Chuck Norris joke to keep things spicy ${cyan}\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -369,7 +369,7 @@ function install_binaries() {
 
     # make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
     if [ "${PROJECT,,}" = "bitsend" ]
-    then echo -e "Bitsend detected, initiating funky installation process...\n"
+    then echo -e "${nocolor}Bitsend detected, initiating funky installation process...\n"
         # insert specific steps here
         add-apt-repository -y ppa:bitcoin/bitcoin
         apt-get -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update
@@ -377,7 +377,7 @@ function install_binaries() {
     fi
 
     # check for binaries and install if found
-    echo -e "\nAttempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
