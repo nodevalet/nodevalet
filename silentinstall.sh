@@ -266,7 +266,7 @@ function setup_environment() {
         while :; do
             echo -e "\n"
             echo -e " Would you like to manually enter your own TXIDs now? y/n "
-            read -n 1 -s -r -p " --> the correct answer is usually NO " GETTXIDS
+            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'no' " GETTXIDS
             if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
             then
                 break
@@ -361,7 +361,7 @@ function silent_harden() {
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
-    echo -e "Inserting random Chuck Norris joke to keep things spicy ${cyan}\n" | tee -a "$LOGFILE"
+    echo -e "Inserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -773,7 +773,7 @@ EOT
 function restart_server() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     clear
-    echo -e "This is the contents of your file $INSTALLDIR/masternode.conf \n" | tee -a "$LOGFILE"
+    echo -e "{lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf {nocolor}\n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
