@@ -775,29 +775,18 @@ function restart_server() {
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
-
-    if [ -s $INFODIR/fullauto.info ]
-    then
-        # echo -e "Fullauto detected, skipping masternode.conf display"  >> "$LOGFILE"
-        echo -e "Going to restart server to complete installation... " >> "$LOGFILE"
-        touch $INSTALLDIR/temp/vpsvaletreboot.txt
-        shutdown -r now "Server is going down for upgrade."
-    else
-        echo -e " Please follow the steps below to complete your masternode setup: "
-        echo -e " 1. Please copy the above file and paste it into the masternode.conf "
-        echo -e "    file on your local wallet. (insert txid info to end of each line) "
-        echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
-        echo -e "    installation and begin syncing the blockchain. "
-        echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
-        echo -e "    and then you may click Start Missing to start your new masternodes. "
-        echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
-        echo -e "    you may need to start the masternodes in your local wallet again.\n"
-        # read -n 1 -s -r -p "  --- Please press any key to reboot ---" ANYKEY
-        echo -e "${lightred} * * Note: This VPS will automatically restart in 1 minute * * ${nocolor}\n"
-        touch $INSTALLDIR/temp/vpsvaletreboot.txt
-        curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        shutdown -r +1 "Server is going down for upgrade in 1 minute."
-    fi
+    echo -e " Please follow the steps below to complete your masternode setup: "
+    echo -e " 1. Please copy the above file and paste it into the masternode.conf "
+    echo -e "    file on your local wallet. (insert txid info to end of each line) "
+    echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
+    echo -e "    installation and begin syncing the blockchain. "
+    echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
+    echo -e "    and then you may click Start Missing to start your new masternodes. "
+    echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
+    echo -e "    you may need to start the masternodes in your local wallet again.\n"
+    echo -e "${lightred} * * Note: This VPS will now automatically restart * * ${nocolor}\n"
+    touch $INSTALLDIR/temp/vpsvaletreboot.txt
+    shutdown -r now "Server is going down for upgrade."
 }
 
 # This is where the script actually starts
