@@ -23,7 +23,7 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 
 # Features
 
-- 5 minute, 'one click' install through our web GUI. No need to login to your VPS.
+- 5 minute, 'one click' install through our web GUI. No need to log into your VPS.
 - We never ask for your personal info so there is nothing to be hacked.
 - Automatic server hardening. Your VPS will be more secure than most.
 - Automatically generated masternode.conf, copy paste ready into your local wallet.
