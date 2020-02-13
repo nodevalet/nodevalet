@@ -628,7 +628,10 @@ EOT
             # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
             if [ "$PRIVATEIP" != "$PUBLICIP" ]
             then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
-                echo -e " Your masternode is on a LAN, replacing $PRIVATEIP with $PUBLICIP " | tee -a "$LOGFILE"
+                echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
+                echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}Since your masternode seems to be on a LAN, we will replace your " | tee -a "$LOGFILE"
+                echo -e " private IP address with the public one in the masternode.conf file. ${nocolor}" | tee -a "$LOGFILE"
             fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
