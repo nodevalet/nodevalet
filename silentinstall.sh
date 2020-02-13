@@ -358,7 +358,7 @@ function silent_harden() {
         bash get-hard.sh
     fi
     echo -e " Installing jq and jp2a and figlet and unzip and at packages" >> $LOGFILE
-    apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
     echo -e "Inserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
@@ -630,8 +630,8 @@ EOT
             then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
                 echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
                 echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
-                echo -e " ${lightgreen}Since your masternode seems to be on a LAN, we will replace your " | tee -a "$LOGFILE"
-                echo -e " private IP address with the public one in the masternode.conf file. ${nocolor}" | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}Your masternode seems to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
+                echo -e " IPv4 address with a public one in the masternode.conf file if needed. ${nocolor}" | tee -a "$LOGFILE"
             fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
@@ -653,7 +653,7 @@ EOT
                 curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
 
                 # log and display original curl API and response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet sent the following API curl <--"   | tee -a "$LOGFILE"
+                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> Your VPS sent NodeValet following request <--"   | tee -a "$LOGFILE"
                 [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo -e " curl -s $CURLAPI \n"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
                 # read curl API response into variable
