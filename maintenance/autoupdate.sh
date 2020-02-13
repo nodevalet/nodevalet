@@ -34,7 +34,7 @@ then echo -e " Skipping autoupdate.sh because the server is shutting down.\n" | 
     exit
 fi
 
-# remove activating flag if it exists
+# delay task if activate_masternodes is running
 if [ -e "$INSTALLDIR/temp/activating" ]
 then sleep 1800
 rm $INSTALLDIR/temp/activating

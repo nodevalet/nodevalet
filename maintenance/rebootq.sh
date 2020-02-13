@@ -38,6 +38,12 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running rebootq.sh" | tee -a "$LOGFI
     exit
 fi
 
+# delay task if activate_masternodes is running
+if [ -e "$INSTALLDIR/temp/activating" ]
+then sleep 1800
+rm $INSTALLDIR/temp/activating
+fi
+
 # write which packages require it
 cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
