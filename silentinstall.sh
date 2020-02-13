@@ -48,7 +48,9 @@ function setup_environment() {
     echo -e " ################################################################" | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
     echo -e " -----------------------------------------------------${nocolor}" | tee -a "$LOGFILE"
+}
 
+function gather_info() {
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
     then PROJECT=$(cat $INFODIR/vpscoin.info)
@@ -347,6 +349,21 @@ function setup_environment() {
 
     # enable softwrap so masternode.conf file can be easily copied
     sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
+}
+
+function check_distro() {
+    # currently only for Ubuntu 16.04
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+        if [[ "${VERSION_ID}" != "16.04" ]] ; then
+            echo "This script only supports Ubuntu 16.04 LTS, exiting."
+            exit 1
+        fi
+    else
+        # no, thats not ok!
+        echo "This script only supports Ubuntu 16.04, exiting."
+        exit 1
+    fi
 }
 
 function silent_harden() {
@@ -798,6 +815,9 @@ function restart_server() {
 # This is where the script actually starts
 
 setup_environment
+check_distro
+
+gather_info
 # moved initial NodeValet callback near beginning of setup_environment to provide faster response
 
 silent_harden
