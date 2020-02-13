@@ -630,7 +630,7 @@ EOT
             then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
                 echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
                 echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
-                echo -e " ${lightgreen}Your masternode seems to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}This masternode seems to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
                 echo -e " IPv4 address with a public one in the masternode.conf file if needed. ${nocolor}" | tee -a "$LOGFILE"
             fi
 
