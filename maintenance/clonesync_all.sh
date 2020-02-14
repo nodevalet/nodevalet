@@ -39,6 +39,12 @@ nocolor=$'\e[0m' # no color
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
+# exit if there is only one masternode
+if (($MNS = 1))
+then echo -e " This VPS has only one masternode, exiting clonesync_all.sh\n"  | tee -a "$LOGFILE"
+exit
+fi
+
 touch $INSTALLDIR/temp/updating
 
 function remove_crons() {

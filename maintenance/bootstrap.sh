@@ -45,6 +45,12 @@ nocolor=$'\e[0m' # no color
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
+# exit if there is only one masternode
+if (($MNS = 1))
+then echo -e " This VPS has only one masternode, exiting bootrap.sh\n"  | tee -a "$LOGFILE"
+exit
+fi
+
 function check_if_synced() {
     # check if all masternodes are already synced
     dSYNCED=$(ls /var/tmp/nodevalet/temp | grep nosync)
