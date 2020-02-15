@@ -128,7 +128,7 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
+        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 30 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
@@ -140,7 +140,7 @@ function check_blocksync() {
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
             rm -rf $INSTALLDIR/getinfo_n${i} --force
-            sleep 10
+            sleep 30
         fi
     done
 
