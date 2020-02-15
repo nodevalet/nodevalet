@@ -123,9 +123,10 @@ function bootstrap() {
         # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
         echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"${s}
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/blocks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/chainstate" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/sporks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin
     done
     echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
