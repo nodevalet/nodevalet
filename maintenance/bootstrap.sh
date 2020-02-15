@@ -46,7 +46,7 @@ nocolor=$'\e[0m' # no color
 shopt -s extglob
 
 # exit if there is only one masternode
-if (($MNS = 1))
+if [ $MNS = 1 ]
 then echo -e " This VPS has only one masternode, exiting bootrap.sh\n"  | tee -a "$LOGFILE"
 exit
 fi

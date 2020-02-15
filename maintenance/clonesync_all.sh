@@ -13,6 +13,12 @@ HNAME=$(<$INFODIR/vpshostname.info)
 
 clear
 
+# exit if there is only one masternode
+if [ $MNS = 1 ]
+then echo -e " This VPS has only one masternode, not running clonesync_all.sh\n"  | tee -a "$LOGFILE"
+exit
+fi
+
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
 echo -e " --> Attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
@@ -38,12 +44,6 @@ nocolor=$'\e[0m' # no color
 
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
-
-# exit if there is only one masternode
-if (($MNS = 1))
-then echo -e " This VPS has only one masternode, exiting clonesync_all.sh\n"  | tee -a "$LOGFILE"
-exit
-fi
 
 touch $INSTALLDIR/temp/updating
 
