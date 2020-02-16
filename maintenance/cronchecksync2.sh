@@ -46,8 +46,7 @@ nocolor=$'\e[0m' # no color
 i=$1
 
 if [ -z "$i" ]
-then echo -e "\n"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
+then echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Running cronchecksync.sh" | tee -a "$LOGFILE"
     echo -e " cronchecksync.sh was called without an argument and will now exit.\n"  | tee -a "$LOGFILE"
     exit
 fi
