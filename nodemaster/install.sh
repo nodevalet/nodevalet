@@ -644,11 +644,13 @@ function final_call() {
         cp "${SCRIPTPATH}"/scripts/activate_masternodes.sh "${MNODE_HELPER}"_"${CODENAME}"
         echo "">> "${MNODE_HELPER}"_"${CODENAME}"
 
+        echo "touch /var/tmp/nodevalet/temp/activating" >> "${MNODE_HELPER}"_"${CODENAME}"
         for NUM in $(seq 1 "${count}"); do
             echo "systemctl daemon-reload" >> "${MNODE_HELPER}"_"${CODENAME}"
             echo "systemctl enable ${CODENAME}_n${NUM}" >> "${MNODE_HELPER}"_"${CODENAME}"
             echo "systemctl restart ${CODENAME}_n${NUM}" >> "${MNODE_HELPER}"_"${CODENAME}"
         done
+        echo "rm -f /var/tmp/nodevalet/temp/activating" >> "${MNODE_HELPER}"_"${CODENAME}"
 
         chmod u+x "${MNODE_HELPER}"_"${CODENAME}"
     fi
