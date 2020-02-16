@@ -37,7 +37,7 @@ fi
 # delay task if activate_masternodes is running
 if [ -e "$INSTALLDIR/temp/activating" ]
 then sleep 1800
-rm $INSTALLDIR/temp/activating
+rm -f $INSTALLDIR/temp/activating
 fi
 
 # update .gitstring binary search string variable and .env
@@ -71,8 +71,9 @@ GIT_URL=$(<$INFODIR/vps.GIT_URL.info)
 GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
 if [ -e $INSTALLDIR/temp/updating ]
-then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate.sh detected update flag, wait 30 min" | tee -a "$LOGFILE"
     echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+    sleep 1800
     rm -f $INSTALLDIR/temp/updating
 fi
 
