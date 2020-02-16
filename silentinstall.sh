@@ -808,13 +808,13 @@ function restart_server() {
     echo -e " Please follow the steps below to complete your masternode setup: "
     echo -e " 1. Please copy the above file and paste it into the masternode.conf "
     echo -e "    file on your local wallet. (insert txid info to end of each line) "
-    echo -e " 2. This VPS will automatically restart in 1 minute to complete the "
-    echo -e "    installation and begin syncing the blockchain. "
+    echo -e " 2. This VPS will automatically restart now to complete the installation"
+    echo -e "    and begin syncing the blockchain. "
     echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
     echo -e "    and then you may click Start Missing to start your new masternodes. "
     echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
     echo -e "    you may need to start the masternodes in your local wallet again.\n"
-    echo -e "${lightred} * * Note: This VPS will now automatically restart * * ${nocolor}\n"
+    echo -e "${lightred} * * Note: This VPS will now automatically restart to finish setup * * ${nocolor}\n"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
     sleep .5
     shutdown -r now "Server is going down for upgrade."
