@@ -212,13 +212,13 @@ function gather_info() {
     else
         echo -e "\n You can choose to enter your own masternode genkeys or you can let"
         echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
-        echo -e " secure, but it's faster if your server does it for you. An example of when you "
-        echo -e " would want to enter them yourself would be if you are trying to transfer"
-        echo -e " existing masternodes to this VPS without interruption."
+        echo -e " secure, but it's faster if your server does it for you. An example of when  "
+        echo -e " you would want to enter them yourself would be if you are trying to "
+        echo -e " transfer existing masternodes to this VPS without interruption."
         echo -e -n "${cyan}"
         while :; do
-            echo -e "\n"
-            read -n 1 -s -r -p " Would you like your server to generate genkeys for you? y/n " GETGENKEYS
+            echo -e "\n Would you like your server to generate genkeys for you? y/n "
+            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
             if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
             then
                 break
@@ -266,8 +266,7 @@ function gather_info() {
         echo -e " also skip this step now and edit the masternode.conf file later. "
         echo -e -n "${cyan}"
         while :; do
-            echo -e "\n"
-            echo -e " Would you like to manually enter your own TXIDs now? y/n "
+            echo -e "\n Would you like to manually enter your own TXIDs now? y/n "
             read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'no' " GETTXIDS
             if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
             then
