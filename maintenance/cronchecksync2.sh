@@ -100,9 +100,11 @@ function check_blocksync() {
         touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
         echo -e "$(date +%m.%d.%Y_%H:%M:%S) -- not running" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
 
+            # if gettinginfo, exit without writing logs
             if [ -e "$INSTALLDIR/temp/gettinginfo" ]
             then rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
+            
             elif [ -e "$INSTALLDIR/temp/shuttingdown" ]
             then rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
@@ -120,6 +122,13 @@ function check_blocksync() {
         # resume after running sync_check
         if [ "$SYNCED" = "yes" ]
         then echo -e "${lightgreen} --> Masternode ${PROJECT}_n${i} is synced${nocolor}\n"
+
+            # if gettinginfo, exit without writing logs
+            if [ -e "$INSTALLDIR/temp/gettinginfo" ]
+            then rm -rf $INSTALLDIR/getinfo_n${i} --force
+            exit
+            fi
+
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync --force
@@ -129,6 +138,12 @@ function check_blocksync() {
                 fi
             exit
         else echo -e "${lightred} --> Masternode ${PROJECT}_n${i} is NOT synced${nocolor}\n"
+            
+            # if gettinginfo, exit without writing logs
+            if [ -e "$INSTALLDIR/temp/gettinginfo" ]
+            then rm -rf $INSTALLDIR/getinfo_n${i} --force
+            exit
+            
             touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
