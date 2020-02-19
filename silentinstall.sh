@@ -127,8 +127,8 @@ function gather_info() {
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
     echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
     MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
+    echo -e " Setting masternode-binaries to MNODE_BINARIES : vpsbinaries.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)

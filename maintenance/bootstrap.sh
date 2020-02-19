@@ -156,6 +156,7 @@ function bootstrap() {
 
     else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
         rm $INSTALLDIR/temp/bootstrapping --force
+        # checksync 1 ; not sure if this line is needed or not
         exit
     fi
     
