@@ -76,8 +76,8 @@ Meanwhile, enjoy the service!
 
 # Links
 
-[Website](https://www.nodevalet.io)
-[Twitter](https://twitter.com/nodevalet)
-[Discord](https://discord.gg/dx2scUU)
-[Bitcointalk](https://bitcointalk.org/index.php?topic=5226866)
+- [Website](https://www.nodevalet.io)
+- [Twitter](https://twitter.com/nodevalet)
+- [Discord](https://discord.gg/dx2scUU)
+- [Bitcointalk](https://bitcointalk.org/index.php?topic=5226866)
 
