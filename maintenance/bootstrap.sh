@@ -155,10 +155,10 @@ function bootstrap() {
             | wget -i -
 
     else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
-        checksync 1
         rm $INSTALLDIR/temp/bootstrapping --force
         exit
     fi
+    
 echo -e "\n ${lightcyan}Bootstrap has been downloaded, extracting...${nocolor}\n"
         BOOTSTRAPZIP="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
