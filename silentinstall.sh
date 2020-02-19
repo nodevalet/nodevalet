@@ -122,11 +122,12 @@ function gather_info() {
     echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
-    cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[d}]' > $INFODIR/vpsbinaries.info
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
     cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
+    echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
+    MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
+
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
