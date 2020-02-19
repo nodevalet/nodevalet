@@ -6,6 +6,7 @@ LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INFODIR='/var/tmp/nvtemp'
 # NOTE: below is MNODE_DAEMOND not MNODE_DAEMON (don't break it!)
 MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
