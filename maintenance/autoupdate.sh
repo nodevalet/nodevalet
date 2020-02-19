@@ -8,6 +8,7 @@ PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
@@ -47,11 +48,13 @@ curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaste
 curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
 
 # set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
+MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
 echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
+cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[d}]' > $INFODIR/vpsbinaries.info
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
 rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
 
@@ -99,8 +102,8 @@ function update_binaries() {
         # mkdir 2>/dev/null
 
         # echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
-        cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
-        rm /usr/local/bin/${PROJECT}*
+        cp /usr/local/bin/${MNODE_BINARIES}* /usr/local/bin/backup
+        rm /usr/local/bin/${MNODE_BINARIES}*
 
         curl -s "$GITAPI_URL" \
             | grep browser_download_url \
@@ -116,12 +119,12 @@ function update_binaries() {
         rm -f "$TARBALL"
         cd  "$(\ls -1dt ./*/ | head -n 1)"
         find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp ${PROJECT}* '/usr/local/bin'
+        cp ${MNODE_BINARIES}* '/usr/local/bin'
         cd ..
         rm -r -f *
         cd
         cd /usr/local/bin
-        chmod 777 ${PROJECT}*
+        chmod 777 ${MNODE_BINARIES}*
 
         echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
         activate_masternodes_${PROJECT}
@@ -169,7 +172,7 @@ function update_from_source() {
         fi
 
         cd /usr/local/bin && rm -f !"("activate_masternodes_$PROJECT")"
-        cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
+        cp $INSTALLDIR/temp/$PROJECT/src/{"$MNODE_BINARIES"-cli,"$MNODE_BINARIES"d,"$MNODE_BINARIES"-tx} /usr/local/bin/
         rm -rf $INSTALLDIR/temp/$PROJECT
         cd $INSTALLDIR/temp
         echo -e " Starting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
@@ -178,7 +181,7 @@ function update_from_source() {
         check_project
         echo -e " It looks like we couldn't rebuild ${PROJECTt} from source, either" >> "$LOGFILE"
         echo -e " Restoring original binaries from /usr/local/bin/backup" | tee -a "$LOGFILE"
-        cp /usr/local/bin/backup/${PROJECT}* /usr/local/bin/
+        cp /usr/local/bin/backup/${MNODE_BINARIES}* /usr/local/bin/
         activate_masternodes_$PROJECT
         sleep 2
         check_restore

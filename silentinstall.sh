@@ -122,7 +122,9 @@ function gather_info() {
     echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
+    cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[d}]' > $INFODIR/vpsbinaries.info
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
+    MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
     cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
     echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
@@ -424,19 +426,19 @@ function install_binaries() {
         rm -f "$TARBALL"
         cd  "$(\ls -1dt ./*/ | head -n 1)"
         find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp "${PROJECT}"* '/usr/local/bin'
+        cp "${MNODE_BINARIES}"* '/usr/local/bin'
         cd ..
         rm -r -f *
         cd
         cd /usr/local/bin
-        chmod 777 "${PROJECT}"*
+        chmod 777 "${MNODE_BINARIES}"*
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
     fi
 
     # check if binaries already exist, skip installing crypto packages if they aren't needed
-    dEXIST=$(ls /usr/local/bin | grep "${MNODE_DAEMON}")
+    dEXIST=$(ls /usr/local/bin | grep "${MNODE_BINARIES}")
 
     if [[ "${dEXIST}" ]]
     then echo -e "${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
@@ -467,18 +469,18 @@ function install_mns() {
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
         # check if $PROJECTd was built correctly and started
-        if ps -A | grep "$MNODE_DAEMON" > /dev/null
+        if ps -A | grep "$MNODE_BINARIES" > /dev/null
         then
             # report back to mother
-            if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+            if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_BINARIES} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
 
         else
             for ((H=1;H<=10;H++));
             do
-                if ps -A | grep "$MNODE_DAEMON" > /dev/null
+                if ps -A | grep "$MNODE_BINARIES" > /dev/null
                 then
                     # report back to mother
-                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_DAEMON} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_BINARIES} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
                     break
                 else
 

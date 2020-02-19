@@ -12,6 +12,7 @@ PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # extglob was necessary to make rm -- ! possible
