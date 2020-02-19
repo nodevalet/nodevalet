@@ -61,7 +61,7 @@ function gather_info() {
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
     else echo -e " Please choose from one of the following supported coins to install:"
-        echo -e "    helium | audax | pivx | phore \n"
+        echo -e "    helium | audax | pivx | phore | mue\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT
