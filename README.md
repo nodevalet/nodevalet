@@ -73,3 +73,11 @@ We've added a few small scriptlets to make the most common commands a lot easier
 We may add more from time to time so stay tuned!
 
 Meanwhile, enjoy the service!
+
+# Links
+
+- [Website](https://www.nodevalet.io)
+- [Twitter](https://twitter.com/nodevalet)
+- [Discord](https://discord.gg/dx2scUU)
+- [Bitcointalk](https://bitcointalk.org/index.php?topic=5226866)
+
