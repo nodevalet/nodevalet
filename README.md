@@ -8,7 +8,7 @@ To get started, visit us on the web https://nodevalet.io and click the "Get Star
 cd /var/tmp ; sudo git clone https://github.com/nodevalet/nodevalet ; cd nodevalet; sudo bash silentinstall.sh
 ```
 
-NodeValet helps you securely deploy multiple Masternodes on a VPS of your choosing in a matter of minutes. Fully-automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention. A true set-and-forget solution.
+NodeValet helps you securely deploy multiple Masternodes on a VPS of your choosing in a matter of minutes. We combine fully-automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention. A true set-and-forget solution.
 
 Self-hosting your own Masternodes has a number of benefits. For starters, it is way more cost-effective than paying someone else to do it. The next best advantage is that you retain full control over your Masternodes so your collateral never leaves your wallet. It can be challenging to set up and maintain Masternodes by yourself, but with NodeValet’s automated VPS installations, you can rapidly deploy fully-autonomous and hardened virtual servers that require little to no maintenance without so much as touching a command prompt. 
 
