@@ -22,7 +22,7 @@ then echo -e " Skipping makerun.sh because bootstrap is in progress.\n"
 fi
 
 if [ -e "$INSTALLDIR/temp/shuttingdown" ]
-then echo -e " Skipping makerun.sh because the server is shutting down.\n" | tee -a "$LOGFILE"
+then echo -e " Skipping makerun.sh because the server is shutting down.\n"
     exit
 fi
 

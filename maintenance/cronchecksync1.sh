@@ -19,6 +19,11 @@ then echo -e " Skipping cronchecksync1.sh because the server is shutting down.\n
     exit
 fi
 
+if [ -e "$INSTALLDIR/temp/updating" ]
+then echo -e " Skipping cronchecksync1.sh because the server is updating.\n"
+    exit
+fi
+
 if [ -e "$INSTALLDIR/temp/activating" ]
 then echo -e " Skipping cronchecksync1.sh because the server is activating masternodes.\n"
     exit
