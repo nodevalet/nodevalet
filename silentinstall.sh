@@ -149,7 +149,7 @@ function gather_info() {
     elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 300}')
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 325}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n\n This server's memory can safely support $MAXNODES masternodes.\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
