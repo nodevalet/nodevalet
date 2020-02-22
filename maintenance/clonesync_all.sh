@@ -13,6 +13,12 @@ HNAME=$(<$INFODIR/vpshostname.info)
 
 clear
 
+# exit if there is only one masternode
+if [ $MNS = 1 ]
+then echo -e " This VPS has only one masternode, not running clonesync_all.sh\n"  | tee -a "$LOGFILE"
+exit
+fi
+
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
 echo -e " --> Attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
@@ -117,9 +123,10 @@ function bootstrap() {
         # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
         echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"${s}
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
-        cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/blocks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/chainstate" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/sporks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin
     done
     echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
@@ -134,11 +141,11 @@ function restart_mns() {
         systemctl start "${PROJECT}"_n${i}
         let "stime=3*$i"
         echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
-        
-        # display countdown timer on screen   
-        seconds=$stime; date1=$((`date +%s` + $seconds)); 
-        while [ "$date1" -ge `date +%s` ]; do 
-            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
+
+        # display countdown timer on screen
+        seconds=$stime; date1=$((`date +%s` + $seconds));
+        while [ "$date1" -ge `date +%s` ]; do
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
             sleep 0.5
         done
     done
@@ -151,7 +158,7 @@ function restore_crons() {
     echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
     (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
     echo -e "${white}  --> Make sure all daemons are running every 10 minutes${nocolor}"
-    (crontab -l ; echo "*/10 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
+    (crontab -l ; echo "7,17,27,37,47,57 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
     (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
     echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"

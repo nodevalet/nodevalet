@@ -21,6 +21,16 @@ then echo -e " Skipping makerun.sh because bootstrap is in progress.\n"
     exit
 fi
 
+if [ -e "$INSTALLDIR/temp/shuttingdown" ]
+then echo -e " Skipping makerun.sh because the server is shutting down.\n"
+    exit
+fi
+
+if [ -e "$INSTALLDIR/temp/activating" ]
+then echo -e " Skipping makerun.sh because the server is activating masternodes.\n"
+    exit
+fi
+
 if [ -e "$INSTALLDIR/temp/updating" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running makerun.sh" | tee -a "$LOGFILE"
     echo -e " It looks like I'm busy with something else; skipping make run.\n"  | tee -a "$LOGFILE"
@@ -33,6 +43,8 @@ EXP_DAEMON=$(cat $INFODIR/vpsnumber.info)
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
+    touch $INSTALLDIR/temp/activating
     bash /usr/local/bin/activate_masternodes_"$PROJECT"
+    rm $INSTALLDIR/temp/activating
 else echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Found $CUR_DAEMON of $EXP_DAEMON expected daemons. All is well. \n"
 fi

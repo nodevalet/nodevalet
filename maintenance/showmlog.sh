@@ -23,7 +23,7 @@ fi
 
 clear
 echo -e "\n ###############################################################"
-echo -e " # This script will now display the NodeValet installation log #"
+echo -e " # This script will now display the NodeValet maintenance log  #"
 echo -e " # which is stored at /var/tmp/nodevalet/logs/maintenance.log  #"
 echo -e " ###############################################################\n"
 

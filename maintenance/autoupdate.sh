@@ -8,6 +8,7 @@ PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 ### define colors ###
@@ -29,6 +30,17 @@ darkgray=$'\033[1;30m'  # dark gray
 black=$'\033[0;30m'  # black
 nocolor=$'\e[0m' # no color
 
+if [ -e "$INSTALLDIR/temp/shuttingdown" ]
+then echo -e " Skipping autoupdate.sh because the server is shutting down.\n" | tee -a "$LOGFILE"
+    exit
+fi
+
+# delay task if activate_masternodes is running
+if [ -e "$INSTALLDIR/temp/activating" ]
+then sleep 1800
+rm -f $INSTALLDIR/temp/activating
+fi
+
 # update .gitstring binary search string variable and .env
 cd $INSTALLDIR/nodemaster/config/$PROJECT
 echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Downloading current $PROJECT.gitstring & .env"
@@ -36,13 +48,15 @@ curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaste
 curl -LJO https://raw.githubusercontent.com/nodevalet/nodevalet/master/nodemaster/config/$PROJECT/$PROJECT.env
 
 # set mnode daemon name from project.env
-MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
+MNODE_DAEMON=$(grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
 echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
-sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  >> log 2>&1
+sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
 cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
 rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
+echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
@@ -60,8 +74,9 @@ GIT_URL=$(<$INFODIR/vps.GIT_URL.info)
 GITSTRING=$(cat $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.gitstring)
 
 if [ -e $INSTALLDIR/temp/updating ]
-then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running autoupdate.sh" | tee -a "$LOGFILE"
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate.sh detected update flag, wait 30 min" | tee -a "$LOGFILE"
     echo -e " Removing maintenance flag that was leftover from previous activity.\n"  | tee -a "$LOGFILE"
+    sleep 1800
     rm -f $INSTALLDIR/temp/updating
 fi
 
@@ -85,10 +100,10 @@ function update_binaries() {
         systemctl stop $PROJECT*
         if [ ! -d /usr/local/bin/backup ]; then mkdir /usr/local/bin/backup ; fi
         # mkdir 2>/dev/null
-        
+
         # echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
-        cp /usr/local/bin/${PROJECT}* /usr/local/bin/backup
-        rm /usr/local/bin/${PROJECT}* 
+        cp /usr/local/bin/${MNODE_BINARIES}* /usr/local/bin/backup
+        rm /usr/local/bin/${MNODE_BINARIES}*
 
         curl -s "$GITAPI_URL" \
             | grep browser_download_url \
@@ -104,12 +119,12 @@ function update_binaries() {
         rm -f "$TARBALL"
         cd  "$(\ls -1dt ./*/ | head -n 1)"
         find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp ${PROJECT}* '/usr/local/bin'
+        cp ${MNODE_BINARIES}* '/usr/local/bin'
         cd ..
         rm -r -f *
         cd
         cd /usr/local/bin
-        chmod 777 ${PROJECT}*
+        chmod 777 ${MNODE_BINARIES}*
 
         echo -e " Starting masternodes after installation of new ${PROJECTt} binaries" >> "$LOGFILE"
         activate_masternodes_${PROJECT}
@@ -157,7 +172,7 @@ function update_from_source() {
         fi
 
         cd /usr/local/bin && rm -f !"("activate_masternodes_$PROJECT")"
-        cp $INSTALLDIR/temp/$PROJECT/src/{"$PROJECT"-cli,"$PROJECT"d,"$PROJECT"-tx} /usr/local/bin/
+        cp $INSTALLDIR/temp/$PROJECT/src/{"$MNODE_BINARIES"-cli,"$MNODE_BINARIES"d,"$MNODE_BINARIES"-tx} /usr/local/bin/
         rm -rf $INSTALLDIR/temp/$PROJECT
         cd $INSTALLDIR/temp
         echo -e " Starting masternodes after building ${PROJECTt} from source" >> "$LOGFILE"
@@ -166,7 +181,7 @@ function update_from_source() {
         check_project
         echo -e " It looks like we couldn't rebuild ${PROJECTt} from source, either" >> "$LOGFILE"
         echo -e " Restoring original binaries from /usr/local/bin/backup" | tee -a "$LOGFILE"
-        cp /usr/local/bin/backup/${PROJECT}* /usr/local/bin/
+        cp /usr/local/bin/backup/${MNODE_BINARIES}* /usr/local/bin/
         activate_masternodes_$PROJECT
         sleep 2
         check_restore
@@ -184,6 +199,7 @@ function check_project() {
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
         echo -e "${lightgreen}  --> ${PROJECTt} was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+        touch $INSTALLDIR/temp/shuttingdown
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -191,6 +207,7 @@ function check_project() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
         exit
 
@@ -213,12 +230,14 @@ function check_restore() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
         exit
 
     else echo -e "${lightred} Restoring the original binaries failed, ${MNODE_DAEMON} is not running... " | tee -a "$LOGFILE"
         echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
         echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
+        touch $INSTALLDIR/temp/shuttingdown
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -226,6 +245,7 @@ function check_restore() {
             systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
+        rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
     fi
 }

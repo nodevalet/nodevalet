@@ -38,6 +38,12 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running rebootq.sh" | tee -a "$LOGFI
     exit
 fi
 
+# delay task if activate_masternodes is running
+if [ -e "$INSTALLDIR/temp/activating" ]
+then sleep 1800
+rm $INSTALLDIR/temp/activating
+fi
+
 # write which packages require it
 cat /run/reboot* > $INSTALLDIR/temp/REBOOTREQ
 
@@ -55,8 +61,8 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     # touch $INSTALLDIR/temp/updating
     # for ((i=1;i<=$MNS;i++));
     # do
-        # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-        # systemctl stop "${PROJECT}"_n${i}
+    # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+    # systemctl stop "${PROJECT}"_n${i}
     # done
     # rm -f $INSTALLDIR/temp/updating
     shutdown -r now "Server is going down for upgrade."

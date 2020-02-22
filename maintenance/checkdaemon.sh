@@ -12,6 +12,7 @@ PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # extglob was necessary to make rm -- ! possible
@@ -19,6 +20,11 @@ shopt -s extglob
 
 if [ -e "$INSTALLDIR/temp/bootstrapping" ]
 then echo -e " Skipping checkdaemon.sh because bootstrap is in progress.\n"
+    exit
+fi
+
+if [ -e "$INSTALLDIR/temp/shuttingdown" ]
+then echo -e " Skipping checkdaemon.sh because the server is shutting down.\n" | tee -a "$LOGFILE"
     exit
 fi
 
@@ -38,33 +44,33 @@ do
     echo -e " Checking for stuck blocks on masternode ${PROJECT}_n${i}"
     if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then previousBlock='null'
-    else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
+    else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
     fi
 
     /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
     currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
-    
+
     if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
     then currentBlock='null'
-    else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
+    else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
     fi
 
     if [ "$currentBlock" == "-1" ]
     then
-        echo -e " Current block is $currentBlock; masternode appears to be starting up\n" 
-    elif [ "$previousBlock" == "$currentBlock" ]
+        echo -e " Current block is $currentBlock; masternode appears to be starting up\n"
+elif [ "$previousBlock" == "$currentBlock" ]
     then
         echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck."  | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
         echo -e " "
         systemctl stop "${PROJECT}"_n${i}
 
-# display countdown timer on screen   
-seconds=5; date1=$((`date +%s` + $seconds)); 
-while [ "$date1" -ge `date +%s` ]; do 
-  echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
-  sleep 0.5
-done
+        # display countdown timer on screen
+        seconds=5; date1=$((`date +%s` + $seconds));
+        while [ "$date1" -ge `date +%s` ]; do
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+            sleep 0.5
+        done
 
         systemctl start "${PROJECT}"_n${i}
 
@@ -76,24 +82,24 @@ done
             echo -e " be left in maintenance mode and will have to delete the file :"
             echo -e " $INSTALLDIR/temp/updating before other scriptlets will work.\n"
 
-# display countdown timer on screen   
-seconds=300; date1=$((`date +%s` + $seconds)); 
-while [ "$date1" -ge `date +%s` ]; do 
-  echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
-  sleep 0.5
-done
+            # display countdown timer on screen
+            seconds=300; date1=$((`date +%s` + $seconds));
+            while [ "$date1" -ge `date +%s` ]; do
+                echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+                sleep 0.5
+            done
 
             echo -e " Checking if restarting solved the problem on masternode ${PROJECT}_n${i}"
 
             if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
             then previousBlock='null'
-            else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
+            else previousBlock=$(cat $INSTALLDIR/temp/blockcount${i})
             fi
 
             /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf getblockcount > $INSTALLDIR/temp/blockcount${i}
             if [ ! -s "$INSTALLDIR/temp/blockcount$i" ]
             then currentBlock='null'
-            else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})   
+            else currentBlock=$(cat $INSTALLDIR/temp/blockcount${i})
             fi
 
             if [ "$previousBlock$" == "$currentBlock$" ]; then
@@ -124,7 +130,7 @@ done
             # sudo systemctl start "${PROJECT}"_n${i}
 
         else unset $FIXED
-            echo " Glad to see that worked, exiting loop for this MN "
+            echo -e " Glad to see that worked, exiting loop for this MN \n"
         fi
 
     else echo -e " Previous block is $previousBlock and current block is $currentBlock."

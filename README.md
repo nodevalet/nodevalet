@@ -2,7 +2,13 @@
 
 This is the repository for the https://nodevalet.io Masternode installation service.
 
-NodeValet helps you securely deploy multiple Masternodes on a VPS of your choosing in a matter of minutes. Fully-automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention. A true set-and-forget solution.
+To get started, visit us on the web https://nodevalet.io and click the "Get Started" link, or if you already have your own ip6 VPS enabled and running Ubuntu 16.04, try running the "headless" installation script from terminal:
+
+```bash
+cd /var/tmp ; sudo git clone https://github.com/nodevalet/nodevalet ; cd nodevalet; sudo bash silentinstall.sh
+```
+
+NodeValet helps you securely deploy multiple Masternodes on a VPS of your choosing in a matter of minutes. We combine fully-automated deployments with the convenience of a hosted solution. NodeValet Masternodes come pre-installed with a variety of maintenance scripts that make sure your Masternode is always online, always secure and even handles wallet updates without user intervention. A true set-and-forget solution.
 
 Self-hosting your own Masternodes has a number of benefits. For starters, it is way more cost-effective than paying someone else to do it. The next best advantage is that you retain full control over your Masternodes so your collateral never leaves your wallet. It can be challenging to set up and maintain Masternodes by yourself, but with NodeValet’s automated VPS installations, you can rapidly deploy fully-autonomous and hardened virtual servers that require little to no maintenance without so much as touching a command prompt. 
 
@@ -10,17 +16,17 @@ Are you a tinkerer who prefers a more hands-on approach? That works, too! Since 
 
 API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your Masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
-For now NodeValet supports Helium, Condominium and PIVX. To try it out please head over to https://nodevalet.io.
+For now NodeValet supports Helium, Audax, MUE, Phore, and PIVX. To try it out please head over to https://nodevalet.io.
 We're working to add a variety of other Masternode coins to the service in the near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
 
 # Features
 
-- 5 minute, 'one click' install through our web GUI. No need to login to your VPS.
-- No logging. We don't save as much as a cookie. Not retaining info means there is nothing there to be hacked.
-- Automatically generated masternode.conf, copy paste ready.
+- 5 minute, 'one click' install through our web GUI. No need to log into your VPS.
+- We never ask for your personal info so there is nothing to be hacked.
 - Automatic server hardening. Your VPS will be more secure than most.
+- Automatically generated masternode.conf, copy paste ready into your local wallet.
 - Automated maintenance. Your VPS will continuously monitor the status of your Masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's Github twice a day, and when it sees an update, install it.
 
@@ -67,3 +73,11 @@ We've added a few small scriptlets to make the most common commands a lot easier
 We may add more from time to time so stay tuned!
 
 Meanwhile, enjoy the service!
+
+# Links
+
+- [Website](https://www.nodevalet.io)
+- [Twitter](https://twitter.com/nodevalet)
+- [Discord](https://discord.gg/dx2scUU)
+- [Bitcointalk](https://bitcointalk.org/index.php?topic=5226866)
+

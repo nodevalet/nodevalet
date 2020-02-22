@@ -11,6 +11,11 @@ PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
+if [ -e "$INSTALLDIR/temp/activating" ]
+then echo -e " Skipping checksync.sh because the server is activating masternodes.\n"
+    exit
+fi
+
 # set hostname variable to the name planted by API installation script
 if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
 then HNAME=$(<$INFODIR/vpshostname.info)
@@ -123,7 +128,7 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 10 seconds${nocolor}\n"
+        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 30 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
@@ -135,7 +140,7 @@ function check_blocksync() {
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
             rm -rf $INSTALLDIR/getinfo_n${i} --force
-            sleep 10
+            sleep 30
         fi
     done
 
@@ -143,7 +148,7 @@ function check_blocksync() {
         # exit the script because syncing did not occur
         rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
-    else : ; fi
+else : ; fi
 
     #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
     #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
