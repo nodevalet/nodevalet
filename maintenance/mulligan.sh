@@ -104,6 +104,7 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin"
         echo -e "-------------------------------------------------------------- ${white}\n"
         rm -rf /usr/local/bin/*
+        rm -rf /root/.${PROJECT}
 
         echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"

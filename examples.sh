@@ -85,7 +85,7 @@ done
 # wc -l helium_n1_synced
 
 # to look for files on a hard drive containing a specific string
-find / -name "*mue*"
+find / -name "*helium*"
 
 # to look for files on a hard drive containing a specific string and delete them
-find / -name "mue_n*" -delete
+find / -name "helium_n*" -delete
