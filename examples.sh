@@ -83,3 +83,6 @@ done
 
 # display the number of lines in a file
 # wc -l helium_n1_synced
+
+# to look for files on a hard drive containing a specific string
+find / -type f -iname "*helium*"
