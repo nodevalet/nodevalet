@@ -537,6 +537,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
     sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
     sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
+    sudo ln -s $INSTALLDIR/maintenance/mnedit.sh /usr/local/bin/mnedit
     sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
     sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
     sudo ln -s $INSTALLDIR/maintenance/clonesync.sh /usr/local/bin/clonesync
