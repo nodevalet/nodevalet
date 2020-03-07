@@ -40,6 +40,45 @@ done
 
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
 echo -e " User has requested to add $NNODES new MN(s) to this VPS.\n"  >> $LOGFILE
+echo -e "\n Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.\n"
+}
+
+function collect_api() {
+
+# read API key if it exists, if not prompt for it
+
+echo -e " Adding $NNODES masternode(s) to your VPS requires 1 NodeValet Deployment credit.\n"
+APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
+curl -s "$APITEST" > $INSTALLDIR/temp/API.test.json
+APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
+! [[ "${APITESTRESPONSE}" == "Invalid key" ]] && echo -e "${lightgreen} Your original NodeValet Deployment Key is still valid\n${nocolor}" && rm -f $INSTALLDIR/temp/API.test.json && GOODKEY='true'
+    
+    if [[ "${GOODKEY}" == "true" ]]
+    then :
+    else echo -e "${lightred} Your original NodeValet Deployment Key is no longer valid\n${nocolor}"
+    echo -e " Before we can begin, we need to collect your NodeValet API Key."
+        echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
+        rm -rf $INFODIR/vpsapi.info
+        touch $INFODIR/vpsapi.info
+        echo -e -n " "
+        while :; do
+            echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
+            read -p "  --> " VPSAPI
+            echo -e "\n You entered this API Key: ${VPSAPI} "
+            read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
+            if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+            then APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
+                curl -s "$APITEST" > $INSTALLDIR/temp/API.test.json
+                APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
+                ! [[ "${APITESTRESPONSE}" == "Invalid key" ]] && echo -e "${lightgreen}NodeValet API Key is valid${nocolor}" && rm -f $INSTALLDIR/temp/API.test.json && break
+                echo -e "${lightred}The API Key you entered is invalid.${nocolor}"
+            else echo " "
+            fi
+        done
+        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
+        echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
+    fi
+
 }
 
 
@@ -70,6 +109,7 @@ echo -e "\n\n Next, we need to collect your $NNODES new masternode address or ad
 
 # This is where the script actually starts
 collect_nnodes
+collect_api
 collect_addresses
 
 
