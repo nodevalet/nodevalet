@@ -15,6 +15,9 @@ MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
 let PNODES=$MAXNODES-$MNS
 (($PNODES <= 0)) && echo " ${lightred}This server cannot support any more masternodes${nocolor}\n" && exit
 
+
+function collect_nnodes() {
+
 # read first argument to string
 NNODES=$1
 
@@ -35,13 +38,19 @@ while :; do
     fi
 done
 
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
+echo -e " User has requested to add $NNODES new MN(s) to this VPS.\n"  >> $LOGFILE
+}
 
+
+function collect_addresses() {
 # Gather new MN addresses
-echo -e "\n\n Next, we need to collect your $NNODES new masternode address(es)."
+echo -e "\n\n Next, we need to collect your $NNODES new masternode address or addresses."
 
         cp $INFODIR/vpsmnaddress.info $INFODIR/vpsmnaddressTEST.info
 
-        for ((i=1;i<=$NNODES;i++));
+        let TNODES=$NNODES+$MNS
+        for ((i=($MNS+1);i<=$TNODES;i++));
         do
             while :; do
                 echo -e "\n${cyan} Please enter the $PROJECTt address for new masternode #$i${nocolor}"
@@ -55,12 +64,18 @@ echo -e "\n\n Next, we need to collect your $NNODES new masternode address(es)."
             done
             
             echo -e "$MNADDP" >> $INFODIR/vpsmnaddressTEST.info
-            echo -e " -> New masternode $i address is: $MNADDP"
-            let NNUMBER=$MNS+$i
-            echo -e " This will be masternode #$NNUMBER on this VPS\n"
+            echo -e " -> New masternode $i address is: $MNADDP\n"
         done
+}
 
 # This is where the script actually starts
-# check_blocksync
+collect_nnodes
+collect_addresses
 
+
+
+
+cat $INFODIR/vpsmnaddressTEST.info
+sudo rm -rf $INFODIR/vpsmnaddressTEST.info
 exit
+
