@@ -1,5 +1,7 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
+
+### load variables ###
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
