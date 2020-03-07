@@ -132,13 +132,15 @@ function gather_info() {
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-    echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-    sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
-    ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+    echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
+    sed -i "s/ONLYNET=//" $INFODIR/vps.onlynet.info 2>&1
+    ONLYNET=$(<$INFODIR/vps.onlynet.info)
     if [ "$ONLYNET" > 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
+    echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
+        echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
     fi
 
     # read or assign number of masternodes to install
@@ -789,7 +791,6 @@ EOT
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
         cp $INSTALLDIR/temp/genkeys $INFODIR/vpsgenkeys.info
         cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
-        cp $INSTALLDIR/temp/ONLYNET $INFODIR/vps.onlynet.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
