@@ -787,13 +787,15 @@ EOT
 
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+        cp $INSTALLDIR/temp/genkeys $INFODIR/vpsgenkeys.info
+        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
+        cp $INSTALLDIR/temp/ONLYNET $INFODIR/vps.onlynet.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
-        rm $INSTALLDIR/temp/txid --force            ;   rm $INSTALLDIR/temp/mnaliases --force
         rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
-        cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
+        rm $INSTALLDIR/temp/txid --force            ;   rm $INSTALLDIR/temp/mnaliases --force
 
         # remove blank lines from installation log file and replace original
         grep -v -e '^[[:space:]]*$' "$LOGFILE" > $INSTALLDIR/logs/install.log

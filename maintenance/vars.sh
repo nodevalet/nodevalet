@@ -13,6 +13,7 @@ MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
 MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 VPSAPI=$(<$INFODIR/vpsapi.info)
+ONLYNET=$(<$INFODIR/vps.onlynet.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red

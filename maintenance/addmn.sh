@@ -107,10 +107,115 @@ echo -e "\n\n Next, we need to collect your $NNODES new masternode address or ad
         done
 }
 
+function gather_txids() {
+# Wait and notify user if they are not yet funded
+echo "gather TXID"
+}
+
+function install_mns() {
+
+        cd $INSTALLDIR/nodemaster || exit
+        echo -e "Invoking local Nodemaster's VPS script to add additional masternodes" | tee -a "$LOGFILE"
+        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$TNODES" | tee -a "$LOGFILE"
+        sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$TNODES"
+        echo -e "\n"
+
+        # check for presence of config file to presume success, cancel and report error if does not exist
+
+        # activate masternodes, or activate just FIRST masternode
+        echo -e "Activating your $PROJECTt masternode(s)" | tee -a "$LOGFILE"
+        ###### substitute in genkeys before starting them
+        # activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
+
+        # check if $PROJECTd was built correctly and started
+        if ps -A | grep "$MNODE_BINARIES" > /dev/null
+        then
+            # report back to mother
+            if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_BINARIES} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' has started ..."}' && echo -e " " ; fi
+
+        else
+            for ((H=1;H<=10;H++));
+            do
+                if ps -A | grep "$MNODE_BINARIES" > /dev/null
+                then
+                    # report back to mother
+                    if [ -e "$INFODIR"/fullauto.info ] ; then echo -e "Reporting ${MNODE_BINARIES} build success to mother" | tee -a "$LOGFILE" ; curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Process '"$MNODE_DAEMON"' started after '"$H"' seconds ..."}' && echo -e " " ; fi
+                    break
+                else
+
+                    if [ "${H}" = "10" ]
+                    then echo " "
+                        echo -e "After $H (H) seconds, $MNODE_DAEMON is still not running" | tee -a "$LOGFILE"
+                        echo -e "so we are going to abort this installation now. \n" | tee -a "$LOGFILE"
+                        echo -e "Reporting ${MNODE_DAEMON} build failure to mother" | tee -a "$LOGFILE"
+                        if [ -e "$INFODIR"/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: '"$MNODE_DAEMON"' failed to build or start after 10 seconds"}' && echo -e " " ; fi
+                        exit
+                    fi
+                    sleep 1
+                fi
+            done
+        fi
+}
+
+function change_vpsnumber() {
+echo "change vpsnumber"
+
+}
+
+
+function create_genkeys() {
+# create new MN genkeys
+
+        echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
+        for ((i=($MNS+1);i<=$TNODES;i++));
+        do
+            for ((P=1;P<=35;P++));
+            do
+                # create masternode genkeys (smart is special "smartnodes")
+                if [ -e $INSTALLDIR/temp/bogus ] ; then :
+                elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vpsgenkeys.info
+                elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
+                elif [ "${PROJECT,,}" = "zcoin" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf znode genkey >> $INFODIR/vpsgenkeys.info
+                else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vpsgenkeys.info ; fi
+                echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
+
+                if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+                KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
+
+                # add extra pause for wallets that are slow to start
+                if [ "${PROJECT,,}" = "polis" ] ; then SLEEPTIME=15 ; else SLEEPTIME=3 ; fi
+
+                # check if GENKEY variable is empty; if so stop script and report error
+                if [ ${#KEYXIST} = "0" ]
+                then echo -e " ${MNODE_DAEMON::-1}-cli couldn't create genkey $i; engine likely still starting up"
+                    echo -e " --> Waiting for $SLEEPTIME seconds before trying again... loop $P"
+                    sleep $SLEEPTIME
+                else break
+                fi
+
+                if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
+                then echo " "
+                    # [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkeys"}' && echo -e " "
+                    echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
+                    echo -e "I patiently tried 35 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
+                    exit
+                fi
+            done
+        done
+
+
+}
+
 # This is where the script actually starts
 collect_nnodes
 collect_api
 collect_addresses
+create_genkeys
+gather_txids
+install_mns
+change_vpsnumber
 
 
 
