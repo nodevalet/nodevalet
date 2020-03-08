@@ -58,6 +58,7 @@ APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
     else echo -e "${lightred} Your original NodeValet Deployment Key is no longer valid\n${nocolor}"
     echo -e " Before we can begin, we need to collect your NodeValet API Key."
         echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
+        cp $INFODIR/vpsapi.info $INFODIR/vpsapi.old
         rm -rf $INFODIR/vpsapi.info
         touch $INFODIR/vpsapi.info
         echo -e -n " "
@@ -86,8 +87,6 @@ function collect_addresses() {
 # Gather new MN addresses
 echo -e "\n\n Next, we need to collect your $NNODES new masternode address or addresses."
 
-        cp $INFODIR/vpsmnaddress.info $INFODIR/vpsmnaddressTEST.info
-
         let TNODES=$NNODES+$MNS
         for ((i=($MNS+1);i<=$TNODES;i++));
         do
@@ -102,7 +101,7 @@ echo -e "\n\n Next, we need to collect your $NNODES new masternode address or ad
                 fi
             done
             
-            echo -e "$MNADDP" >> $INFODIR/vpsmnaddressTEST.info
+            echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
             echo -e " -> New masternode $i address is: $MNADDP\n"
         done
 }
@@ -158,8 +157,8 @@ function install_mns() {
 }
 
 function change_vpsnumber() {
-echo "change vpsnumber"
-
+echo -e "$VPSAPI" > $INFODIR/vpsnumber.info
+echo -e "Changing total number of masternodes on this server to $TNODES. \n" | tee -a "$LOGFILE"
 }
 
 
@@ -220,7 +219,6 @@ change_vpsnumber
 
 
 
-cat $INFODIR/vpsmnaddressTEST.info
-sudo rm -rf $INFODIR/vpsmnaddressTEST.info
+cat $INFODIR/vpsmnaddress.info
 exit
 
