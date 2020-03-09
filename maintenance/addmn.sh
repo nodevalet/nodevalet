@@ -44,6 +44,8 @@ echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
 echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
 echo -e "\n Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.\n"
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
+echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
 }
 
 function collect_api() {
@@ -505,8 +507,8 @@ install_mns
 sub_genkeys
 change_vpsnumber
 start_mns
-make_newconf
 restore_crons
+make_newconf
 
 
 # echo -e "\n These are your vpsmnaddresses:"
