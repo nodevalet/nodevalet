@@ -148,7 +148,7 @@ function check_blocksync() {
             exit
             fi
             
-            echo -e "$(date +%m.%d.%Y_%H:%M:%S)" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
+            echo -e "$(date +%m.%d.%Y_%H:%M:%S) -- Last block is $TIMEDIF seconds old" >> $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
             rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync --force
                 if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
                 then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync

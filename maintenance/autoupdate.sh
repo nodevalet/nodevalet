@@ -1,5 +1,7 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
+
+### load variables ###
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
@@ -199,6 +201,18 @@ function check_project() {
         echo -e " New version installed : $NEWVERSION" | tee -a "$LOGFILE"
         echo -e "${lightgreen}  --> ${PROJECTt} was successfully updated, restarting VPS ${nocolor}\n" | tee -a "$LOGFILE"
         curl -s $GITAPI_URL | grep tag_name > $INSTALLDIR/temp/currentversion
+        
+            # Pull BLOCKEXP from $PROJECT.env
+            BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+            if [ -n "$BLOCKEX" ]
+            then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+                sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+                BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
+                echo -e " Block Explorer set to :" | tee -a "$LOGFILE"
+                echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
+            else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
+            fi
+        
         touch $INSTALLDIR/temp/shuttingdown
         for ((i=1;i<=$MNS;i++));
         do

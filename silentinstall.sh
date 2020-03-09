@@ -132,13 +132,15 @@ function gather_info() {
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
-    echo -e "$ONLYNET" > $INSTALLDIR/temp/ONLYNET
-    sed -i "s/ONLYNET=//" $INSTALLDIR/temp/ONLYNET 2>&1
-    ONLYNET=$(<$INSTALLDIR/temp/ONLYNET)
+    echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
+    sed -i "s/ONLYNET=//" $INFODIR/vps.onlynet.info 2>&1
+    ONLYNET=$(<$INFODIR/vps.onlynet.info)
     if [ "$ONLYNET" > 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
+    echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
+        echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
     fi
 
     # read or assign number of masternodes to install
@@ -604,12 +606,12 @@ EOT
         do
             # get or iterate mnprefixes
             if [ -s $INFODIR/vpsmnprefix.info ] 
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INSTALLDIR/temp/mnaliases
-            else echo -e "${MNPREFIX}-MN$i" >> $INSTALLDIR/temp/mnaliases
+            then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INFODIR/vps.mnaliases.info
+            else echo -e "${MNPREFIX}-MN$i" >> $INFODIR/vps.mnaliases.info
             fi
 
             # create masternode prefix files
-            echo -e "$(sed -n ${i}p $INSTALLDIR/temp/mnaliases)" >> $INSTALLDIR/temp/MNALIAS$i
+            echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
             # create masternode address files
             echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
@@ -643,13 +645,13 @@ EOT
             fi
 
             # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vpsipaddresses.info
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vps.ipaddresses.info
 
             # remove "bind=" from vpsipaddresses.info
-            sed -i "s/bind=//" $INFODIR/vpsipaddresses.info 2>&1
+            sed -i "s/bind=//" $INFODIR/vps.ipaddresses.info 2>&1
 
             # the next line produces the IP addresses for this masternode
-            echo -e "$(sed -n ${i}p $INFODIR/vpsipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
+            echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
 
             PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
             PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
@@ -787,13 +789,14 @@ EOT
 
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
+        cp $INSTALLDIR/temp/genkeys $INFODIR/vpsgenkeys.info
+        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
-        rm $INSTALLDIR/temp/txid --force            ;   rm $INSTALLDIR/temp/mnaliases --force
         rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
-        cp $INSTALLDIR/temp/genkeys /var/tmp/nvtemp/vpsgenkeys.info
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
+        rm $INSTALLDIR/temp/txid --force
 
         # remove blank lines from installation log file and replace original
         grep -v -e '^[[:space:]]*$' "$LOGFILE" > $INSTALLDIR/logs/install.log

@@ -9,6 +9,7 @@ PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
 MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 
 # extglob was necessary to make rm -- ! possible
@@ -82,6 +83,9 @@ function search_and_destroy() {
             echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
             systemctl disable "${PROJECT}"_n${i}
             systemctl stop "${PROJECT}"_n${i}
+            # rm -f /etc/systemd/system/"${PROJECT}"_n${i}.service
+            find / -name "${PROJECT}_n${i}.service" -delete
+    
         done
         echo -e "------------------------------------------------------------------------------ ${white}\n"
         sleep 2
@@ -100,6 +104,7 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin"
         echo -e "-------------------------------------------------------------- ${white}\n"
         rm -rf /usr/local/bin/*
+        rm -rf /root/.${PROJECT}
 
         echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"

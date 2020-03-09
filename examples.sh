@@ -83,3 +83,9 @@ done
 
 # display the number of lines in a file
 # wc -l helium_n1_synced
+
+# to look for files on a hard drive containing a specific string
+find / -name "*helium*"
+
+# to look for files on a hard drive containing a specific string and delete them
+find / -name "helium_n*" -delete
