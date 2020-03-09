@@ -300,7 +300,7 @@ function start_mns() {
         do
         clonesync $i
         # display countdown timer on screen
-        echo -e " Please wait patiently while the masternodes start-- do not interrupt."
+        echo -e " Please wait patiently while the masternodes start-- do not interrupt!"
         seconds=90; date1=$((`date +%s` + $seconds));
         while [ "$date1" -ge `date +%s` ]; do
             echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
