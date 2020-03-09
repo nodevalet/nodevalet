@@ -1,15 +1,8 @@
 #!/bin/bash
 # attempt to bootstrap blockchain and then clonesync_all
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
-PROJECTl=${PROJECT,,}
-PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-HNAME=$(<$INFODIR/vpshostname.info)
+# Set common variables
+. /var/tmp/nodevalet/maintenance/vars.sh
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)

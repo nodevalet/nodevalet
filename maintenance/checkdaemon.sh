@@ -4,16 +4,8 @@
 # Add the following to the crontab (i.e. crontab -e)
 # (crontab -l ; echo "*/30 * * * * $INSTALLDIR/maintenance/checkdaemon.sh") | crontab -
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
-PROJECTl=${PROJECT,,}
-PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-HNAME=$(<$INFODIR/vpshostname.info)
+# Set common variables
+. /var/tmp/nodevalet/maintenance/vars.sh
 
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob

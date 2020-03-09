@@ -467,6 +467,7 @@ EOT
         rm $INSTALLDIR/temp/txid --force            ;   rm $INFODIR/vps.mnaliases.info --force
 
         # log successful install
+        #### check to see that the last masternode.conf file exists and if so call it a day --still need to add this!###
         TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" | tee -a "/var/tmp/nodevalet/logs/maintenance.log"
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
@@ -497,7 +498,6 @@ change_vpsnumber
 start_mns
 restore_crons
 make_newconf
-
 
 # echo -e "\n These are your vpsmnaddresses:"
 # cat $INFODIR/vpsmnaddress.info
