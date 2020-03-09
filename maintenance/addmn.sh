@@ -33,7 +33,7 @@ fi
 
 while :; do
     if [ -z "$NNODES" ] ; then read -p " --> " NNODES ; fi
-    [[ $NNODES =~ ^[0-9]+$ ]] || { printf "${lightred}"; echo -e "\n --> I only recognize numbers; enter a number between 0 and $PNODES...\n"; t=""; printf "${nocolor}"; continue; }
+    [[ $NNODES =~ ^[0-9]+$ ]] || { printf "${lightred}"; echo -e "\n --> I only recognize numbers; enter a number between 0 and $PNODES...\n"; NNODES=""; printf "${nocolor}"; continue; }
     if (($NNODES >= 0 && $NNODES <= $PNODES)); then break
     else echo -e "\n${lightred} --> That's too many; please enter a number between 0 and $PNODES.${nocolor}\n"
         NNODES=""
