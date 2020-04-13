@@ -60,7 +60,13 @@ function gather_info() {
         echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
-    else echo -e " Please choose from one of the following supported coins to install:"
+    else 
+        # exit with error if not run as root/sudo
+        if [ "$(id -u)" != "0" ]; then
+	    echo "Please re-run as sudo."
+	    exit 1
+        fi
+    echo -e " Please choose from one of the following supported coins to install:"
         echo -e "    helium | audax | pivx | phore | mue\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
