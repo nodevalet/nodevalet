@@ -33,6 +33,13 @@ echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  |
 
 touch $INSTALLDIR/temp/updating
 
+# remove synced flag, set not synced flag
+if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
+    rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+fi
+touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
+
 echo -e "${lightred} Disabling ${PROJECT}_n${i} now.${nocolor}"
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n${i}
