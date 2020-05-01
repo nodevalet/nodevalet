@@ -17,10 +17,10 @@ fi
 
 while :; do
     if [ -z "$i" ] ; then read -p " --> " i ; fi
-    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...\n"; i=""; continue; }
+    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e "\n --> I only recognize numbers; enter  enter a number between 1 and $MNS...${nocolor}\n"; i=""; continue; }
     if (($i >= 1 && $i <= $MNS))
     then break
-    else echo -e "\n --> I don't have a masternode $i; enter a number between 1 and $MNS.\n"
+    else echo -e "${lightred}\n --> I don't have a masternode $i; enter a number between 1 and $MNS.${nocolor}\n"
         i=""
     fi
 done
