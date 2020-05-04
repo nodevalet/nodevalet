@@ -359,13 +359,13 @@ function check_distro() {
     # currently only for Ubuntu 16.04
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
-        if [[ "${VERSION_ID}" != "16.04" ]] ; then
-            echo -e "This script only supports Ubuntu 16.04 LTS, exiting.\n"
+        if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]]; then
+            echo -e "This script only supports Ubuntu 16.04 LTS or 18.04 LTS, exiting.\n"
             exit 1
         fi
     else
         # no, thats not ok!
-        echo -e "This script only supports Ubuntu 16.04, exiting.\n"
+        echo -e "This script only supports Ubuntu 16.04 or 18.04 LTS, exiting.\n"
         exit 1
     fi
 }
