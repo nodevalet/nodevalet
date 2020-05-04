@@ -822,7 +822,7 @@ function restart_server() {
         touch /etc/rc.local
         
         echo "Adding startup script to /etc/rc.local"
-cat <<EOT > /etc/rc.local
+cat <<EOT2 > /etc/rc.local
 #!/bin/sh -e
 #
 # rc.local
@@ -839,7 +839,7 @@ cat <<EOT > /etc/rc.local
 sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &
 exit 0
 
-EOT        
+EOT2
 
 chmod +x /etc/rc.local  
     fi
