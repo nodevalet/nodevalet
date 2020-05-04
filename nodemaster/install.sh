@@ -8,6 +8,7 @@ INFODIR='/var/tmp/nvtemp'
 MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
 MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
@@ -130,8 +131,8 @@ function install_packages() {
     dEXISTT=$(ls /usr/local/bin | grep "${MNODE_DAEMOND}")
 
     if [[ "${dEXISTT}" ]]
-    then echo -e "${lightcyan}Binaries for ${PROJECTt} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
-    else echo -e "${lightred}Did not find binaries for ${PROJECTt} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
+    then echo -e "${lightcyan}Binaries for ${PROJECT} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
+    else echo -e "${lightred}Did not find binaries for ${PROJECT} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
         echo -e "${lightred}${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a ${SCRIPT_LOGFILE}
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
         # development and build packages
