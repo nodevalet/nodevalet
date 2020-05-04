@@ -820,8 +820,28 @@ function restart_server() {
     if [[ "${VERSION_ID}" = "18.04" ]]; then
         echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
         touch /etc/rc.local
-        echo -e "bash $INSTALLDIR/maintenance/postinstall_api.sh" > /etc/rc.local
-        chmod +x /etc/rc.local  
+        
+        echo "Adding startup script to /etc/rc.local"
+cat <<EOT > /etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &
+exit 0
+
+EOT        
+
+chmod +x /etc/rc.local  
     fi
     
     echo -e " Please follow the steps below to complete your masternode setup: "
