@@ -810,12 +810,6 @@ EOT
 
 function restart_server() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
-    clear
-    echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
-    cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-    cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-    update-rc.d postinstall_api.sh defaults  2>/dev/null
-    
     # test support for Ubuntu 18
     if [[ "${VERSION_ID}" = "18.04" ]]; then
         echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
@@ -843,7 +837,12 @@ EOT2
 
 chmod +x /etc/rc.local  
     fi
-    
+    cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
+    update-rc.d postinstall_api.sh defaults  2>/dev/null
+
+    clear
+    echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
+    cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     echo -e " Please follow the steps below to complete your masternode setup: "
     echo -e " 1. Please copy the above file and paste it into the masternode.conf "
     echo -e "    file on your local wallet. (insert txid info to end of each line) "
