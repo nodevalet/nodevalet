@@ -36,6 +36,9 @@ function setup_environment() {
     touch $INSTALLDIR/logs/maintenance.log
     touch $INSTALLDIR/logs/silentinstall.log
 
+    # install curl
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
+
     # Create Log File and Begin
     clear
     echo -e "${white} ################################################################" | tee -a "$LOGFILE"
