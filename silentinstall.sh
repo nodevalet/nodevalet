@@ -815,6 +815,15 @@ function restart_server() {
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
+    
+    # test support for Ubuntu 18
+    if [[ "${VERSION_ID}" = "18.04" ]]; then
+        echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
+        touch /etc/rc.local
+        echo -e "bash $INSTALLDIR/maintenance/postinstall_api.sh" > /etc/rc.local
+        chmod +x /etc/rc.local  
+    fi
+    
     echo -e " Please follow the steps below to complete your masternode setup: "
     echo -e " 1. Please copy the above file and paste it into the masternode.conf "
     echo -e "    file on your local wallet. (insert txid info to end of each line) "

@@ -33,6 +33,12 @@ function final_message() {
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
 
+        # test support for Ubuntu 18
+        if [[ "${VERSION_ID}" = "18.04" ]]; then
+            echo -e "Removing postinstall_api.sh from /etc/rc.local for Ubuntu 18.04 \n"
+            rm -rf /etc/rc.local
+        fi
+
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
         
