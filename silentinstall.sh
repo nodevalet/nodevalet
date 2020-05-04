@@ -654,7 +654,7 @@ EOT
             echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
 
             PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
-            PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
+            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
 
             # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
             if [ "$PRIVATEIP" != "$PUBLICIP" ]
