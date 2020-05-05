@@ -33,8 +33,7 @@ function final_message() {
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
 
-        # test support for Ubuntu 18
-        echo -e "Removing postinstall_api.sh from /etc/rc.local \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        # Remove postinstall from rc.local (for Ubuntu 18)
         sed -i '/postinstall_api.sh/d' /etc/rc.local
 
         # Add a sequence to interpret the reply as success or fail $?
