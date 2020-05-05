@@ -382,16 +382,16 @@ function gather_info() {
 }
 
 function check_distro() {
-    # currently only for Ubuntu 16.04
+    # currently supporting Ubuntu 16.04/18.04/20.04
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
-        if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]]; then
-            echo -e "This script only supports Ubuntu 16.04 LTS or 18.04 LTS, exiting.\n"
+        if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]] && [[ "${VERSION_ID}" != "20.04" ]]; then
+            echo -e "This script only supports Ubuntu 16.04/18.04/20.04 LTS, exiting.\n"
             exit 1
         fi
     else
         # no, thats not ok!
-        echo -e "This script only supports Ubuntu 16.04 or 18.04 LTS, exiting.\n"
+        echo -e "This script only supports Ubuntu 16.04/18.04/20.04 LTS, exiting.\n"
         exit 1
     fi
 }
@@ -832,14 +832,15 @@ EOT
 }
 
 function restart_server() {
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
-    # test support for Ubuntu 18
-    if [[ "${VERSION_ID}" = "18.04" ]]; then
-        echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
+    # add support for Ubuntu 18 and 20
+    if [[ "${VERSION_ID}" = "18.04" ]] || [[ "${VERSION_ID}" = "20.04" ]]; then
+        echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04/20.04 \n"
         echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
     fi
     sed -i '/exit 0/d' /etc/rc.local
     echo -e "exit 0" >> /etc/rc.local
+    
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
 
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
