@@ -859,7 +859,7 @@ function restart_server() {
     echo -e "${lightred} * * Note: This VPS will now automatically restart to finish setup * * ${nocolor}\n"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
     sleep .5
-    # shutdown -r now "Server is going down for upgrade."
+    shutdown -r now "Server is going down for upgrade."
 }
 
 # This is where the script actually starts
