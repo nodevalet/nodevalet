@@ -574,6 +574,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
     sudo ln -s $INSTALLDIR/maintenance/mnedit.sh /usr/local/bin/mnedit
     sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
+    sudo ln -s $INSTALLDIR/maintenance/addmn.sh /usr/local/bin/addmn
     sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
     sudo ln -s $INSTALLDIR/maintenance/remove_crons.sh /usr/local/bin/remove_crons
     sudo ln -s $INSTALLDIR/maintenance/restore_crons.sh /usr/local/bin/restore_crons

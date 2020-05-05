@@ -470,9 +470,9 @@ EOT
         #### check to see that the last masternode.conf file exists and if so call it a day --still need to add this!###
         TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" | tee -a "/var/tmp/nodevalet/logs/maintenance.log"
-        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" | tee -a "/var/tmp/nodevalet/logs/silentinstall.log"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" >> "/var/tmp/nodevalet/logs/silentinstall.log"
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        
+
         echo -e " Your new masternode.conf is as follows \n"
         showconf
 }
