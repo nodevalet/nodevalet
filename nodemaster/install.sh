@@ -747,12 +747,20 @@ function prepare_mn_interfaces() {
                 if [ "${NETWORK_CONFIG}" = "/etc/rc.local" ]; then
                     # need to put network config in front of "exit 0" in rc.local
                     sed -e '$i ip -6 addr add '"${IPV6_INT_BASE}"':'"${NETWORK_BASE_TAG}"'::'"${NUM}"'/64 dev '"${ETH_INTERFACE}"'\n' -i "${NETWORK_CONFIG}" &>> ${SCRIPT_LOGFILE}
+                    # add additional info for logging
+                    echo -e "sed -e '$i ip -6 addr add '${IPV6_INT_BASE}':'${NETWORK_BASE_TAG}'::'${NUM}'/64 dev '${ETH_INTERFACE}'\n' -i ${NETWORK_CONFIG}"
+                    echo -e "NETWORK_CONFIG is equal to ${NETWORK_CONFIG}"
                 else
                     # if not using rc.local, append normally
                     echo "ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE}" >> "${NETWORK_CONFIG}" &>> ${SCRIPT_LOGFILE}
+                    # add additional info for logging
+                    echo -e "ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE}"
+                    echo -e "NETWORK_CONFIG is equal to ${NETWORK_CONFIG}"
+
                 fi
                 sleep 2
                 ip -6 addr add "${IPV6_INT_BASE}":"${NETWORK_BASE_TAG}"::"${NUM}"/64 dev ${ETH_INTERFACE} &>> ${SCRIPT_LOGFILE}
+                echo -e "ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE} &>> ${SCRIPT_LOGFILE}"
             fi
         done # end forloop
     fi # end ifneteq6
