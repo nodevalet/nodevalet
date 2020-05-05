@@ -8,6 +8,7 @@ INFODIR='/var/tmp/nvtemp'
 MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
 MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
+PROJECT=$(<$INFODIR/vpscoin.info)
 
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
@@ -105,6 +106,7 @@ function show_help(){
 # /* no parameters, checks if we are running on a supported Ubuntu release */
 #
 function check_distro() {
+    # remove version check since silentinstall already checks for this
     # currently only for Ubuntu 16.04 & 18.04
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
@@ -130,8 +132,8 @@ function install_packages() {
     dEXISTT=$(ls /usr/local/bin | grep "${MNODE_DAEMOND}")
 
     if [[ "${dEXISTT}" ]]
-    then echo -e "${lightcyan}Binaries for ${PROJECTt} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
-    else echo -e "${lightred}Did not find binaries for ${PROJECTt} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
+    then echo -e "${lightcyan}Binaries for ${PROJECT} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
+    else echo -e "${lightred}Did not find binaries for ${PROJECT} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
         echo -e "${lightred}${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a ${SCRIPT_LOGFILE}
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
         # development and build packages
@@ -148,7 +150,7 @@ function install_packages() {
     fi
 
     # only for 18.04 // openssl
-    if [[ "${VERSION_ID}" == "18.04" ]] ; then
+    if [[ "${VERSION_ID}" == "18.04" ]] || [[ "${VERSION_ID}" == "20.04" ]]; then
         apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libssl1.0-dev
     fi
 
@@ -439,7 +441,7 @@ function source_config() {
     SETUP_CONF_FILE="${SCRIPTPATH}/config/${project}/${project}.env"
 
     # first things first, to break early if things are missing or weird
-    check_distro
+    # check_distro
 
     if [ -f "${SETUP_CONF_FILE}" ]; then
         echo "Script version ${SCRIPT_VERSION}, you picked: $(tput bold)$(tput setaf 2) ${project} $(tput sgr0), running on Ubuntu ${VERSION_ID}"

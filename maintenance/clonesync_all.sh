@@ -1,15 +1,8 @@
 #!/bin/bash
 # Clonesync all masternodes, assumes 1 is fully synced
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
-PROJECTl=${PROJECT,,}
-PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-HNAME=$(<$INFODIR/vpshostname.info)
+# Set common variables
+. /var/tmp/nodevalet/maintenance/vars.sh
 
 clear
 
@@ -23,25 +16,6 @@ echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
 echo -e " --> Attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
 
-### define colors ###
-lightred=$'\033[1;31m'  # light red
-red=$'\033[0;31m'  # red
-lightgreen=$'\033[1;32m'  # light green
-green=$'\033[0;32m'  # green
-lightblue=$'\033[1;34m'  # light blue
-blue=$'\033[0;34m'  # blue
-lightpurple=$'\033[1;35m'  # light purple
-purple=$'\033[0;35m'  # purple
-lightcyan=$'\033[1;36m'  # light cyan
-cyan=$'\033[0;36m'  # cyan
-lightgray=$'\033[0;37m'  # light gray
-white=$'\033[1;37m'  # white
-brown=$'\033[0;33m'  # brown
-yellow=$'\033[1;33m'  # yellow
-darkgray=$'\033[1;30m'  # dark gray
-black=$'\033[0;30m'  # black
-nocolor=$'\e[0m' # no color
-
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
@@ -49,11 +23,12 @@ touch $INSTALLDIR/temp/updating
 
 function remove_crons() {
     # disable the crons that could cause problems
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/rebootq.sh'  | crontab -
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/makerun.sh'  | crontab -
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/checkdaemon.sh'  | crontab -
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/autoupdate.sh'  | crontab -
-    crontab -l | grep -v '/var/tmp/nodevalet/maintenance/cronchecksync1.sh'  | crontab -
+    . /var/tmp/nodevalet/maintenance/remove_crons.sh
+}
+
+function restore_crons() {
+    # restore maintenance crons that were previously disabled
+    . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
 
 function shutdown_mns() {
@@ -150,21 +125,6 @@ function restart_mns() {
         done
     done
     echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
-}
-
-function restore_crons() {
-    # restore maintenance crons that were previously disabled
-    echo -e "${yellow} Re-enabling crontabs that were previously disabled:${nocolor}"
-    echo -e "${white}  --> Check for & reboot if needed to install updates every 10 hours${nocolor}"
-    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
-    echo -e "${white}  --> Make sure all daemons are running every 10 minutes${nocolor}"
-    (crontab -l ; echo "7,17,27,37,47,57 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
-    echo -e "${white}  --> Check for stuck blocks every 30 minutes${nocolor}"
-    (crontab -l ; echo "1,31 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
-    echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"
-    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
-    echo -e "${white}  --> Check if chains are syncing or synced every 5 minutes${nocolor}"
-    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
 }
 
 # This file will contain if the chain is currently not synced

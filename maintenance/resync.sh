@@ -1,34 +1,8 @@
 #!/bin/bash
 # Wipe stuck masternode chains and force a full resync
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
-PROJECTl=${PROJECT,,}
-PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-HNAME=$(<$INFODIR/vpshostname.info)
-
-### define colors ###
-lightred=$'\033[1;31m'  # light red
-red=$'\033[0;31m'  # red
-lightgreen=$'\033[1;32m'  # light green
-green=$'\033[0;32m'  # green
-lightblue=$'\033[1;34m'  # light blue
-blue=$'\033[0;34m'  # blue
-lightpurple=$'\033[1;35m'  # light purple
-purple=$'\033[0;35m'  # purple
-lightcyan=$'\033[1;36m'  # light cyan
-cyan=$'\033[0;36m'  # cyan
-lightgray=$'\033[0;37m'  # light gray
-white=$'\033[1;37m'  # white
-brown=$'\033[0;33m'  # brown
-yellow=$'\033[1;33m'  # yellow
-darkgray=$'\033[1;30m'  # dark gray
-black=$'\033[0;30m'  # black
-nocolor=$'\e[0m' # no color
+# Set common variables
+. /var/tmp/nodevalet/maintenance/vars.sh
 
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
@@ -58,6 +32,13 @@ echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running resync.sh" | tee -a "$LOGFILE"
 echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
+
+# remove synced flag, set not synced flag
+if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
+then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
+    rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
+fi
+touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_nosync
 
 echo -e "${lightred} Disabling ${PROJECT}_n${i} now.${nocolor}"
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1

@@ -1,14 +1,7 @@
 #!/bin/bash
 
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
-INSTALLDIR='/var/tmp/nodevalet'
-INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
-PROJECTl=${PROJECT,,}
-PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-HNAME=$(<$INFODIR/vpshostname.info)
+# Set common variables
+. /var/tmp/nodevalet/maintenance/vars.sh
 
 # set mnode daemon name from project.env
 MNODE_DAEMON=`grep ^MNODE_DAEMON $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env`
@@ -32,7 +25,7 @@ fi
 
 while :; do
     if [ -z $i ] ; then read -p "  --> " i ; fi
-    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> I only recognize numbers, try again..."; i=""; continue; }
+    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> I only recognize numbers, try again...${nocolor}"; i=""; continue; }
     if (($i >= 1 && $i <= $MNS)); then break
     else echo -e "\n --> Can't find masternode $i, try again. \n"
         i=""
@@ -44,13 +37,13 @@ nano -c /etc/masternodes/${PROJECT}_n${i}.conf
 while :; do
     printf "${cyan}"
     echo -e "\n"
-    echo -e "\n Changes to that masternode rquire a restart to take effect."
+    echo -e "\n Changes to that masternode rquire a restart to take effect.${nocolor}"
     read -n 1 -s -r -p "  --> Would you like to restart this masternode now? y/n  " VERIFY
     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-    then printf "${cyan}" ; break
+    then printf "${nocolor}" ; break
 elif [[ $VERIFY == "n" || $VERIFY == "N" ]]
     echo -e "\n"
-    echo -e " Changes to your masternode.conf will not take effect until it is restarted\n"
+    echo -e " Changes to your masternode.conf will not take effect until it is restarted${nocolor}\n"
     then exit
     fi
 done

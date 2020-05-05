@@ -241,12 +241,12 @@ function favored_packages() {
     echo -e -n "${white}"
     echo ' # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install ' | tee -a "$LOGFILE"
     echo '   htop nethogs ufw fail2ban wondershaper glances ntp figlet lsb-release ' | tee -a "$LOGFILE"
-    echo '   update-motd unattended-upgrades secure-delete' | tee -a "$LOGFILE"
+    echo '   update-motd unattended-upgrades secure-delete net-tools dnsutils' | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${nocolor}"
     apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install \
         htop nethogs ufw fail2ban wondershaper glances ntp figlet lsb-release \
-        update-motd unattended-upgrades secure-delete | tee -a "$LOGFILE"
+        update-motd unattended-upgrades secure-delete net-tools dnsutils | tee -a "$LOGFILE"
     echo -e -n "${lightgreen}"
     echo -e "----------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : FAVORED INSTALLED SUCCESFULLY " | tee -a "$LOGFILE"
@@ -769,17 +769,6 @@ function server_hardening() {
         if grep -q "tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0" /etc/fstab; then :
         else echo 'tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0' >> /etc/fstab
         fi
-
-        # prevent IP spoofing
-        echo -e -n "${yellow}"
-        echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : PREVENTING IP SPOOFING " | tee -a "$LOGFILE"
-        echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e -n "${white}"
-        echo -e " --> Updating /etc/host.conf to include 'nospoof' " | tee -a "$LOGFILE"
-        echo -e "---------------------------------------------------- \n " | tee -a "$LOGFILE"
-        # sleep 2	; #  dramatic pause
-        cat etc/host.conf > /etc/host.conf
 
         # enable DDOS protection
         echo -e -n "${yellow}"

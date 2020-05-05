@@ -7,7 +7,12 @@
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
-# check if $POJECT ONLYNET=4, abort if so with warning "Your project only supports 1 masternode per VPS"
+# check if $POJECT ONLYNET=4, exit with warning
+if [ "$ONLYNET" = 4 ]
+then echo -e "\n${lightred} $PROJECTt only supports IPv4 and one masternode per VPS.${nocolor}"
+    echo -e " No changes were made. This script will now exit.\n"
+    exit
+fi
 
 # check for possible number of new masternodes
 NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 325}')
@@ -33,12 +38,21 @@ fi
 
 while :; do
     if [ -z "$NNODES" ] ; then read -p " --> " NNODES ; fi
-    [[ $NNODES =~ ^[0-9]+$ ]] || { printf "${lightred}"; echo -e "\n --> I only recognize numbers; enter a number between 0 and $PNODES...\n"; t=""; printf "${nocolor}"; continue; }
+    [[ $NNODES =~ ^[0-9]+$ ]] || { printf "${lightred}"; echo -e "\n --> I only recognize numbers; enter a number between 0 and $PNODES...\n"; NNODES=""; printf "${nocolor}"; continue; }
     if (($NNODES >= 0 && $NNODES <= $PNODES)); then break
     else echo -e "\n${lightred} --> That's too many; please enter a number between 0 and $PNODES.${nocolor}\n"
         NNODES=""
     fi
 done
+
+# exit if user is adding 0 masternodes
+if [ "$NNODES" = 0 ]
+then echo -e "\n${lightred} You have selected to add no new masternodes.${nocolor}"
+    echo -e " No changes were made. This script will now exit.\n"
+    rm $INSTALLDIR/temp/updating --force
+    restore_crons
+    exit
+fi
 
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
 echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
@@ -49,7 +63,6 @@ echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${
 }
 
 function collect_api() {
-
 # read API key if it exists, if not prompt for it
 
 echo -e "${white} Adding $NNODES masternode(s) to your VPS requires 1 NodeValet Deployment credit.${nocolor}\n"
@@ -84,13 +97,12 @@ APITESTRESPONSE=$(cat $INSTALLDIR/temp/API.test.json)
         echo -e "$VPSAPI" > $INFODIR/vpsapi.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
     fi
-
 }
-
 
 function collect_addresses() {
 # Gather new MN addresses
-echo -e "\n Next, we need to collect your $NNODES new masternode address or addresses."
+
+echo -e "\n Next, we need to collect your $NNODES new masternode address(es)."
 
         let TNODES=$NNODES+$MNS
         for ((i=($MNS+1);i<=$TNODES;i++));
@@ -155,11 +167,6 @@ function install_mns() {
 
         # check for presence of config file to presume success, cancel and report error if does not exist
 
-        # activate masternodes, or activate just FIRST masternode
-        # echo -e "Activating your $PROJECTt masternode(s)" | tee -a "$LOGFILE"
-        ###### substitute in genkeys before starting them
-        # activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
-
         # check if $PROJECTd was built correctly and started
         if ps -A | grep "$MNODE_BINARIES" > /dev/null
         then
@@ -197,7 +204,6 @@ echo -e "$TNODES" > $INFODIR/vpsnumber.info
 echo -e "Changing total number of masternodes on this server to $TNODES. \n" | tee -a "$LOGFILE"
 }
 
-
 function create_genkeys() {
 # create new MN genkeys
 
@@ -215,9 +221,6 @@ function create_genkeys() {
             # append "masternodeprivkey="
             paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
             tr -d '[:blank:]' < $INSTALLDIR/temp/GENKEY${i}FIN > $INSTALLDIR/temp/MNPRIVKEY$i
-
-            # save IP address
-            # save 
         done
 
         for ((i=($MNS+1);i<=$TNODES;i++));
@@ -228,10 +231,9 @@ function create_genkeys() {
                 if [ -e $INSTALLDIR/temp/bogus ] ; then :
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vpsgenkeys.info
                 elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-                elif [ "${PROJECT,,}" = "zcoin" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf znode genkey >> $INFODIR/vpsgenkeys.info
+                elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vpsgenkeys.info ; fi
                 echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
-
 
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
@@ -257,7 +259,6 @@ function create_genkeys() {
                 fi
             done
         done
-
 }
 
 function sub_genkeys() {
@@ -461,16 +462,17 @@ EOT
         # cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
-        rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force
         rm $INSTALLDIR/temp/"${PROJECT}"Ds --force  ;   rm $INSTALLDIR/temp/MNPRIV* --force
         rm $INSTALLDIR/temp/ONLYNET --force         ;   rm $INSTALLDIR/temp/genkeys --force
         rm $INSTALLDIR/temp/txid --force            ;   rm $INFODIR/vps.mnaliases.info --force
 
         # log successful install
+        #### check to see that the last masternode.conf file exists and if so call it a day --still need to add this!###
         TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" | tee -a "/var/tmp/nodevalet/logs/maintenance.log"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server successfully added $NNODES new masternodes \e[0m\n" >> "/var/tmp/nodevalet/logs/silentinstall.log"
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        
+
         echo -e " Your new masternode.conf is as follows \n"
         showconf
 }
@@ -497,7 +499,6 @@ change_vpsnumber
 start_mns
 restore_crons
 make_newconf
-
 
 # echo -e "\n These are your vpsmnaddresses:"
 # cat $INFODIR/vpsmnaddress.info
