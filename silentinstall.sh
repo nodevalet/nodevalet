@@ -835,7 +835,7 @@ function restart_server() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     # test support for Ubuntu 18
     if [[ "${VERSION_ID}" = "18.04" ]]; then
-        echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
+        echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
         echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
     fi
     sed -i '/exit 0/d' /etc/rc.local
