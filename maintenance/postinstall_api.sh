@@ -20,8 +20,8 @@ function final_message() {
         # echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server restarted successfully " | tee -a "$LOGFILE"
-        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has restarted after installation \e[0m \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
@@ -32,6 +32,9 @@ function final_message() {
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
+
+        # Remove postinstall from rc.local (for Ubuntu 18)
+        sed -i '/postinstall_api.sh/d' /etc/rc.local
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt

@@ -89,3 +89,6 @@ find / -name "*helium*"
 
 # to look for files on a hard drive containing a specific string and delete them
 find / -name "helium_n*" -delete
+
+# to install NodeValet on Contabo , you must first enable IPv6
+# execute the command "enable_ipv6" and restart your server.

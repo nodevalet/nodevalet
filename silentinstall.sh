@@ -36,6 +36,32 @@ function setup_environment() {
     touch $INSTALLDIR/logs/maintenance.log
     touch $INSTALLDIR/logs/silentinstall.log
 
+# create rc.local if it does not exist
+if [ -s /etc/rc.local ]
+then :
+else cat <<EOTRC > /etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+exit 0
+
+EOTRC
+chmod 777 /etc/rc.local
+fi
+
+    # install curl
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
+
     # Create Log File and Begin
     clear
     echo -e "${white} ################################################################" | tee -a "$LOGFILE"
@@ -362,16 +388,16 @@ function gather_info() {
 }
 
 function check_distro() {
-    # currently only for Ubuntu 16.04
+    # currently supporting Ubuntu 16.04/18.04/20.04
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
-        if [[ "${VERSION_ID}" != "16.04" ]] ; then
-            echo -e "This script only supports Ubuntu 16.04 LTS, exiting.\n"
+        if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]] && [[ "${VERSION_ID}" != "20.04" ]]; then
+            echo -e "This script only supports Ubuntu 16.04/18.04/20.04 LTS, exiting.\n"
             exit 1
         fi
     else
         # no, thats not ok!
-        echo -e "This script only supports Ubuntu 16.04, exiting.\n"
+        echo -e "This script only supports Ubuntu 16.04/18.04/20.04 LTS, exiting.\n"
         exit 1
     fi
 }
@@ -661,7 +687,7 @@ EOT
             echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
 
             PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
-            PRIVATEIP=$(sudo ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
+            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
 
             # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
             if [ "$PRIVATEIP" != "$PUBLICIP" ]
@@ -815,12 +841,22 @@ EOT
 }
 
 function restart_server() {
+    # add support for Ubuntu 18 and 20
+    if [[ "${VERSION_ID}" = "18.04" ]] || [[ "${VERSION_ID}" = "20.04" ]]; then
+        echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04/20.04 \n"
+        echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
+    fi
+    sed -i '/exit 0/d' /etc/rc.local
+    echo -e "exit 0" >> /etc/rc.local
+    
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
+
+    cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
+    update-rc.d postinstall_api.sh defaults  2>/dev/null
+
     clear
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-    cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-    update-rc.d postinstall_api.sh defaults  2>/dev/null
     echo -e " Please follow the steps below to complete your masternode setup: "
     echo -e " 1. Please copy the above file and paste it into the masternode.conf "
     echo -e "    file on your local wallet. (insert txid info to end of each line) "

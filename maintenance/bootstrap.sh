@@ -26,7 +26,7 @@ function check_if_synced() {
     if [[ "${dSYNCED}" ]]
     then echo -e "${lightred} One or more masternodes are not synced.${nocolor}\n"
     else echo -e "${lightcyan} All masternodes seem to be synced, no need to bootstrap.${nocolor}\n"
-        rm $INSTALLDIR/temp/bootstrapping --force
+        rm -f $INSTALLDIR/temp/bootstrapping --force
         exit
     fi
 }
@@ -115,7 +115,7 @@ function bootstrap() {
             | wget -i -
 
     else echo -e " ${lightcyan}No bootstrap file is detected${nocolor}\n"
-        rm $INSTALLDIR/temp/bootstrapping --force
+        rm -f $INSTALLDIR/temp/bootstrapping --force
         # checksync 1 ; not sure if this line is needed or not
         exit
     fi
@@ -184,5 +184,5 @@ then echo -e " This VPS has only one masternode, skipping clonesync_all.sh\n"  |
 else bash $INSTALLDIR/maintenance/clonesync_all.sh 
 fi
 
-rm $INSTALLDIR/temp/bootstrapping --force
+rm -f $INSTALLDIR/temp/bootstrapping --force
 exit
