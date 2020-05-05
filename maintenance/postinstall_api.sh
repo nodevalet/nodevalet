@@ -38,7 +38,7 @@ function final_message() {
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
-        
+
         # create file to signal that bootstrap is running
         touch $INSTALLDIR/temp/bootstrapping
 

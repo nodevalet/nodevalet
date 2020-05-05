@@ -58,7 +58,7 @@ function search_and_destroy() {
             systemctl stop "${PROJECT}"_n${i}
             # rm -f /etc/systemd/system/"${PROJECT}"_n${i}.service
             find / -name "${PROJECT}_n${i}.service" -delete
-    
+
         done
         echo -e "------------------------------------------------------------------------------ ${white}\n"
         sleep 2

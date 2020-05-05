@@ -32,7 +32,7 @@ else
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Checking masternode status of ${PROJECT}_n${input}"
     if [ "${PROJECT,,}" = "smart" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf smartnode status)
-    elif [ "${PROJECT,,}" = "squorum" ]
+elif [ "${PROJECT,,}" = "squorum" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf masternodedebug)
     else MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf masternode status)
     fi
@@ -48,7 +48,7 @@ do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Checking masternode status of ${PROJECT}_n${i}"
     if [ "${PROJECT,,}" = "smart" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf smartnode status)
-    elif [ "${PROJECT,,}" = "squorum" ]
+elif [ "${PROJECT,,}" = "squorum" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf masternodedebug)
     else MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf masternode status)
     fi

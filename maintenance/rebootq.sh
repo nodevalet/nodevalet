@@ -15,7 +15,7 @@ fi
 # delay task if activate_masternodes is running
 if [ -e "$INSTALLDIR/temp/activating" ]
 then sleep 1800
-rm $INSTALLDIR/temp/activating
+    rm $INSTALLDIR/temp/activating
 fi
 
 # write which packages require it

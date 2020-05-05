@@ -36,10 +36,10 @@ function setup_environment() {
     touch $INSTALLDIR/logs/maintenance.log
     touch $INSTALLDIR/logs/silentinstall.log
 
-# create rc.local if it does not exist
-if [ -s /etc/rc.local ]
-then :
-else cat <<EOTRC > /etc/rc.local
+    # create rc.local if it does not exist
+    if [ -s /etc/rc.local ]
+    then :
+    else cat <<EOTRC > /etc/rc.local
 #!/bin/sh -e
 #
 # rc.local
@@ -56,8 +56,8 @@ else cat <<EOTRC > /etc/rc.local
 exit 0
 
 EOTRC
-chmod 777 /etc/rc.local
-fi
+        chmod 777 /etc/rc.local
+    fi
 
     # install curl
     sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
@@ -86,13 +86,13 @@ function gather_info() {
         echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
-    else 
+    else
         # exit with error if not run as root/sudo
         if [ "$(id -u)" != "0" ]; then
-	    echo "Please re-run as sudo."
-	    exit 1
+            echo "Please re-run as sudo."
+            exit 1
         fi
-    echo -e " Please choose from one of the following supported coins to install:"
+        echo -e " Please choose from one of the following supported coins to install:"
         echo -e "    helium | audax | pivx | phore | mue\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
@@ -169,7 +169,7 @@ function gather_info() {
     ONLYNET=$(<$INFODIR/vps.onlynet.info)
     if [ "$ONLYNET" > 0 ]
     then echo -e " Setting network to IPv${ONLYNET} d/t instructions in ${PROJECT}.env" >> $LOGFILE
-    echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
+        echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
     else ONLYNET='6'
         echo -e " Setting network to IPv${ONLYNET} d/t no reference in ${PROJECT}.env" >> $LOGFILE
         echo -e "$ONLYNET" > $INFODIR/vps.onlynet.info
@@ -180,7 +180,7 @@ function gather_info() {
     then MNS=$(<$INFODIR/vpsnumber.info)
         echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
         # check memory and set max MNS appropriately then prompt user how many they would like to build
-    elif [ "$ONLYNET" = 4 ]
+elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 325}')
@@ -609,13 +609,13 @@ EOT
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
                 elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-                else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-                else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
@@ -642,7 +642,7 @@ EOT
         for ((i=1;i<=$MNS;i++));
         do
             # get or iterate mnprefixes
-            if [ -s $INFODIR/vpsmnprefix.info ] 
+            if [ -s $INFODIR/vpsmnprefix.info ]
             then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INFODIR/vps.mnaliases.info
             else echo -e "${MNPREFIX}-MN$i" >> $INFODIR/vps.mnaliases.info
             fi
@@ -667,7 +667,7 @@ EOT
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
-            elif [ "${PROJECT,,}" = "zcoin" ]
+        elif [ "${PROJECT,,}" = "zcoin" ]
             then
                 sed -i "s/^znodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^znodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
@@ -802,12 +802,12 @@ EOT
 
         [ -e $INFODIR/fullauto.info ] && echo -e "Converting masternode.conf to one delineated line for mother" | tee -a "$LOGFILE"
         # convert masternode.conf to one delineated line separated using | and ||
-        
+
         # echo -e "complete" > $INSTALLDIR/temp/complete
-            if [ -e $INFODIR/fullauto.info ]
-            then echo -e "complete|${VPSAPI}|guidedui" > $INSTALLDIR/temp/complete
-            else echo -e "complete|${VPSAPI}|headless" > $INSTALLDIR/temp/complete
-            fi 
+        if [ -e $INFODIR/fullauto.info ]
+        then echo -e "complete|${VPSAPI}|guidedui" > $INSTALLDIR/temp/complete
+        else echo -e "complete|${VPSAPI}|headless" > $INSTALLDIR/temp/complete
+        fi
 
         # comment out lines that contain no txid or index
         # sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
@@ -852,7 +852,7 @@ function restart_server() {
     fi
     sed -i '/exit 0/d' /etc/rc.local
     echo -e "exit 0" >> /etc/rc.local
-    
+
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
 
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/

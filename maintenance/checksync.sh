@@ -113,12 +113,12 @@ function check_blocksync() {
             curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
             echo -e "\n"
             rm -rf $INSTALLDIR/getinfo_n${i} --force
-            
-            # display countdown timer on screen   
-            countdown=30; date1=$((`date +%s` + $countdown)); 
-            while [ "$date1" -ge `date +%s` ]; do 
-            echo -ne "   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
-            sleep 0.5
+
+            # display countdown timer on screen
+            countdown=30; date1=$((`date +%s` + $countdown));
+            while [ "$date1" -ge `date +%s` ]; do
+                echo -ne "   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+                sleep 0.5
             done
         fi
     done

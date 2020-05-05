@@ -9,7 +9,7 @@ clear
 # exit if there is only one masternode
 if [ $MNS = 1 ]
 then echo -e " This VPS has only one masternode, not running clonesync_all.sh\n"  | tee -a "$LOGFILE"
-exit
+    exit
 fi
 
 echo -e "\n"
