@@ -754,7 +754,6 @@ function prepare_mn_interfaces() {
                 fi
                 sleep 2
                 ip -6 addr add "${IPV6_INT_BASE}":"${NETWORK_BASE_TAG}"::"${NUM}"/64 dev ${ETH_INTERFACE} &>> ${SCRIPT_LOGFILE}
-                echo -e "ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE} &>> ${SCRIPT_LOGFILE}"
             fi
         done # end forloop
     fi # end ifneteq6
