@@ -36,6 +36,29 @@ function setup_environment() {
     touch $INSTALLDIR/logs/maintenance.log
     touch $INSTALLDIR/logs/silentinstall.log
 
+# create rc.local if it does not exist
+if [ -s /etc/rc.local ]
+then :
+else cat <<EOTRC > /etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+exit 0
+
+EOTRC
+chmod 777 /etc/rc.local
+fi
+
     # install curl
     sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
 
@@ -811,32 +834,13 @@ EOT
 function restart_server() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     # test support for Ubuntu 18
-    if [[ "${VERSION_ID}" = "18.04not" ]]; then
+    if [[ "${VERSION_ID}" = "18.04" ]]; then
         echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
-        touch /etc/rc.local
-        
-        echo "Adding startup script to /etc/rc.local"
-cat <<EOT2 > /etc/rc.local
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-#
-# By default this script does nothing.
-
-sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &
-exit 0
-
-EOT2
-
-chmod +x /etc/rc.local  
+        echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
     fi
+    sed -i '/exit 0/d' /etc/rc.local
+    echo -e "exit 0" >> /etc/rc.local
+
     cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
     update-rc.d postinstall_api.sh defaults  2>/dev/null
 

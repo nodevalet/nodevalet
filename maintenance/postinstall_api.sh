@@ -38,6 +38,7 @@ function final_message() {
         if [[ "${VERSION_ID}" = "18.04" ]]; then
             echo -e "Removing postinstall_api.sh from /etc/rc.local for Ubuntu 18.04 \n"
             rm -rf /etc/rc.local
+            sed -i '/postinstall_api.sh/d' /etc/rc.local
         fi
 
         # Add a sequence to interpret the reply as success or fail $?
