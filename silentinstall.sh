@@ -811,7 +811,7 @@ EOT
 function restart_server() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     # test support for Ubuntu 18
-    if [[ "${VERSION_ID}" = "18.04" ]]; then
+    if [[ "${VERSION_ID}" = "18.04not" ]]; then
         echo -e "Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04 \n"
         touch /etc/rc.local
         
@@ -855,7 +855,7 @@ chmod +x /etc/rc.local
     echo -e "${lightred} * * Note: This VPS will now automatically restart to finish setup * * ${nocolor}\n"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
     sleep .5
-    shutdown -r now "Server is going down for upgrade."
+    # shutdown -r now "Server is going down for upgrade."
 }
 
 # This is where the script actually starts
