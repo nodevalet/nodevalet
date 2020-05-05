@@ -231,7 +231,7 @@ function create_genkeys() {
                 if [ -e $INSTALLDIR/temp/bogus ] ; then :
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vpsgenkeys.info
                 elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-                elif [ "${PROJECT,,}" = "zcoin" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf znode genkey >> $INFODIR/vpsgenkeys.info
+                elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vpsgenkeys.info ; fi
                 echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
 
