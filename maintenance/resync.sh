@@ -48,7 +48,8 @@ sleep 2
 echo -e "${white} Removing blockchain data.${nocolor}"
 cd /var/lib/masternodes/"${PROJECT}"${i}
 rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
-sudo rm -rf !("wallet.dat"|"masternode.conf")
+cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
 sleep 2
 
 echo -e "${lightgreen} Restarting masternode.${nocolor}"

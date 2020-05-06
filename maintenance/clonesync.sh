@@ -91,7 +91,8 @@ else echo -e "${lightcyan} Clonesync will now attempt to clone the blockchain "
 
     echo -e "${lightred} Removing relevant target blockchain data.${nocolor}\n"
     cd /var/lib/masternodes/"${PROJECT}"${t}
-    sudo rm -rf !("wallet.dat"|"masternode.conf")
+    cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+    sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
     sleep 2
 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail

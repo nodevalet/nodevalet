@@ -146,7 +146,8 @@ elif [[ $BOOTSTRAPZIP == *.zip ]]
 
     echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
     cd /var/lib/masternodes/"${PROJECT}"1
-    sudo rm -rf !("wallet.dat"|"masternode.conf")
+    cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+    sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
     sleep .25
 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
