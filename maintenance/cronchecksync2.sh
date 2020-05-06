@@ -64,7 +64,7 @@ function check_blocksync() {
         exit
 
         # if masternode is not running, check if there's a good reason; if not re-enable it
-elif ! [ "$BLOCKS" ]
+    elif ! [ "$BLOCKS" ]
     then echo -e "${lightred} Masternode ${i} is not running${nocolor}\n"
         if [ -e $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced ]
         then cp $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastnsync
@@ -78,7 +78,7 @@ elif ! [ "$BLOCKS" ]
         then rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
 
-    elif [ -e "$INSTALLDIR/temp/shuttingdown" ]
+        elif [ -e "$INSTALLDIR/temp/shuttingdown" ]
         then rm -rf $INSTALLDIR/getinfo_n${i} --force
             exit
         else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Re-enabling masternode ${PROJECT}_n${i}.\n" | tee -a "$LOGFILE"
