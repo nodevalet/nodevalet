@@ -26,14 +26,11 @@ function final_message() {
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
 
-        # Remove postinstall_api.sh crontab
-        crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
-
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
 
-        # Remove postinstall from rc.local (for Ubuntu 18)
+        # Remove postinstall from rc.local
         sed -i '/postinstall_api.sh/d' /etc/rc.local
 
         # Add a sequence to interpret the reply as success or fail $?

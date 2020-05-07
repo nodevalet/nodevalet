@@ -102,7 +102,8 @@ function check_blocksync() {
 
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 30 seconds${nocolor}\n"
-            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
+            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}"
+            echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $(((86400-SECONDS) / (3600))) hours${nocolor}\n"
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
             then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"

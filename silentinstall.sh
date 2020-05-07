@@ -537,9 +537,6 @@ function install_mns() {
 function add_cron() {
     # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-    # remove this because we placed it in /etc/init.d/ on reboot
-    # echo -e "  --> Run post install script after first reboot"  | tee -a "$LOGFILE"
-    # (crontab -l ; echo "*/1 * * * * /var/tmp/nodevalet/maintenance/postinstall_api.sh") | crontab - > /dev/null 2>&1
     echo -e "  --> Make sure all daemons are running every 10 minutes"  | tee -a "$LOGFILE"
     (crontab -l ; echo "7,17,27,37,47,57 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
     echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
@@ -558,28 +555,29 @@ function add_cron() {
     chmod 0700 $INSTALLDIR/maintenance/*.sh
 
     # Add system link to common maintenance scripts so they can be accessed more easily
-    sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
-    sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
-    sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
-    sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
-    sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
-    sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
-    sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
-    sudo ln -s $INSTALLDIR/maintenance/bootstrap.sh /usr/local/bin/bootstrap
-    sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
-    sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showconf
-    sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
-    sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
-    sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
-    sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
-    sudo ln -s $INSTALLDIR/maintenance/mnedit.sh /usr/local/bin/mnedit
-    sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
     sudo ln -s $INSTALLDIR/maintenance/addmn.sh /usr/local/bin/addmn
-    sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
-    sudo ln -s $INSTALLDIR/maintenance/remove_crons.sh /usr/local/bin/remove_crons
-    sudo ln -s $INSTALLDIR/maintenance/restore_crons.sh /usr/local/bin/restore_crons
+    sudo ln -s $INSTALLDIR/maintenance/autoupdate.sh /usr/local/bin/autoupdate
+    sudo ln -s $INSTALLDIR/maintenance/bootstrap.sh /usr/local/bin/bootstrap
+    sudo ln -s $INSTALLDIR/maintenance/checkdaemon.sh /usr/local/bin/checkdaemon
+    sudo ln -s $INSTALLDIR/maintenance/checksync.sh /usr/local/bin/checksync
     sudo ln -s $INSTALLDIR/maintenance/clonesync.sh /usr/local/bin/clonesync
     sudo ln -s $INSTALLDIR/maintenance/clonesync_all.sh /usr/local/bin/clonesync_all
+    sudo ln -s $INSTALLDIR/maintenance/getinfo.sh /usr/local/bin/getinfo
+    sudo ln -s $INSTALLDIR/maintenance/killswitch.sh /usr/local/bin/killswitch
+    sudo ln -s $INSTALLDIR/maintenance/makerun.sh /usr/local/bin/makerun
+    sudo ln -s $INSTALLDIR/maintenance/masternodestatus.sh /usr/local/bin/masternodestatus
+    sudo ln -s $INSTALLDIR/maintenance/mnedit.sh /usr/local/bin/mnedit
+    sudo ln -s $INSTALLDIR/maintenance/mnstart.sh /usr/local/bin/mnstart
+    sudo ln -s $INSTALLDIR/maintenance/mnstop.sh /usr/local/bin/mnstop
+    sudo ln -s $INSTALLDIR/maintenance/mulligan.sh /usr/local/bin/mulligan
+    sudo ln -s $INSTALLDIR/maintenance/rebootq.sh /usr/local/bin/rebootq
+    sudo ln -s $INSTALLDIR/maintenance/remove_crons.sh /usr/local/bin/remove_crons
+    sudo ln -s $INSTALLDIR/maintenance/restore_crons.sh /usr/local/bin/restore_crons
+    sudo ln -s $INSTALLDIR/maintenance/resync.sh /usr/local/bin/resync
+    sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showconf
+    sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
+    sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
+
 }
 
 function configure_mns() {
@@ -845,18 +843,12 @@ EOT
 }
 
 function restart_server() {
-    # add support for Ubuntu 18 and 20
-    if [[ "${VERSION_ID}" = "18.04" ]] || [[ "${VERSION_ID}" = "20.04" ]]; then
-        echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 18.04/20.04 \n"
-        echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
-    fi
+    echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 16.04/18.04/20.04 \n"
+    echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
     sed -i '/exit 0/d' /etc/rc.local
     echo -e "exit 0" >> /etc/rc.local
 
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
-
-    cp $INSTALLDIR/maintenance/postinstall_api.sh /etc/init.d/
-    update-rc.d postinstall_api.sh defaults  2>/dev/null
 
     clear
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
