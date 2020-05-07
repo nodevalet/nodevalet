@@ -97,7 +97,7 @@ function bootstrap() {
         cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
         sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
         sleep 1
-
+    fi
     done
     echo -e "${lightcyan} --> All blockchain data has been cleared from unsynced target(s)${nocolor}\n"
 
@@ -113,7 +113,8 @@ function bootstrap() {
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/blocks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/chainstate" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/sporks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
-        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin  
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin
+    fi 
     done
     echo -e "${lightcyan} --> Target masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
