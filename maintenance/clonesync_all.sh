@@ -33,7 +33,7 @@ function restore_crons() {
 
 function shutdown_mns() {
     # shutdown all MNs except the first
-    echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}\n"
+    echo -e "\n${yellow} Clonesync_all will now stop and disable all unsynced masternode(s):${nocolor}\n"
     for ((i=2;i<=$MNS;i++));
     do
     # check for and shutdown masternodes which are not currently synced
@@ -116,7 +116,7 @@ function bootstrap() {
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin
     fi 
     done
-    echo -e "${lightcyan} --> Target masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
+    echo -e "${lightcyan} --> Unsynced masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
 
 function restart_mns() {
