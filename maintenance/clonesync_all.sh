@@ -33,19 +33,21 @@ function restore_crons() {
 
 function shutdown_mns() {
     # shutdown all MNs except the first
-    echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}"
+    echo -e "\n${yellow} Clonesync_all will now stop and disable all Target masternode(s):${nocolor}\n"
     for ((i=2;i<=$MNS;i++));
     do
-        echo -e "${lightred}  Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
+    # check for and shutdown masternodes which are not currently synced
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    if [[ "${TARGETSYNC}" ]]
+    then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is synced.${nocolor}\n"
+    else echo -e "${lightred} Masternode ${PROJECT}_n${i} is not synced.${nocolor}"
+        echo -e "${i}" >> /var/tmp/nodevalet/temp/rolling_start
+        echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl stop "${PROJECT}"_n${i}
+    fi
     done
-    echo -e "${lightcyan} --> Masternodes have been stopped and disabled${nocolor}\n"
-}
-
-function adjust_swap() {
-    # reserved for future user
-    true
+    echo -e "${lightcyan} --> Unsynced masternodes have been stopped and disabled${nocolor}\n"
 }
 
 function checksync_source() {
@@ -73,9 +75,9 @@ function checksync_source() {
 function shutdown_mn1() {
     # stop and disable mn1
     echo -e "${yellow} Clonesync_all needs to shut down the Source masternode:${nocolor}"
-    # echo -e "${lightred} Disabling Source masternode ${PROJECT}_n1 now."
     sudo systemctl disable "${PROJECT}"_n1 > /dev/null 2>&1
     sudo systemctl stop "${PROJECT}"_n1
+    sleep 1
     rm -f $INSTALLDIR/temp/"${PROJECT}"_n1_synced
     echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
@@ -85,34 +87,62 @@ function bootstrap() {
     echo -e "${yellow} Clonesync_all will now remove relevant blockchain data from target(s):${nocolor}"
     for ((t=2;t<=$MNS;t++));
     do
-        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
+        
+    # remove blockchain data from masternodes which were not currently synced
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
+    if [[ "${TARGETSYNC}" ]]
+    then :
+    else echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"${t}
         cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
         sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
-        sleep 2
-    done
-    echo -e "${lightcyan} --> All blockchain data has been cleared from the target(s)${nocolor}\n"
+        sleep 1
 
+    done
+    echo -e "${lightcyan} --> All blockchain data has been cleared from unsynced target(s)${nocolor}\n"
+
+    # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
     echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
     for ((t=2;t<=$MNS;t++));
     do
-        # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-        echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
+    if [[ "${TARGETSYNC}" ]]
+    then :
+    else echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
         cd /var/lib/masternodes/"${PROJECT}"${s}
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/blocks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/blocks /var/lib/masternodes/"${PROJECT}${t}"/blocks
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/chainstate" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/chainstate /var/lib/masternodes/"${PROJECT}${t}"/chainstate
         [ -d "/var/lib/masternodes/"${PROJECT}${s}"/sporks" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/sporks /var/lib/masternodes/"${PROJECT}${t}"/sporks
-        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin
+        [ -d "/var/lib/masternodes/"${PROJECT}${s}"/zerocoin" ] && cp -rp /var/lib/masternodes/"${PROJECT}${s}"/zerocoin /var/lib/masternodes/"${PROJECT}${t}"/zerocoin  
     done
-    echo -e "${lightcyan} --> All masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
+    echo -e "${lightcyan} --> Target masternodes have been bootstrapped from ${PROJECT}_n1${nocolor}\n"
 }
 
 function restart_mns() {
     # restart and re-enable all masternodes
     echo -e "${yellow} Clonesync_all will now restart all masternodes:${nocolor}"
-    for ((i=1;i<=$MNS;i++));
+    
+    # restart masternode 1 and wait 5 seconds
+    echo -e -n "${white}  Restarting masternode ${PROJECT}_n1...${nocolor}"
+        systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
+        systemctl start "${PROJECT}"_n1
+        let "stime=5"
+        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
+
+        # display countdown timer on screen
+        seconds=$stime; date1=$((`date +%s` + $seconds));
+        while [ "$date1" -ge `date +%s` ]; do
+            echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+            sleep 0.5
+        done
+    
+    # restart the rest of the unsynced masternodes
+    for ((i=2;i<=$MNS;i++));
     do
-        echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    if [[ "${TARGETSYNC}" ]]
+    then :
+    else echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
         let "stime=3*$i"
@@ -124,8 +154,20 @@ function restart_mns() {
             echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
             sleep 0.5
         done
+
+        # check if masternode has fully started up and is synced
+        checksync $i
+        echo -e "${yellow} Checking if masternode ${PROJECT}_n$i is synced.${nocolor}\n"
+        sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $i > /dev/null 2>&1
+        sleep 1
+        SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+        if [[ "${SOURCESYNC}" ]]
+        then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is running and synced.${nocolor}"  | tee -a "$LOGFILE"
+        else echo -e " Source (${PROJECT}_n1) is not synced; something went wrong.\n"  | tee -a "$LOGFILE"
+        fi
+    fi
     done
-    echo -e "${lightcyan} --> Masternodes have been restarted and enabled${nocolor}\n"
+    echo -e "${lightcyan} --> Unsynced masternodes have been restarted and enabled${nocolor}\n"
 }
 
 # This file will contain if the chain is currently not synced
@@ -143,14 +185,13 @@ function restart_mns() {
 # this is the actual start of the script
 remove_crons
 shutdown_mns
-adjust_swap
 checksync_source
 shutdown_mn1
 bootstrap
 restart_mns
 restore_crons
 
-echo -e "\n${lightgreen} Complete; Masternodes have all been bootstrapped.${nocolor}\n"
+echo -e "\n${lightgreen} Complete; unsynced masternodes have been bootstrapped.${nocolor}\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}All Masternodes have been bootstrapped!${nocolor}\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit
