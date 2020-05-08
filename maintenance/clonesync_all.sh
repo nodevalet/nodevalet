@@ -160,11 +160,13 @@ function restart_mns() {
         checksync $i
         echo -e "${yellow} Checking if masternode ${PROJECT}_n$i is synced.${nocolor}\n"
         sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $i > /dev/null 2>&1
-        sleep 1
+        sleep 2
         SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
         if [[ "${SOURCESYNC}" ]]
-        then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is running and synced.${nocolor}"  | tee -a "$LOGFILE"
-        else echo -e " Source (${PROJECT}_n1) is not synced; something went wrong.\n"  | tee -a "$LOGFILE"
+        then :
+        # echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is running and synced.${nocolor}"  | tee -a "$LOGFILE"
+        else :
+        # echo -e " Masternode ${PROJECT}_n${i} is not synced; something went wrong.\n"  | tee -a "$LOGFILE"
         fi
     fi
     done
