@@ -13,5 +13,5 @@ echo -e "${white}  --> Check for wallet updates every 48 hours${nocolor}"
 (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
 echo -e "${white}  --> Check if chains are syncing or synced every 5 minutes${nocolor}"
 (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
-echo -e "${white}  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
+echo -e "${white}  --> Clear daemon debug logs weekly to prevent clog${nocolor}"
 (crontab -l ; echo "@weekly /var/tmp/nodevalet/maintenance/cleardebuglog.sh") | crontab -
