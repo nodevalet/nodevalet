@@ -21,14 +21,14 @@ shopt -s extglob
 
 touch $INSTALLDIR/temp/updating
 
-function remove_crons() {
+function remove_crons_function() {
     # disable the crons that could cause problems
-    . /var/tmp/nodevalet/maintenance/remove_crons.sh
+    remove_crons
 }
 
-function restore_crons() {
+function restore_crons_function() {
     # restore maintenance crons that were previously disabled
-    . /var/tmp/nodevalet/maintenance/restore_crons.sh
+    restore_crons
 }
 
 function shutdown_mns() {
@@ -186,13 +186,13 @@ function restart_mns() {
 # $INSTALLDIR/temp/"${PROJECT}"_n${t}_lastnsync  (eg. audax_n2_lastnsync)
 
 # this is the actual start of the script
-remove_crons
+remove_crons_function
 shutdown_mns
 checksync_source
 shutdown_mn1
 bootstrap
 restart_mns
-restore_crons
+restore_crons_function
 
 echo -e "\n${lightgreen} Complete; unsynced masternodes have been bootstrapped.${nocolor}\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}All Masternodes have been bootstrapped!${nocolor}\n" >> $LOGFILE

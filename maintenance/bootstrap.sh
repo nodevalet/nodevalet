@@ -176,11 +176,11 @@ elif [[ $BOOTSTRAPZIP == *.zip ]]
 check_if_synced
 bootstrap
 rm -rf $INSTALLDIR/temp/updating
-restore_crons
 
 # exit if there is only one masternode
 if [ $MNS = 1 ]
 then echo -e " This VPS has only one masternode, skipping clonesync_all.sh\n"  | tee -a "$LOGFILE"
+restore_crons
 else bash $INSTALLDIR/maintenance/clonesync_all.sh
 fi
 
