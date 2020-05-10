@@ -1002,6 +1002,8 @@ function motd_install() {
 Here are some scriptlets you can use to easily manage your masternodes:
  showmlog | showconf | getinfo | masternodestatus | mnedit | addmn | clonesync
 EOMOTD
+PRINTLASTLOGIN=$(sed -n -e '/PrintLastLog /p' $SSHDFILE)
+sed -i "s/$PRINTLASTLOGIN/PrintLastLog no/" $SSHDFILE >> $LOGFILE 2>&1
 
         clear
         # Error Handling
