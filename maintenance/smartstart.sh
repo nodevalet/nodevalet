@@ -14,7 +14,7 @@ fi
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Server reboot detected; running smartstart.sh${nocolor}" | tee -a "$LOGFILE"
-echo -e " --> SmartStart will reduce server congestion after each reboot\n"  | tee -a "$LOGFILE"
+echo -e " --> NodeValet SmartStart will reduce server congestion after each reboot\n"  | tee -a "$LOGFILE"
 
 # extglob was necessary to make rm -- ! possible
 # shopt -s extglob

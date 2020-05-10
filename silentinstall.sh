@@ -611,6 +611,7 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/showconf.sh /usr/local/bin/showconf
     sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
+    sudo ln -s $INSTALLDIR/maintenance/smartstart.sh /usr/local/bin/smartstart
 
 }
 
