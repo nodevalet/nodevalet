@@ -115,16 +115,17 @@ function gather_info() {
         done
         echo -e "${nocolor}"
     if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
-    then  echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
+    then  clear
+        echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
     else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
         exit 1
     fi
 
     # check if VPS supports IPv6  
-    [ -f /proc/net/if_inet6 ] && echo 'IPv6 ready system!' || echo 'No IPv6 support was found! !'
+    [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
             
-        echo -e " Please choose from one of the following supported coins to install:"
-        echo -e "    helium | audax | pivx | phore | mue | squorum\n"
+        echo -e "${white} Please choose from one of the following supported coins to install:${nocolor}"
+        echo -e "${lightpurple}    helium | audax | pivx | phore | mue | squorum${nocolor}\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT
@@ -280,10 +281,9 @@ elif [ "$ONLYNET" = 4 ]
     else
         echo -e "\n You can choose to enter your own masternode genkeys or you can let"
         echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
-        echo -e " secure, but it's faster if your server does it for you. An example of when  "
-        echo -e " you would want to enter them yourself would be if you are trying to "
-        echo -e " transfer existing masternodes to this VPS without interruption."
-        echo -e -n "${cyan}"
+        echo -e " secure, but it's faster if your server does it for you. An example of "
+        echo -e " when you would want to enter them yourself would be if you are trying "
+        echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
         while :; do
             echo -e "\n Would you like your server to generate genkeys for you? y/n "
             read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
@@ -382,7 +382,7 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSH port to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n\n${nocolor} Your current SSH port is : $(sed -n -e '/^Port /p' /etc/ssh/sshd_config) \n"
+        echo -e "\n\n${nocolor} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
         echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
 
         # what I consider a good example of a complicated query for numerical data
