@@ -994,6 +994,15 @@ function motd_install() {
         cat etc/update-motd.d/99-esm > /etc/update-motd.d/99-esm
         sed -i 's,#Banner /etc/issue.net,Banner /etc/issue.net,' /etc/ssh/sshd_config
         cat etc/issue.net > /etc/issue.net
+
+    rm -rf /etc/motd
+    touch /etc/motd
+    chmod +x /etc/motd
+    cat <<EOMOTD >> /etc/motd
+Here are some NodeValet scriptlets you can use to easily manage your masternodes:
+ showmlog | showconf | getinfo | masternodestatus | mnedit | addmn | clonesync
+EOMOTD
+
         clear
         # Error Handling
         if [ $? -eq 0 ]
