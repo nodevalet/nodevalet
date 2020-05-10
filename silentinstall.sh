@@ -72,10 +72,14 @@ EOTRC
     echo -e " #   |_| \_|\___/ \__,_|\___| \_/ \__,_|_|\___|\__(_)_|\___/    #" | tee -a "$LOGFILE"
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
     echo -e " ################################################################" | tee -a "$LOGFILE"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
-    echo -e " -----------------------------------------------------${nocolor}" | tee -a "$LOGFILE"
+    echo -e " ${yellow}---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : BEGIN INSTALLATION SCRIPT " | tee -a "$LOGFILE"
+    echo -e " ---------------------------------------------------- ${nocolor}\n" | tee -a "$LOGFILE"
 }
 
+#####################
+###  GATHER INFO  ###
+#####################
 function gather_info() {
     # read or set project name
     if [ -s $INFODIR/vpscoin.info ]
@@ -89,11 +93,38 @@ function gather_info() {
     else
         # exit with error if not run as root/sudo
         if [ "$(id -u)" != "0" ]; then
-            echo "Please re-run as sudo."
+            echo "Please re-run as root or sudo."
             exit 1
         fi
+        
+    echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your "
+    echo -e " server and masternodes. This interactive script will first prompt you"
+    echo -e " for information about your setup. Then it will update your VPS and"
+    echo -e " securely install the masternodes you specifiy.\n "
+    echo -e " In most cases, this script will function correctly on supported VPS"
+    echo -e " platforms without extra steps. Some providers require extra care.\n"
+    echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
+    echo -e "${lightcyan} and reboot your VPS before you proceed.${cyan}"
+            while :; do
+            echo -e "\n"
+            read -n 1 -s -r -p " Are you ready to continue the installation now? y/n  " INSTALLNOW
+            if [[ ${INSTALLNOW,,} == "y" || ${INSTALLNOW,,} == "Y" || ${INSTALLNOW,,} == "N" || ${INSTALLNOW,,} == "n" ]]
+            then
+                break
+            fi
+        done
+        echo -e "${nocolor}"
+    if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
+    then  echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
+    else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
+        exit 1
+    fi
+
+    # check if VPS supports IPv6  
+    [ -f /proc/net/if_inet6 ] && echo 'IPv6 ready system!' || echo 'No IPv6 support was found! !'
+            
         echo -e " Please choose from one of the following supported coins to install:"
-        echo -e "    helium | audax | pivx | phore | mue\n"
+        echo -e "    helium | audax | pivx | phore | mue | squorum\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT
