@@ -731,8 +731,9 @@ EOT
             then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
                 echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
                 echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
-                echo -e " ${lightgreen}This masternode seems to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
-                echo -e " IPv4 address with a public one in the masternode.conf file if needed. ${nocolor}" | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}This masternode appears to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
+                echo -e " IPv4 address with a public one in the masternode.conf file if needed." | tee -a "$LOGFILE"
+                echo -e " You may need to configure your router to forward ports for masternodes to work. ${nocolor}" | tee -a "$LOGFILE"
             fi
 
             # Check for presence of txid and, if present, use it for txid/txidx

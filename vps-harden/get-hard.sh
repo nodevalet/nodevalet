@@ -1137,7 +1137,7 @@ function install_complete() {
     echo -e -n "${lightcyan}"
     if [ "${KSPLICE,,}" = "yes" ] || [ "${KSPLICE,,}" = "y" ]
     then echo -e " You installed Oracle's Ksplice to update without reboot" | tee -a "$LOGFILE"
-    else echo -e " You chose NOT to auto-update OS with Oracle's Ksplice" | tee -a "$LOGFILE"
+    else :
     fi
     echo -e -n "${yellow}"
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"
