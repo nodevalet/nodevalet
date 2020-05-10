@@ -158,8 +158,11 @@ function gather_info() {
     if [ -e $INFODIR/vpsapi.info ]
     then VPSAPI=$(<$INFODIR/vpsapi.info)
         echo -e " Setting NodeValet API key to provided value : vpsapi.info found" >> $LOGFILE
-    else echo -e "\n\n Before we can begin, we need to collect your NodeValet API Key."
-        echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
+    else echo -e "${lightcyan}\n\n Before we begin, we need to verify your NodeValet API Key."
+        echo -e " If you do not already have one, you may purchase a NodeValet "
+        echo -e " API Key at ${white}https://www.nodevalet.io/purchase.php${lightcyan}. Purchased"
+        echo -e " keys permit 5 server installations and expire after 30 days.\n"
+        echo -e "${lightgreen} !! Please double check your NodeValet API Key for accuracy !!${nocolor}"
         touch $INFODIR/vpsapi.info
         echo -e -n " "
         while :; do

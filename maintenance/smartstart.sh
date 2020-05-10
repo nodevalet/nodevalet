@@ -14,7 +14,7 @@ fi
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Server reboot detected; running smartstart.sh${nocolor}" | tee -a "$LOGFILE"
-echo -e " --> The goal of SmartStart is to reduce server congestion after each reboot\n"  | tee -a "$LOGFILE"
+echo -e " --> SmartStart will reduce server congestion after each reboot\n"  | tee -a "$LOGFILE"
 
 # extglob was necessary to make rm -- ! possible
 # shopt -s extglob
@@ -39,7 +39,6 @@ function shutdown_mns() {
         echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl stop "${PROJECT}"_n${i}
-    fi
     done
     echo -e "${lightcyan} --> All masternodes have been stopped and disabled${nocolor}\n"
 }
