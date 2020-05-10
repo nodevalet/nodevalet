@@ -78,6 +78,6 @@ restart_mns
 restore_crons_function
 
 echo -e "\n${lightgreen} Complete; all masternodes have been intelligently restarted.${nocolor}\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}SmartStart has completed!${nocolor}\n" >> $LOGFILE
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}SmartStart has completed; resuming normal operations!${nocolor}\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
 exit
