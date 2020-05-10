@@ -13,7 +13,7 @@ then echo -e " This VPS has only one masternode, not running clonesync_all.sh\n"
 fi
 
 echo -e "\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running clonesync_all.sh" | tee -a "$LOGFILE"
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Running clonesync_all.sh${nocolor}" | tee -a "$LOGFILE"
 echo -e " --> Attempting to bootstrap all Masternodes using n1's blockchain"  | tee -a "$LOGFILE"
 
 # extglob was necessary to make rm -- ! possible
@@ -41,7 +41,6 @@ function shutdown_mns() {
     if [[ "${TARGETSYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is synced.${nocolor}\n"
     else echo -e "${lightred} Masternode ${PROJECT}_n${i} is not synced.${nocolor}"
-        echo -e "${i}" >> /var/tmp/nodevalet/temp/rolling_start
         echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl stop "${PROJECT}"_n${i}
@@ -160,14 +159,6 @@ function restart_mns() {
         checksync $i
         echo -e "${yellow} Checking if masternode ${PROJECT}_n$i is synced.${nocolor}\n"
         sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $i > /dev/null 2>&1
-        sleep 2
-        SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
-        if [[ "${SOURCESYNC}" ]]
-        then :
-        # echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is running and synced.${nocolor}"  | tee -a "$LOGFILE"
-        else :
-        # echo -e " Masternode ${PROJECT}_n${i} is not synced; something went wrong.\n"  | tee -a "$LOGFILE"
-        fi
     fi
     done
     echo -e "${lightcyan} --> Unsynced masternodes have been restarted and enabled${nocolor}\n"

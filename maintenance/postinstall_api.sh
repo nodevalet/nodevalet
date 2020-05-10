@@ -21,7 +21,7 @@ function final_message() {
 
         # log successful reboot
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
-        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
@@ -32,6 +32,12 @@ function final_message() {
 
         # Remove postinstall from rc.local
         sed -i '/postinstall_api.sh/d' /etc/rc.local
+
+        # Enable SmartStart on subsequent reboots
+        echo -e " Enabling SmartStart by adding task to /etc/rc.local \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        echo -e "sudo bash /var/tmp/nodevalet/maintenance/smartstart.sh &" >> /etc/rc.local
+        sed -i '/exit 0/d' /etc/rc.local
+        echo -e "exit 0" >> /etc/rc.local
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
