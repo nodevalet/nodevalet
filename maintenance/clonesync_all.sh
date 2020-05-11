@@ -54,7 +54,9 @@ function checksync_source() {
     # wait for sync and then make sure masternode 1 has a fully-synced blockchain
     checksync 1
     echo -e "${yellow} Checking if masternode ${PROJECT}_n1 is synced.${nocolor}\n"
+    touch "$INSTALLDIR/temp/gettinginfo"
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
+    rm -rf "$INSTALLDIR/temp/gettinginfo"
     sleep 1
     SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
 
@@ -167,7 +169,9 @@ function restart_mns() {
         # check if masternode has fully started up and is synced
         checksync $i
         echo -e "${yellow} Checking if masternode ${PROJECT}_n$i is synced.${nocolor}\n"
+        touch "$INSTALLDIR/temp/gettinginfo"
         sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $i > /dev/null 2>&1
+        rm -rf "$INSTALLDIR/temp/gettinginfo"
     fi
     done
     echo -e "${lightcyan} --> Unsynced masternodes have been restarted and enabled${nocolor}\n"

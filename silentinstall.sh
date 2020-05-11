@@ -884,7 +884,9 @@ function restart_server() {
     sed -i '/exit 0/d' /etc/rc.local
     echo -e "exit 0" >> /etc/rc.local
 
+    echo -e " ${yellow}---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
+    echo -e " ---------------------------------------------------- ${nocolor}\n" | tee -a "$LOGFILE"
 
     clear
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
