@@ -60,6 +60,7 @@ function sync_check() {
     if ((TIMEDIF <= 300 && TIMEDIF >= -300))
     then echo -e " The blockchain is almost certainly synced.\n"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
+        touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
         SYNCED="yes"
     else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
         SYNCED="no"
