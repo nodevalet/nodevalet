@@ -57,17 +57,26 @@ function checksync_source() {
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh 1 > /dev/null 2>&1
     sleep 1
     SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
+
+    if [[ "${SOURCESYNC}" ]]
+    then :
+    else echo -e "${lightred} Source (${PROJECT}_n1) is not yet synced; checking again.${nocolor}\n"
+        sleep 30
+        checksync 1
+        SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n1" | grep "synced")
+    fi
+
     if [[ "${SOURCESYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n1 is synced and a valid Source masternode.${nocolor}"
         echo -e "${lightcyan} --> Setting Source masternode to n1${nocolor}\n"
         rm -f $INSTALLDIR/temp/clonesyncing
         s=1
-    else echo -e " Source (${PROJECT}_n1) is not synced; aborting clonesync_all.\n"  | tee -a "$LOGFILE"
+    else echo -e "${lightred} Source (${PROJECT}_n1) is not synced; aborting clonesync_all.${nocolor}\n"  | tee -a "$LOGFILE"
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/clonesyncing
-        restore_crons
+        . /var/tmp/nodevalet/maintenance/restore_crons.sh
         activate_masternodes_"$PROJECT"
-        exit
+        exit 1
     fi
 }
 
