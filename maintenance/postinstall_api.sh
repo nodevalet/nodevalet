@@ -50,7 +50,7 @@ function final_message() {
         sudo bash bootstrap.sh
 
         # create file to signal that bootstrap has finished
-        rm $INSTALLDIR/temp/bootstrapping
+        rm -rf $INSTALLDIR/temp/bootstrapping --force
 
     else :
     fi
