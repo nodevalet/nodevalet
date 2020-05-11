@@ -652,7 +652,7 @@ EOT
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
-                if [ "${PROJECT,,}" = "polis" ] ; then SLEEPTIME=15 ; else SLEEPTIME=3 ; fi
+                if [ "${PROJECT,,}" = "polis" ] ; then SLEEPTIME=15 ; else SLEEPTIME=5 ; fi
 
                 # check if GENKEY variable is empty; if so stop script and report error
                 if [ ${#KEYXIST} = "0" ]
