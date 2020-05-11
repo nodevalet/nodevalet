@@ -74,10 +74,11 @@ function search_and_destroy() {
         echo -e "----------------------------------------------------------------------------- ${yellow}\n"
 
         echo -e "${yellow}-------------------------------------------------------------- "
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin and rc.local"
         echo -e "-------------------------------------------------------------- ${white}\n"
         rm -rf /usr/local/bin/*
         rm -rf /root/.${PROJECT}
+        rm -rf /etc/rc.local
 
         echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
@@ -92,7 +93,7 @@ function search_and_destroy() {
         echo -e "${yellow}------------------------------------------------------------------ "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
         echo -e "------------------------------------------------------------------ ${white}\n"
-        sudo rm -rf /var/tmp/nodevalet
+        sudo rm -rf /var/tmp/nodevalet 
 
         echo -e "${lightgreen}------------------------------------------------------------------------- "
         echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : NodeValet was scrubbed from this Server"
