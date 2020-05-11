@@ -39,12 +39,12 @@ function shutdown_mn1() {
     echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
-function remove_crons() {
+function remove_cron_function() {
     # disable the crons that could cause problems
     . /var/tmp/nodevalet/maintenance/remove_crons.sh
 }
 
-function restore_crons() {
+function restore_cron_function() {
     # restore maintenance crons that were previously disabled
     . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
@@ -62,7 +62,7 @@ function bootstrap() {
 
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
-    then remove_crons
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -80,7 +80,7 @@ function bootstrap() {
             | wget -i -
 
 elif curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .tgz
-    then remove_crons
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -98,7 +98,7 @@ elif curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .tgz
             | wget -i -
 
 elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
-    then remove_crons
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt bootstrap file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -180,7 +180,7 @@ rm -rf $INSTALLDIR/temp/updating
 # exit if there is only one masternode
 if [ $MNS = 1 ]
 then echo -e " This VPS has only one masternode, skipping clonesync_all.sh\n"  | tee -a "$LOGFILE"
-restore_crons
+restore_cron_function
 else bash $INSTALLDIR/maintenance/clonesync_all.sh
 fi
 
