@@ -252,14 +252,14 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/vpsmnaddress.info ]
     then :
         # create a subroutine here to check memory and size MNS appropriately
-    else echo -e "\n\n Before we can begin, we need to collect $MNS masternode addresses."
+    else echo -e "\n\n Before we can begin, we need to collect${lightcyan} $MNS masternode addresses.${nocolor}"
         echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
         echo -e " On your local wallet, generate the masternode addresses and send"
         echo -e " your collateral transactions for masternodes you want to start"
         echo -e " now. You may also add extra addresses even if you have not yet"
         echo -e " funded them, and the script will still create the masternode"
         echo -e " instance which you can later activate from your local wallet."
-        echo -e "   ! ! Please double check your addresses for accuracy ! !"
+        echo -e "${lightgreen}   ! ! Please double check your addresses for accuracy ! !${nocolor}"
         touch $INFODIR/vpsmnaddress.info
         for ((i=1;i<=$MNS;i++));
         do
