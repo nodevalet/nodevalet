@@ -23,12 +23,12 @@ touch $INSTALLDIR/temp/updating
 
 function remove_crons_function() {
     # disable the crons that could cause problems
-    remove_crons
+    . /var/tmp/nodevalet/maintenance/remove_crons.sh
 }
 
 function restore_crons_function() {
     # restore maintenance crons that were previously disabled
-    restore_crons
+    . /var/tmp/nodevalet/maintenance/restore.sh
 }
 
 function shutdown_mns() {

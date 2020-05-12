@@ -421,6 +421,9 @@ elif [ "$ONLYNET" = 4 ]
     sed -i "s/# set softwrap/set softwrap/" /etc/nanorc >> $LOGFILE 2>&1
 }
 
+######################
+###  CHECK DISTRO  ###
+######################
 function check_distro() {
     # currently supporting Ubuntu 16.04/18.04/20.04
     if [[ -r /etc/os-release ]]; then
@@ -436,7 +439,10 @@ function check_distro() {
     fi
 }
 
-function silent_harden() {
+####################
+###  HARDEN VPS  ###
+####################
+function harden_vps() {
     if [ -e /var/log/server_hardening.log ]
     then echo -e " This server seems to already be hardened, skipping this part \n" | tee -a "$LOGFILE"
     else echo -e " This server is not yet secure, running VPS Hardening script" | tee -a "$LOGFILE"
@@ -452,6 +458,9 @@ function silent_harden() {
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
+##########################
+###  INSTALL BINARIES  ###
+##########################
 function install_binaries() {
 
     # make special accomodations for coins that build weird, require oddball dependencies, or use sloppy code
@@ -521,6 +530,10 @@ function install_binaries() {
     # remove binaries temp folder
     rm -rf $INSTALLDIR/temp/bin
 }
+
+#####################
+###  INSTALL MNS  ###
+#####################
 function install_mns() {
     if [ -e /etc/masternodes/"$PROJECT_n1".conf ]
     then touch $INSTALLDIR/temp/mnsexist
@@ -535,7 +548,7 @@ function install_mns() {
         
         # add support for deterministic wallets so they don't break everything
         if [ "${PROJECT,,}" = "mue" ]
-        then echo -e "Setting masternode services to not use deterministic seeds for wallets" | tee -a "$LOGFILE"
+        then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
         sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
@@ -577,6 +590,9 @@ function install_mns() {
     fi
 }
 
+######################
+###  ADD CRONJOBS  ###
+######################
 function add_cron() {
     # Add maintenance and automation cronjobs
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
@@ -624,6 +640,9 @@ function add_cron() {
 
 }
 
+#######################
+###  CONFIGURE MNS  ###
+#######################
 function configure_mns() {
     # Do not break any existing masternodes
     if [ -s $INSTALLDIR/temp/mnsexist ]
@@ -887,6 +906,9 @@ EOT
     fi
 }
 
+########################
+###  RESTART SERVER  ###
+########################
 function restart_server() {
     echo -e " Placing postinstall_api.sh in /etc/rc.local for Ubuntu 16.04/18.04/20.04 \n"
     echo -e "sudo bash /var/tmp/nodevalet/maintenance/postinstall_api.sh &" >> /etc/rc.local
@@ -901,30 +923,28 @@ function restart_server() {
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     echo -e " Please follow the steps below to complete your masternode setup: "
-    echo -e " 1. Please copy the above file and paste it into the masternode.conf "
-    echo -e "    file on your local wallet. (insert txid info to end of each line) "
+    echo -e " 1. Please copy the above file and paste it into the ${yellow}masternode.conf${nocolor} "
+    echo -e "    file on your local wallet. (insert txid info if necessary) "
     echo -e " 2. This VPS will automatically restart now to complete the installation"
     echo -e "    and begin syncing the blockchain. "
     echo -e " 3. Once the VPS has rebooted successfully, restart your local wallet, "
-    echo -e "    and then you may click Start Missing to start your new masternodes. "
+    echo -e "    and then you may click ${yellow}Start Missing${nocolor} to start your new masternodes. "
     echo -e " 4. If the initial blockchain sync takes longer than a couple of hours "
     echo -e "    you may need to start the masternodes in your local wallet again.\n"
     echo -e "${lightred} * * Note: This VPS will now automatically restart to finish setup * * ${nocolor}\n"
     touch $INSTALLDIR/temp/vpsvaletreboot.txt
-    sleep .5
+    sleep 1
     shutdown -r now "Server is going down for upgrade."
 }
 
-# This is where the script actually starts
+################################
+###  ACTUAL START OF SCRIPT  ###
+################################
 
-setup_environment
+setup_environment # moved initial NodeValet callback near beginning to provide faster response
 check_distro
-
 gather_info
-# moved initial NodeValet callback near beginning of setup_environment to provide faster response
-
-silent_harden
-# NodeValet callbacks are embedded in get-hard.sh
+harden_vps
 
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Downloading '"$PROJECTt"' Binaries ..."}' && echo -e " "
 install_binaries
@@ -942,3 +962,5 @@ configure_mns
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
 
 restart_server
+
+exit 0
