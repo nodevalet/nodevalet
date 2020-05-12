@@ -532,6 +532,15 @@ function install_mns() {
         echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
+        
+        # add support for deterministic wallets so they don't break everything
+        if [ "${PROJECT,,}" = "mue" ]
+        then echo -e "Setting masternode services to not use deterministic seeds for wallets" | tee -a "$LOGFILE"
+        for ((i=1;i<=$MNS;i++));
+        do
+        sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i >> $LOGFILE 2>&1
+        done
+        fi
 
         # activate masternodes, or activate just FIRST masternode
         echo -e "Activating your $PROJECTt masternode(s)" | tee -a "$LOGFILE"
