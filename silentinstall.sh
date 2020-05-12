@@ -282,7 +282,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e "${white}\n You can choose to enter your own masternode genkeys or you can let"
         echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
         echo -e " secure, but it's faster if your server does it for you. An example of "
         echo -e " when you would want to enter them yourself would be if you are trying "
@@ -330,7 +330,7 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
     else
-        echo -e "\n${nocolor} If your project is supported by NodeValet, your VPS can likely retrieve the"
+        echo -e "\n${white} If your project is supported by NodeValet, your VPS can likely retrieve the"
         echo -e " masternodes' transaction IDs and indices from the blockchain. If you are "
         echo -e " installing masternodes for a project that is not fully supported, then you "
         echo -e " are able to provide your own transaction IDs and output indices. You can "
@@ -538,7 +538,7 @@ function install_mns() {
         then echo -e "Setting masternode services to not use deterministic seeds for wallets" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
-        sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i >> $LOGFILE 2>&1
+        sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
         done
         fi
 
