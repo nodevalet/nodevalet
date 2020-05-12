@@ -20,6 +20,7 @@ echo -e " --> NodeValet SmartStart will reduce server congestion after each rebo
 # shopt -s extglob
 
 touch $INSTALLDIR/temp/updating
+touch $INSTALLDIR/temp/smartstart
 
 function remove_crons_function() {
     # disable the crons that could cause problems
@@ -80,4 +81,5 @@ restore_crons_function
 echo -e "\n${lightgreen} Complete; all masternodes have been intelligently restarted.${nocolor}\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}SmartStart has completed; resuming normal operations!${nocolor}\n" >> $LOGFILE
 rm -f $INSTALLDIR/temp/updating
+rm -f $INSTALLDIR/temp/smartstart
 exit

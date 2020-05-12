@@ -69,12 +69,13 @@ function sync_check() {
 
 function check_blocksync() {
 
-    # check if blockchain of n1 is synced for 24 hours (86400 seconds) before reporting failure
-    end=$((SECONDS+86400))
-    # end=$((SECONDS+86400))
+    # check if blockchain is synced for this amount of time before reporting failure
+    if [ -e "$INSTALLDIR/temp/smartstart" ]
+    then end=$((SECONDS+1800)) # 30 minutes (1800 seconds)
+    else end=$((SECONDS+86400)) # 24 hours (86400 seconds)
+    fi
 
     while [ $SECONDS -lt $end ]; do
-        # echo -e "Time $SECONDS"
         touch $INSTALLDIR/getinfo_n${i}
         /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n${i}
         clear
@@ -104,7 +105,7 @@ function check_blocksync() {
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 20 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}"
-            echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $(((86400-SECONDS) / (3600))) hours${nocolor}\n"
+            echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $((($end-SECONDS) / (60))) minutes${nocolor}\n"
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
             then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
@@ -119,7 +120,7 @@ function check_blocksync() {
             # display countdown timer on screen
             countdown=20; date1=$((`date +%s` + $countdown));
             while [ "$date1" -ge `date +%s` ]; do
-                echo -ne "   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+                echo -ne "${lightcyan}   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r${nocolor}";
                 sleep 0.5
             done
         fi
