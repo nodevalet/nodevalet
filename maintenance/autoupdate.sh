@@ -81,7 +81,6 @@ function update_binaries() {
         touch $INSTALLDIR/temp/updating
         systemctl stop $PROJECT*
         if [ ! -d /usr/local/bin/backup ]; then mkdir /usr/local/bin/backup ; fi
-        # mkdir 2>/dev/null
 
         # echo -e " Backing up existing binaries to /usr/local/bin/backup" | tee -a "$LOGFILE"
         cp /usr/local/bin/${MNODE_BINARIES}* /usr/local/bin/backup
@@ -119,7 +118,7 @@ function update_binaries() {
 }
 
 function update_from_source() {
-    #check for updates and build from source if installing binaries failed.
+    # check for updates and build from source if installing binaries failed.
 
     echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running update_from_source function" | tee -a "$LOGFILE"
     cd $INSTALLDIR/temp
@@ -196,9 +195,9 @@ function check_project() {
         remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
-            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
             # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            systemctl stop "${PROJECT}"_n${i}
+            # systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
@@ -220,9 +219,9 @@ function check_restore() {
         remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
-            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
             # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            systemctl stop "${PROJECT}"_n${i}
+            # systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
@@ -236,9 +235,9 @@ function check_restore() {
         remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
-            echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
+            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
             # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            systemctl stop "${PROJECT}"_n${i}
+            # systemctl stop "${PROJECT}"_n${i}
         done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
