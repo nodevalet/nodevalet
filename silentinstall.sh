@@ -258,7 +258,7 @@ elif [ "$ONLYNET" = 4 ]
         echo -e " your collateral transactions for masternodes you want to start"
         echo -e " now. You may also add extra addresses even if you have not yet"
         echo -e " funded them, and the script will still create the masternode"
-        echo -e " instance which you can later activate from your local wallet."
+        echo -e " instance which you can later activate from your local wallet.\n"
         echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
         touch $INFODIR/vpsmnaddress.info
         for ((i=1;i<=$MNS;i++));
