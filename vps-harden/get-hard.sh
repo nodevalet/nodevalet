@@ -154,10 +154,10 @@ function create_swap() {
 
         fallocate -l ${SWAPSIZE}G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
         echo -e -n "${lightgreen}"
-        echo -e "----------------------------------------------------- " | tee -a "$LOGFILE"
+        echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${SWAPSIZE}GB SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
         echo -e "--> Thanks @Cryptotron for supplying swap code <-- "
-        echo -e "----------------------------------------------------- \n" | tee -a "$LOGFILE"
+        echo -e "------------------------------------------------------ \n" | tee -a "$LOGFILE"
         # sleep 2
         echo -e -n "${nocolor}"
     fi
@@ -998,9 +998,9 @@ function motd_install() {
     rm -rf /etc/motd
     touch /etc/motd
     chmod +x /etc/motd
-    cat <<EOMOTD >> /etc/motd
-Here are some scriptlets you can use to easily manage your masternodes:
- showmlog | showconf | getinfo | masternodestatus | mnedit | addmn | clonesync
+    echo -e "\033[1;37mHere are some scriptlets you can use to easily manage your masternodes:\e[0m" >> /etc/motd
+    echo -e "\033[1;36m showmlog | showconf | getinfo | masternodestatus | mnedit | addmn | clonesync\e[0m" >> /etc/motd
+ 
 EOMOTD
 PRINTLASTLOGIN=$(sed -n -e '/PrintLastLog /p' $SSHDFILE)
 sed -i "s/$PRINTLASTLOGIN/PrintLastLog no/" $SSHDFILE >> $LOGFILE 2>&1

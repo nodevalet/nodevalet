@@ -519,7 +519,7 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_BINARIES}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
+    then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
@@ -637,7 +637,6 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
     sudo ln -s $INSTALLDIR/maintenance/smartstart.sh /usr/local/bin/smartstart
-
 }
 
 #######################
