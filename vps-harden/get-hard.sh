@@ -146,9 +146,9 @@ function create_swap() {
         # sleep 2
         echo -e -n "${nocolor}"
     else
-        # set swap to twice the physical RAM but not less than 4GB
+        # set swap to three times the physical RAM but not less than 4GB
         PHYSRAM=$(grep MemTotal /proc/meminfo | awk '{print int($2 / 1024 / 1024 + 0.5)}')
-        let "SWAPSIZE=2*$PHYSRAM"
+        let "SWAPSIZE=3*$PHYSRAM"
         (($SWAPSIZE >= 1 && $SWAPSIZE >= 31)) && SWAPSIZE=31
         (($SWAPSIZE <= 6)) && SWAPSIZE=6
 
