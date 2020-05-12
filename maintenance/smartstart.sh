@@ -54,7 +54,7 @@ function restart_mns() {
         echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
-        let "stime=10*$i"
+        let "stime=$i"
         echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
 
         # display countdown timer on screen
