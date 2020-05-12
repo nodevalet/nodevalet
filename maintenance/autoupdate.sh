@@ -54,9 +54,17 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate.sh detected update flag, 
     rm -f $INSTALLDIR/temp/updating
 fi
 
+function remove_cron_function() {
+    # disable the crons that could cause problems
+    . /var/tmp/nodevalet/maintenance/remove_crons.sh
+}
+
+function restore_cron_function() {
+    # restore maintenance crons that were previously disabled
+    . /var/tmp/nodevalet/maintenance/restore_crons.sh
+}
+
 function update_binaries() {
-    #check for updates and install binaries if necessary
-    # echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running update_binaries function"
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Autoupdate is looking for new $PROJECTt tags"
 
     if [ ! -d $INSTALLDIR/temp/bin ]; then mkdir $INSTALLDIR/temp/bin ; fi
@@ -156,7 +164,6 @@ function update_from_source() {
         echo -e " It looks like we couldn't rebuild ${PROJECTt} from source, either" >> "$LOGFILE"
         echo -e " Restoring original binaries from /usr/local/bin/backup" | tee -a "$LOGFILE"
         cp /usr/local/bin/backup/${MNODE_BINARIES}* /usr/local/bin/
-        activate_masternodes_$PROJECT
         sleep 2
         check_restore
         reboot
@@ -180,12 +187,13 @@ function check_project() {
         then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
             sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
             BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
-            echo -e " Block Explorer set to :" | tee -a "$LOGFILE"
-            echo -e " $BLOCKEXP \n" | tee -a "$LOGFILE"
+            echo -e " Block Explorer set to :"
+            echo -e " $BLOCKEXP \n"
         else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
         fi
 
         touch $INSTALLDIR/temp/shuttingdown
+        remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -209,6 +217,7 @@ function check_restore() {
     if [[ "${dEXIST}" ]]
     then echo -e "${yellow} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
         echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
+        remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -224,6 +233,7 @@ function check_restore() {
         echo -e " This shouldn't happen unless your source is unwell.  Make a fuss in Discord.${nocolor}" | tee -a "$LOGFILE"
         echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
         touch $INSTALLDIR/temp/shuttingdown
+        remove_cron_function
         for ((i=1;i<=$MNS;i++));
         do
             echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
@@ -237,6 +247,8 @@ function check_restore() {
 }
 
 # this is where the current update sequence begins
+
 update_binaries
 update_from_source
+restore_cron_function
 exit
