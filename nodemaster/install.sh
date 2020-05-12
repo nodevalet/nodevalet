@@ -629,9 +629,9 @@ function final_call() {
     # note outstanding tasks that need manual work
     echo "************! ALMOST DONE !******************************"
     if [ "$update" -eq 0 ]; then
-        echo "There is still work to do in the configuration templates."
-        echo "These are located at ${MNODE_CONF_BASE}, one per masternode."
-        echo "Add your masternode private keys now."
+    #    echo "There is still work to do in the configuration templates."
+        echo "Your masternode templates are located at ${MNODE_CONF_BASE}, one per masternode."
+    #    echo "Add your masternode private keys now."
         echo "eg in /etc/masternodes/${CODENAME}_n1.conf"
     else
         echo "Your ${CODENAME} masternode daemon has been updated! (but not yet activated)"
