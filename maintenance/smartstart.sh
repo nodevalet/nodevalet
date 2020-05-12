@@ -29,7 +29,7 @@ function remove_crons_function() {
 
 function restore_crons_function() {
     # restore maintenance crons that were previously disabled
-    . /var/tmp/nodevalet/maintenance/restore.sh
+    . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
 
 function shutdown_mns() {
