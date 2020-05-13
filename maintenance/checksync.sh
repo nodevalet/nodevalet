@@ -59,7 +59,11 @@ function sync_check() {
     # check if current to within 5 minutes
     if ((TIMEDIF <= 300 && TIMEDIF >= -300))
     then echo -e " The blockchain is almost certainly synced.\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
+    
+    if [ -e "$INSTALLDIR/temp/smartstart" ]
+    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
+    else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}"
+    fi
         touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
         SYNCED="yes"
     else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
@@ -106,14 +110,20 @@ function check_blocksync() {
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 20 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}"
             echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $((($end-SECONDS) / (60))) minutes${nocolor}\n"
+            
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
             then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
                 echo -e " ${lightred}Bootstrap will resume once your first blockchain is synced.${nocolor}\n"
             else :
             fi
-            # insert a little humor
-            curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
+            
+            # insert a little humor if it will be visible
+            if [ -e "$INSTALLDIR/temp/smartstart" ]
+            then :
+            else curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' 
+            fi
+
             echo -e "\n"
             rm -rf $INSTALLDIR/getinfo_n${i} --force
 
@@ -130,12 +140,7 @@ function check_blocksync() {
         # exit the script because syncing did not occur
         rm -rf $INSTALLDIR/getinfo_n${i} --force
         exit
-else : ; fi
-
-    #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
-    #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
-    #   touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-
+    fi
 }
 
 # This is where the script actually starts
