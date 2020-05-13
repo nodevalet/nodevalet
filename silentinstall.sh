@@ -454,7 +454,7 @@ function harden_vps() {
     sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
-    echo -e "Inserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
+    echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -921,8 +921,8 @@ function restart_server() {
     clear
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
-    echo -e " Please follow the steps below to complete your masternode setup: "
-    echo -e " 1. Please copy the above file and paste it into the ${yellow}masternode.conf${nocolor} "
+    echo -e "${white} Please follow the steps below to complete your masternode setup: ${nocolor}"
+    echo -e " 1. Please copy the data above and paste it into the ${yellow}masternode.conf${nocolor} "
     echo -e "    file on your local wallet. (insert txid info if necessary) "
     echo -e " 2. This VPS will automatically restart now to complete the installation"
     echo -e "    and begin syncing the blockchain. "
