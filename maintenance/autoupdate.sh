@@ -9,9 +9,9 @@ then echo -e " Skipping autoupdate.sh because the server is shutting down.\n" | 
     exit
 fi
 
-# delay task if activate_masternodes is running
+# delay task for 1 hour if activate_masternodes is running
 if [ -e "$INSTALLDIR/temp/activating" ]
-then sleep 1800
+then sleep 3600
     rm -f $INSTALLDIR/temp/activating
 fi
 
@@ -193,12 +193,6 @@ function check_project() {
 
         touch $INSTALLDIR/temp/shuttingdown
         remove_cron_function
-        for ((i=1;i<=$MNS;i++));
-        do
-            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            # systemctl stop "${PROJECT}"_n${i}
-        done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
@@ -217,12 +211,6 @@ function check_restore() {
     then echo -e "${yellow} ** ${MNODE_DAEMON} is running...original binaries were restored${nocolor}" | tee -a "$LOGFILE"
         echo -e "  --> We will try to install this update again next time, rebooting... \n" | tee -a "$LOGFILE"
         remove_cron_function
-        for ((i=1;i<=$MNS;i++));
-        do
-            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            # systemctl stop "${PROJECT}"_n${i}
-        done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."
@@ -233,12 +221,6 @@ function check_restore() {
         echo -e "${white}  --> I'm all out of options; your VPS may need service ${nocolor}\n " | tee -a "$LOGFILE"
         touch $INSTALLDIR/temp/shuttingdown
         remove_cron_function
-        for ((i=1;i<=$MNS;i++));
-        do
-            # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-            # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-            # systemctl stop "${PROJECT}"_n${i}
-        done
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
         shutdown -r now "Server is going down for upgrade."

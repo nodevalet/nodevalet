@@ -4,6 +4,14 @@
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
+# cleanup old maintenance files
+rm -f $INSTALLDIR/temp/checkingdaemon
+rm -f $INSTALLDIR/temp/bootstrapping
+rm -f $INSTALLDIR/temp/shuttingdown
+rm -f $INSTALLDIR/temp/clonesyncing
+rm -f $INSTALLDIR/temp/gettinginfo
+rm -f $INSTALLDIR/temp/activating
+
 clear
 
 # exit if there is only one masternode

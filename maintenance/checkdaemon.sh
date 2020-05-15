@@ -10,8 +10,8 @@
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
-if [ -e "$INSTALLDIR/temp/bootstrapping" ]
-then echo -e " Skipping checkdaemon.sh because bootstrap is in progress.\n"
+if [ -e "$INSTALLDIR/temp/bootstrapping" ] || [ -e "$INSTALLDIR/temp/checkingdaemon" ]
+then echo -e " Skipping checkdaemon.sh because another process is in progress.\n"
     exit
 fi
 
@@ -27,6 +27,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$L
 fi
 
 touch $INSTALLDIR/temp/updating
+touch $INSTALLDIR/temp/checkingdaemon
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 echo -e "\n"
@@ -52,8 +53,8 @@ do
         echo -e " Current block is $currentBlock; masternode appears to be starting up\n"
     elif [ "$previousBlock" == "$currentBlock" ]
     then
-        echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightpurple}Restarting ${PROJECT}_n${i} because it seems stuck at $currentBlock.${nocolor}"  | tee -a "$LOGFILE"
+        echo -e " Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}; same\n"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightpurple}Restarting ${PROJECT}_n${i} since it seems stuck at $currentBlock.${nocolor}"  | tee -a "$LOGFILE"
         echo -e " "
         systemctl stop "${PROJECT}"_n${i}
 
@@ -98,7 +99,7 @@ do
                 echo -e " --> I have restarted the masternode and waited 5 minutes $T time(s)." | tee -a "$LOGFILE"
                 echo -e " --> $(date +%H:%M:%S) ${lightred}Restarting ${PROJECT}_n${i} didn't fix chain syncing${nocolor}" | tee -a "$LOGFILE"
 
-            else echo -e " --> Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
+            else echo -e " --> Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}." | tee -a "$LOGFILE"
                 echo -e " --> $(date +%H:%M:%S) ${lightgreen}${PROJECT}_n${i} appears to be functioning normally again.${nocolor}\n" | tee -a "$LOGFILE"
                 FIXED="yes"
                 break
@@ -133,7 +134,7 @@ do
             echo -e " Glad to see that worked, exiting loop for this MN \n"
         fi
 
-    else echo -e " Previous block is $previousBlock and current block is $currentBlock."
+    else echo -e " Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}."
         echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
 
     fi
@@ -142,3 +143,6 @@ done
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
+rm -f $INSTALLDIR/temp/checkingdaemon
+
+exit 0
