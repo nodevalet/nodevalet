@@ -46,9 +46,12 @@ function shutdown_mns() {
     for ((i=1;i<=$MNS;i++));
     do
         echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
-        systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-        systemctl stop "${PROJECT}"_n${i}
+        # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+        # systemctl stop "${PROJECT}"_n${i}
+        . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
     done
+    echo -e "${white} Sleeping for 4 minutes to give masternodes time to stop...${nocolor}"
+    sleep 240
     echo -e "${lightcyan} --> All masternodes have been stopped and disabled${nocolor}\n"
 }
 

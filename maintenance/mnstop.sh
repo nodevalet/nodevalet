@@ -27,6 +27,7 @@ done
 
 echo -e "\n"
 
+# only log and set updating flag if this is not run during a smartstart
 if [ ! -e "$INSTALLDIR/temp/smartstart" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
 touch $INSTALLDIR/temp/updating
