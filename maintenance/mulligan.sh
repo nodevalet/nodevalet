@@ -54,8 +54,10 @@ function search_and_destroy() {
         for ((i=1;i<=$MNS;i++));
         do
             echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
-            systemctl disable "${PROJECT}"_n${i}
-            systemctl stop "${PROJECT}"_n${i}
+            . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
+            sleep 2
+            # systemctl disable "${PROJECT}"_n${i}
+            # systemctl stop "${PROJECT}"_n${i}
             # rm -f /etc/systemd/system/"${PROJECT}"_n${i}.service
             find / -name "${PROJECT}_n${i}.service" -delete
 
