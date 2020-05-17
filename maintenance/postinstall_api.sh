@@ -20,6 +20,8 @@ function final_message() {
         # echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
+        rm -rf /var/tmp/nodevalet/logs/maintenance.log
+        touch /var/tmp/nodevalet/logs/maintenance.log
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
