@@ -38,14 +38,24 @@ function shutdown_mns() {
     do
     # check for and shutdown masternodes which are not currently synced
     TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    touch $INSTALLDIR/temp/smartstart
     if [[ "${TARGETSYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is synced.${nocolor}\n"
     else echo -e "${lightred} Masternode ${PROJECT}_n${i} is not synced.${nocolor}"
         echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
-        systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-        systemctl stop "${PROJECT}"_n${i}
+        . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
     fi
     done
+    
+    # display countdown timer on screen
+    echo -e "${lightcyan} --> Sleeping for 4 minutes to let unsynced masternodes shutdown ${nocolor}\n"
+    seconds=240; date1=$((`date +%s` + $seconds));
+    while [ "$date1" -ge `date +%s` ]; do
+        echo -ne "${lightcyan}   ---> Continuing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r${nocolor}";
+        sleep 0.5
+    done
+
+    rm -rf $INSTALLDIR/temp/smartstart
     echo -e "${lightcyan} --> Unsynced masternodes have been stopped and disabled${nocolor}\n"
 }
 

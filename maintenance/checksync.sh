@@ -60,7 +60,7 @@ function sync_check() {
     if ((TIMEDIF <= 300 && TIMEDIF >= -300))
     then echo -e " The blockchain is almost certainly synced.\n"
 
-    if [ -e "$INSTALLDIR/temp/smartstart" ]
+    if [ -e "$INSTALLDIR/temp/smartstart" ] || [ -e "$INSTALLDIR/temp/bootstrapping" ]
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
     else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}"
     fi
