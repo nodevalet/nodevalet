@@ -26,9 +26,11 @@ while :; do
 done
 
 echo -e "\n"
-echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
 
+if [ ! -e "$INSTALLDIR/temp/smartstart" ]
+then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running mnstop.sh" | tee -a "$LOGFILE"
 touch $INSTALLDIR/temp/updating
+fi
 
 echo -e -n " Disabling ${PROJECT}_n${i} now...  "
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
@@ -36,7 +38,7 @@ sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}
 systemctl stop "${PROJECT}"_n${i}
 sleep .5
 
-echo -e "${lightred} User has manually disabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
-
-# echo -e " Unsetting -update flag \n"
+if [ ! -e "$INSTALLDIR/temp/smartstart" ]
+then echo -e "${lightred} User has manually disabled Masternode ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 rm -f $INSTALLDIR/temp/updating
+fi
