@@ -65,10 +65,18 @@ function restart_mns() {
         echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
-        let "stime=$i"
-        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
+        let "stime=5"
+        let "j=$i+1"
+
+    if (($j <= $MNS))
+    then echo -e " "
+        echo -e -n "${white}  Restarting masternode ${PROJECT}_n${j}...${nocolor}"
+        systemctl enable "${PROJECT}"_n${j} > /dev/null 2>&1
+        systemctl start "${PROJECT}"_n${j}
+    fi
 
         # display countdown timer on screen
+        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
         seconds=$stime; date1=$((`date +%s` + $seconds));
         while [ "$date1" -ge `date +%s` ]; do
             echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
@@ -78,7 +86,19 @@ function restart_mns() {
         # check if masternode has fully started up and is synced
         checksync $i
         echo -e "${yellow} Checking if masternode ${PROJECT}_n$i is synced.${nocolor}\n"
+        touch "$INSTALLDIR/temp/gettinginfo"
         sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $i > /dev/null 2>&1
+        rm -rf "$INSTALLDIR/temp/gettinginfo"
+
+        if (($j <= $MNS))
+        then checksync $j
+            echo -e "${yellow} Checking if masternode ${PROJECT}_n$j is synced.${nocolor}\n"
+            touch "$INSTALLDIR/temp/gettinginfo"
+            sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh $j > /dev/null 2>&1
+            rm -rf "$INSTALLDIR/temp/gettinginfo"
+        fi
+
+    let "i=$i+1"
     done
     echo -e "${lightcyan} --> All masternodes have been restarted and enabled${nocolor}\n"
 }

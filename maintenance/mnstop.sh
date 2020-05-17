@@ -35,7 +35,7 @@ fi
 
 echo -e -n " Disabling ${PROJECT}_n${i} now...  "
 sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
+# sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
 systemctl stop "${PROJECT}"_n${i}
 sleep .5
 

@@ -156,10 +156,10 @@ function restart_mns() {
     else echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
         systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
         systemctl start "${PROJECT}"_n${i}
-        let "stime=$i"
-        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
+        let "stime=5"
 
         # display countdown timer on screen
+        echo -e " (waiting${lightpurple} ${stime}s ${nocolor}for restart)"
         seconds=$stime; date1=$((`date +%s` + $seconds));
         while [ "$date1" -ge `date +%s` ]; do
             echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";

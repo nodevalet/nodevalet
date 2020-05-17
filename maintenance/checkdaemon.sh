@@ -116,6 +116,7 @@ do
             RPCPORTIS=$(sed -n -e '/^rpcport/p' /etc/masternodes/${PROJECT}_n${i}.conf)
             RPCPORTNUMBER=$(echo -e "$RPCPORTIS" | sed 's/[^0-9]*//g')
             let "RPCPORTNUMBER=RPCPORTNUMBER+200"
+            (($RPCPORTNUMBER >= 65400)) && let "RPCPORTNUMBER=RPCPORTNUMBER-20000"
             sed -i "s/${RPCPORTIS}/rpcport=${RPCPORTNUMBER}/" /etc/masternodes/${PROJECT}_n${i}.conf >> $LOGFILE 2>&1
 
             # stop the troublesome masternode

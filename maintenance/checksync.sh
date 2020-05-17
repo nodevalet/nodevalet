@@ -59,7 +59,7 @@ function sync_check() {
     # check if current to within 5 minutes
     if ((TIMEDIF <= 300 && TIMEDIF >= -300))
     then echo -e " The blockchain is almost certainly synced.\n"
-    
+
     if [ -e "$INSTALLDIR/temp/smartstart" ]
     then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
     else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}"
@@ -82,6 +82,7 @@ function check_blocksync() {
     while [ $SECONDS -lt $end ]; do
         touch $INSTALLDIR/getinfo_n${i}
         /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n${i}
+        [ ! -s $INSTALLDIR/getinfo_n${i} ] && echo -e "Empty getinfo during checksync" >> $INSTALLDIR/temp/nogetinfo_n${i}
         clear
 
         # if  masternode not running, echo masternode not running and break
@@ -110,14 +111,45 @@ function check_blocksync() {
         else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 20 seconds${nocolor}\n"
             echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}"
             echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $((($end-SECONDS) / (60))) minutes${nocolor}\n"
-            
+
+        # count number of lines in the file, save to variable
+        if [ -e $INSTALLDIR/temp/nogetinfo_n${i} ]
+        then countLINES=$(wc -l $INSTALLDIR/temp/nogetinfo_n${i} | awk '{ print $1 }')
+        else countLINES=0
+        fi
+
+        # delete range of lines 1 through difference above
+        if (( $countLINES >= 6 ))
+        then 
+            # stop and disable masternode
+            sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+            # sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
+            systemctl stop "${PROJECT}"_n${i}
+
+            # occasional problems with rpcport prevent masternodes from starting
+            # Holy Hand Grenade will now reset the RPC port by adding 200 to fix this
+            RPCPORTIS=$(sed -n -e '/^rpcport/p' /etc/masternodes/${PROJECT}_n${i}.conf)
+            RPCPORTNUMBER=$(echo -e "$RPCPORTIS" | sed 's/[^0-9]*//g')
+            let "RPCPORTNUMBER=RPCPORTNUMBER+200"
+            (($RPCPORTNUMBER >= 65400)) && let "RPCPORTNUMBER=RPCPORTNUMBER-20000"
+            sed -i "s/${RPCPORTIS}/rpcport=${RPCPORTNUMBER}/" /etc/masternodes/${PROJECT}_n${i}.conf >> $LOGFILE 2>&1
+            echo -e "${lightpurple} Possible error with RPCport on Masternode n$i. Incrementing to $RPCPORTNUMBER ...${nocolor}" | tee -a "$LOGFILE"
+            rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
+
+            # enable and start masternode
+            sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+            sudo systemctl start "${PROJECT}"_n${i}
+            sleep 5
+
+        fi
+
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
             then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
                 echo -e " ${lightred}Bootstrap will resume once your first blockchain is synced.${nocolor}\n"
             else :
             fi
-            
+
             # insert a little humor if it will be visible
             if [ -e "$INSTALLDIR/temp/smartstart" ]
             then :
@@ -138,7 +170,8 @@ function check_blocksync() {
 
     if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode n$i did not sync in the allowed time${nocolor}" | tee -a "$LOGFILE"
         # exit the script because syncing did not occur
-        rm -rf $INSTALLDIR/getinfo_n${i} --force
+        rm -rf $INSTALLDIR/getinfo_n${i}
+        rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
         exit
     fi
 }
@@ -146,5 +179,6 @@ function check_blocksync() {
 # This is where the script actually starts
 check_blocksync
 
-rm -rf $INSTALLDIR/getinfo_n${i} --force
+rm -rf $INSTALLDIR/getinfo_n${i}
+rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
 exit
