@@ -14,18 +14,15 @@ rm -f $INSTALLDIR/temp/activating
 
 clear
 
-# exit if there is only one masternode
-if [ $MNS = 1 ]
-then echo -e " This VPS has only one masternode, not running smartstart.sh\n"
+# exit if there is only one or two masternode(s)
+if [ $MNS = 1 ] || [ $MNS = 2 ]
+then echo -e " This VPS has only one or two masternodes; not running smartstart.sh\n"
     exit
 fi
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Server reboot detected; running smartstart.sh${nocolor}" | tee -a "$LOGFILE"
 echo -e " --> NodeValet SmartStart will reduce server congestion after each reboot\n"  | tee -a "$LOGFILE"
-
-# extglob was necessary to make rm -- ! possible
-# shopt -s extglob
 
 touch $INSTALLDIR/temp/updating
 touch $INSTALLDIR/temp/smartstart
@@ -46,8 +43,6 @@ function shutdown_mns() {
     for ((i=1;i<=$MNS;i++));
     do
         echo -e "${lightred} Stopping and disabling masternode ${PROJECT}_n${i}...${nocolor}"
-        # systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
-        # systemctl stop "${PROJECT}"_n${i}
         . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
     done
     echo -e "${white} Sleeping for 4 minutes to give masternodes time to stop...${nocolor}"
