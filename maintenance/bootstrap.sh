@@ -166,7 +166,7 @@ elif [[ $BOOTSTRAPZIP == *.zip ]]
     # cd  "$(\ls -1dt ./*/ | head -n 1)"
     # find . -mindepth 2 -type f -print -exec mv {} . \;
 
-    echo -e " --> $(date +%H:%M:%S) Restarting first $PROJECTt masternode\n" | tee -a "$LOGFILE"
+    echo -e " --> $(date +%H:%M:%S) : ${lightgreen}Restarting the first $PROJECTt masternode${nocolor}\n" | tee -a "$LOGFILE"
     sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
     sudo systemctl start "${PROJECT}"_n1
     sleep 2
