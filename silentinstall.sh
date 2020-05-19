@@ -590,25 +590,10 @@ function install_mns() {
     fi
 }
 
-######################
-###  ADD CRONJOBS  ###
-######################
-function add_cron() {
-    # Add maintenance and automation cronjobs
-    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
-#    echo -e "  --> Make sure all daemons are running every 10 minutes"  | tee -a "$LOGFILE"
-#    (crontab -l ; echo "7,17,27,37,47,57 * * * * /var/tmp/nodevalet/maintenance/makerun.sh") | crontab -
-    echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "5,35 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
-    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
-    echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
-    echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "@weekly /var/tmp/nodevalet/maintenance/cleardebuglog.sh") | crontab -
-    echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
-    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
-
+########################
+###  ADD SCRIPTLETS  ###
+########################
+function add_scriptlets() {
     # Enable run permissions on all scripts
     chmod 0700 $INSTALLDIR/*.sh
     chmod 0700 $INSTALLDIR/maintenance/*.sh
@@ -637,6 +622,24 @@ function add_cron() {
     sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
     sudo ln -s $INSTALLDIR/maintenance/smartstart.sh /usr/local/bin/smartstart
+}
+
+######################
+###  ADD CRONJOBS  ###
+######################
+function add_cron() {
+    # Add maintenance and automation cronjobs
+    echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Adding crontabs"  | tee -a "$LOGFILE"
+    echo -e "  --> Check for stuck blocks every 30 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "5,35 * * * * /var/tmp/nodevalet/maintenance/checkdaemon.sh") | crontab -
+    echo -e "  --> Check for & reboot if needed to install updates every 10 hours"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "59 */10 * * * /var/tmp/nodevalet/maintenance/rebootq.sh") | crontab -
+    echo -e "  --> Check for wallet updates every 48 hours"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "2 */48 * * * /var/tmp/nodevalet/maintenance/autoupdate.sh") | crontab -
+    echo -e "  --> Clear daemon debug logs weekly to prevent clog"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "@weekly /var/tmp/nodevalet/maintenance/cleardebuglog.sh") | crontab -
+    echo -e "  --> Check if chains are syncing or synced every 5 minutes"  | tee -a "$LOGFILE"
+    (crontab -l ; echo "*/5 * * * * /var/tmp/nodevalet/maintenance/cronchecksync1.sh") | crontab -
 }
 
 #######################
@@ -951,11 +954,13 @@ install_binaries
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Creating '"$MNS"' '"$PROJECTt"' Masternodes using Nodemaster VPS script ..."}' && echo -e " "
 install_mns
 
-# install crontabs must complete before we display masternode.conf file in case user breaks there
-add_cron
+add_scriptlets
 
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Configuring '"$MNS"' '"$PROJECTt"' Masternodes ..."}' && echo -e " "
 configure_mns
+
+# install crontabs must complete before we display masternode.conf file in case user breaks there
+add_cron
 
 # create file to signal cron that reboot has occurred
 [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Restarting Server to Finalize Installation ..."}' && echo -e " "
