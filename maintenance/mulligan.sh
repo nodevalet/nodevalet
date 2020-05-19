@@ -56,9 +56,6 @@ function search_and_destroy() {
             echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
             . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
             sleep 2
-            # systemctl disable "${PROJECT}"_n${i}
-            # systemctl stop "${PROJECT}"_n${i}
-            # rm -f /etc/systemd/system/"${PROJECT}"_n${i}.service
             find / -name "${PROJECT}_n${i}.service" -delete
 
         done
@@ -75,17 +72,28 @@ function search_and_destroy() {
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : Masternodes have been stopped and destroyed"
         echo -e "----------------------------------------------------------------------------- ${yellow}\n"
 
-        echo -e "${yellow}-------------------------------------------------------------- "
+        echo -e "${yellow}--------------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /usr/local/bin and rc.local"
-        echo -e "-------------------------------------------------------------- ${white}\n"
+        echo -e "--------------------------------------------------------------------------- ${white}\n"
         rm -rf /usr/local/bin/*
         rm -rf /root/.${PROJECT}
         rm -rf /etc/rc.local
 
-        echo -e "${yellow}------------------------------------------------------- "
+while :; do
+    printf "${cyan}"
+    echo -e " Installation variables and data are stored in the nvtemp folder.${nocolor}\n"
+    read -n 1 -s -r -p "  --> Would you like to remove this folder now? y/n  " VERIFY
+    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+    then echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
+    break
+    elif [[ $VERIFY == "n" || $VERIFY == "N" ]]
+    then echo -e "\n This folder will not be deleted${nocolor}\n"
+    break
+    fi
+done
 
         echo -e "${yellow}-------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling swap file"
