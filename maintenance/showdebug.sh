@@ -37,11 +37,19 @@ while :; do
     fi
 done
 
-echo -e "\n"
-
-
 clear
+
+DEBUG=$(find /var/lib/masternodes/${PROJECT}${i} -name "debug.log")
+
+if [ -z "$DEBUG" ]
+then echo -e "\n${lightred} NodeValet could not locate a debug.log for Masternode ${PROJECT}_n${i}.\n${nocolor}" && exit
+fi
+
+echo -e " \n##############################################################"
+echo -e " This script will now display the debug log for Masternode n${i}"
+echo -e " ##############################################################"
+
+cat $DEBUG
 echo -e "\n"
-cat $INSTALLDIR/masternode.conf
-cat /var/lib/masternodes/${PROJECT}${i}/debug.log
-echo -e "\n"
+
+exit 0
