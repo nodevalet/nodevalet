@@ -500,7 +500,7 @@ function install_binaries() {
 
         # do not try to unpack and install if tarball does not exist
             if [ -z "$TARBALL" ]
-            then echo -e "${lightred} Binaries matching $GITSTRING could not be located.${nocolor}"
+            then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
             else echo -e "${lightcyan} Unpacking and installing binaries.${nocolor}"
                 if [[ $TARBALL == *.gz ]]
                 then tar -xzf "$TARBALL"
@@ -529,7 +529,7 @@ function install_binaries() {
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
-    else echo -e "${lightred}Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
+    else echo -e "${lightred}Binaries for ${PROJECTt} were not installed.\n${nocolor}"  | tee -a "$LOGFILE"
     fi
 
     # remove binaries temp folder

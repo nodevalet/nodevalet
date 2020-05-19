@@ -157,13 +157,13 @@ function install_packages() {
         # development and build packages
         # these are common on all cryptos
         echo "* Package installation!"
-        add-apt-repository -yu ppa:bitcoin/bitcoin  &>> ${SCRIPT_LOGFILE}
-        apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update  &>> ${SCRIPT_LOGFILE}
+        add-apt-repository -yu ppa:bitcoin/bitcoin | tee -a "$SCRIPT_LOGFILE"
+        apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update | tee -a "$SCRIPT_LOGFILE"
         apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install build-essential \
             libcurl4-gnutls-dev protobuf-compiler libboost-all-dev autotools-dev automake \
             libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
             libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
-            pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
+            pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd | tee -a "$SCRIPT_LOGFILE"
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$MNODE_DAEMOND"' from source ... this could take 20 to 40 minutes so you may take a break if needed ..."}' && echo -e " " ; fi
     fi
 
