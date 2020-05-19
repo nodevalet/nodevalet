@@ -54,15 +54,16 @@ function search_and_destroy() {
         for ((i=1;i<=$MNS;i++));
         do
             echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
-            . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
-            sleep 2
+            . /var/tmp/nodevalet/maintenance/mnstop.sh $i &e
+        done
+        sleep 20
+        for ((i=1;i<=$MNS;i++));
+        do  
             find / -name "${PROJECT}_n${i}.service" -delete
-
         done
         echo -e "------------------------------------------------------------------------------ ${white}\n"
-        sleep 2
 
-        echo -e "${yellow}-------------------------------------------------------------------- "
+        echo -e "\n${yellow}-------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
         echo -e "-------------------------------------------------------------------- ${white}\n"
         rm -rf /var/lib/masternodes
