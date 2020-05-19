@@ -2,7 +2,7 @@
 # load common variables used by NodeValet scripts
 
 ### load variables ###
-LOGFILE='/var/tmp/nodevalet/logs/maintenance.log' 
+LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 MNS=$(<$INFODIR/vpsnumber.info)

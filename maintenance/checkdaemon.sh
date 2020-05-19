@@ -10,8 +10,8 @@
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
-if [ -e "$INSTALLDIR/temp/bootstrapping" ]
-then echo -e " Skipping checkdaemon.sh because bootstrap is in progress.\n"
+if [ -e "$INSTALLDIR/temp/bootstrapping" ] || [ -e "$INSTALLDIR/temp/checkingdaemon" ]
+then echo -e " Skipping checkdaemon.sh because another process is in progress.\n"
     exit
 fi
 
@@ -27,6 +27,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh" | tee -a "$L
 fi
 
 touch $INSTALLDIR/temp/updating
+touch $INSTALLDIR/temp/checkingdaemon
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running checkdaemon.sh\n"  | tee -a $INSTALLDIR/temp/updating
 
 echo -e "\n"
@@ -50,10 +51,10 @@ do
     if [ "$currentBlock" == "-1" ]
     then
         echo -e " Current block is $currentBlock; masternode appears to be starting up\n"
-elif [ "$previousBlock" == "$currentBlock" ]
+    elif [ "$previousBlock" == "$currentBlock" ]
     then
-        echo -e " Previous block is $previousBlock and current block is $currentBlock; same\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Auto-restarting ${PROJECT}_n${i} because it seems stuck.\n"  | tee -a "$LOGFILE"
+        echo -e " Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}; same\n"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightpurple}Restarting ${PROJECT}_n${i} since it seems stuck at $currentBlock.${nocolor}"  | tee -a "$LOGFILE"
         echo -e " "
         systemctl stop "${PROJECT}"_n${i}
 
@@ -66,10 +67,10 @@ elif [ "$previousBlock" == "$currentBlock" ]
 
         systemctl start "${PROJECT}"_n${i}
 
-        for ((T=1;T<=5;T++));
+        for ((T=1;T<=3;T++));
         do
             # wait 5 minutes to ensure that the chain is unstuck, and if it isn't, nuke and resync the chain on that instance
-            echo -e " Pausing for 5 minutes to let instance start and resume syncing"
+            echo -e "\n Pausing for 5 minutes to let instance start and resume syncing"
             echo -e " It is not recommended that you cancel or interrupt or you will"
             echo -e " be left in maintenance mode and will have to delete the file :"
             echo -e " $INSTALLDIR/temp/updating before other scriptlets will work.\n"
@@ -95,11 +96,11 @@ elif [ "$previousBlock" == "$currentBlock" ]
             fi
 
             if [ "$previousBlock$" == "$currentBlock$" ]; then
-                echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} didn't fix chain syncing" | tee -a "$LOGFILE"
-                echo -e " I have restarted the MN once and waited 5 minutes $T time(s). \n" | tee -a "$LOGFILE"
+                echo -e " --> I have restarted the masternode and waited 5 minutes $T time(s)." | tee -a "$LOGFILE"
+                echo -e " --> $(date +%H:%M:%S) ${lightred}Restarting ${PROJECT}_n${i} didn't fix chain syncing${nocolor}" | tee -a "$LOGFILE"
 
-            else echo -e " Previous block is $previousBlock and current block is $currentBlock." | tee -a "$LOGFILE"
-                echo -e " ${PROJECT}_n${i} appears to be syncing normally again.\n" | tee -a "$LOGFILE"
+            else echo -e " --> Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}." | tee -a "$LOGFILE"
+                echo -e " --> $(date +%H:%M:%S) ${lightgreen}${PROJECT}_n${i} appears to be functioning normally again.${nocolor}\n" | tee -a "$LOGFILE"
                 FIXED="yes"
                 break
             fi
@@ -108,24 +109,41 @@ elif [ "$previousBlock" == "$currentBlock" ]
         if [ ! "$FIXED" == "yes" ]; then
 
             unset $FIXED
-            echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Restarting ${PROJECT}_n${i} $T times didn't fix chain" | tee -a "$LOGFILE"
-            echo -e " Invoking Holy Hand Grenade to resync entire blockchain\n" | tee -a "$LOGFILE"
-            # use clonesync rather than fully resync the chain
+            echo -e "${lightblue} Invoking Holy Hand Grenade to reset troublesome masternode ${PROJECT}_n${i}.${nocolor}\n" | tee -a "$LOGFILE"
+
+            # occasional problems with rpcport prevent masternodes from starting
+            # Holy Hand Grenade will now reset the RPC port by adding 200 to fix this
+            RPCPORTIS=$(sed -n -e '/^rpcport/p' /etc/masternodes/${PROJECT}_n${i}.conf)
+            RPCPORTNUMBER=$(echo -e "$RPCPORTIS" | sed 's/[^0-9]*//g')
+            let "RPCPORTNUMBER=RPCPORTNUMBER+200"
+            (($RPCPORTNUMBER >= 65400)) && let "RPCPORTNUMBER=RPCPORTNUMBER-20000"
+            sed -i "s/${RPCPORTIS}/rpcport=${RPCPORTNUMBER}/" /etc/masternodes/${PROJECT}_n${i}.conf >> $LOGFILE 2>&1
+
+            # stop the troublesome masternode
+            echo -e -n " Stopping ${PROJECT}_n${i} now...  "
+            systemctl stop "${PROJECT}"_n${i}
+            
+            # backup then remove wallet and blockchain data to force resync wallet in case clonesync fails
+            DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}${i} -name "wallet.dat")
+            if [ -z "$DATAFOLDER" ]
+            then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n${i}.${nocolor}"
+                cd /var/lib/masternodes/"${PROJECT}"${i}
+            else echo "$DATAFOLDER" > $INSTALLDIR/temp/DATAFOLDER
+                sed -i "s/wallet.dat//" $INSTALLDIR/temp/DATAFOLDER 2>&1
+                cd $(cat $INSTALLDIR/temp/DATAFOLDER)
+                rm -rf $INSTALLDIR/temp/DATAFOLDER
+            fi
+            cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+            sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
+            sleep 2
+
             sudo bash $INSTALLDIR/maintenance/clonesync.sh $i
-            # sudo systemctl disable "${PROJECT}"_n${i}
-            # sudo systemctl stop "${PROJECT}"_n${i}
-            # sleep 5
-            # cd /var/lib/masternodes/"${PROJECT}"${i}
-            # sudo rm -rf !("wallet.dat"|"masternode.conf")
-            # sleep 5
-            # sudo systemctl enable "${PROJECT}"_n${i}
-            # sudo systemctl start "${PROJECT}"_n${i}
 
         else unset $FIXED
             echo -e " Glad to see that worked, exiting loop for this MN \n"
         fi
 
-    else echo -e " Previous block is $previousBlock and current block is $currentBlock."
+    else echo -e " Previous block was${white} $previousBlock ${nocolor}and current block is${white} $currentBlock${nocolor}."
         echo -e " ${PROJECT}_n${i} appears to be syncing normally.\n"
 
     fi
@@ -134,4 +152,6 @@ done
 
 # echo -e " Unsetting -update flag \n"
 rm -f $INSTALLDIR/temp/updating
-#echo -e " Unsetting -update flag."  | tee -a "$LOGFILE"
+rm -f $INSTALLDIR/temp/checkingdaemon
+
+exit 0

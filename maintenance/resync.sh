@@ -29,7 +29,7 @@ done
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running resync.sh" | tee -a "$LOGFILE"
-echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
+echo -e "${lightred} User has manually asked to resync the chain on ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
@@ -45,10 +45,20 @@ sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
 sudo systemctl stop "${PROJECT}"_n${i}
 sleep 2
 
+DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}${i} -name "wallet.dat")
+if [ -z "$DATAFOLDER" ]
+then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n${i}.${nocolor}"
+    cd /var/lib/masternodes/"${PROJECT}"${i}
+else echo "$DATAFOLDER" > $INSTALLDIR/temp/DATAFOLDER
+    sed -i "s/wallet.dat//" $INSTALLDIR/temp/DATAFOLDER 2>&1
+    cd $(cat $INSTALLDIR/temp/DATAFOLDER)
+    rm -rf $INSTALLDIR/temp/DATAFOLDER
+fi
+
 echo -e "${white} Removing blockchain data.${nocolor}"
-cd /var/lib/masternodes/"${PROJECT}"${i}
 rm $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced --force
-sudo rm -rf !("wallet.dat"|"masternode.conf")
+cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
 sleep 2
 
 echo -e "${lightgreen} Restarting masternode.${nocolor}"

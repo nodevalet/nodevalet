@@ -1,0 +1,7 @@
+#!/bin/bash   
+
+apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install libssl1.0-dev
+./autogen.sh
+./configure
+make
+make install

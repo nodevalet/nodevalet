@@ -25,7 +25,7 @@ fi
 
 while :; do
     if [ -z $i ] ; then read -p "  --> " i ; fi
-    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}";echo -e " --> I only recognize numbers, try again...${nocolor}"; i=""; continue; }
+    [[ $i =~ ^[0-9]+$ ]] || { printf "${lightred}" ; echo -e " --> I only recognize numbers, try again...${nocolor}"; i=""; continue; }
     if (($i >= 1 && $i <= $MNS)); then break
     else echo -e "\n --> Can't find masternode $i, try again. \n"
         i=""
@@ -41,10 +41,9 @@ while :; do
     read -n 1 -s -r -p "  --> Would you like to restart this masternode now? y/n  " VERIFY
     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
     then printf "${nocolor}" ; break
-elif [[ $VERIFY == "n" || $VERIFY == "N" ]]
-    echo -e "\n"
-    echo -e " Changes to your masternode.conf will not take effect until it is restarted${nocolor}\n"
-    then exit
+    elif [[ $VERIFY == "n" || $VERIFY == "N" ]]
+    then echo -e "\n Changes to your masternode.conf will not take effect until it is restarted${nocolor}\n"
+    exit
     fi
 done
 

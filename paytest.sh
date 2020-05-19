@@ -26,34 +26,34 @@ curl -s "$BTCCURLAPI" | jq '.final_balance' > /var/tmp/nodevalet/temp/BTC.respon
 
 # this is old rubbish I haven't modified yet
 
-    while :; do
-        echo -e "\n"
-        read -n 1 -s -r -p " ${lightred}Would you like to destroy all masternodes now? y/n " NUKEIT
-        if [[ ${NUKEIT,,} == "y" || ${NUKEIT,,} == "Y" || ${NUKEIT,,} == "N" || ${NUKEIT,,} == "n" ]]
-        then
-            break
-        fi
-    done
+while :; do
+    echo -e "\n"
+    read -n 1 -s -r -p " ${lightred}Would you like to destroy all masternodes now? y/n " NUKEIT
+    if [[ ${NUKEIT,,} == "y" || ${NUKEIT,,} == "Y" || ${NUKEIT,,} == "N" || ${NUKEIT,,} == "n" ]]
+    then
+        break
+    fi
+done
 
-                # display original curl API response
-                [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
+# display original curl API response
+[[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> NodeValet gave the following response to API curl <--"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
 
-                # read curl API response into variable
-                APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+# read curl API response into variable
+APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
 
-                # check if API response is invalid
-                [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-                [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-                [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+# check if API response is invalid
+[[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+[[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+[[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
 
-                # check if stored file (API.response$i.json) has NOT length greater than zero
-                ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+# check if stored file (API.response$i.json) has NOT length greater than zero
+! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
 
-                # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
-                ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "NodeValet replied: Transaction ID recorded for MN$i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+# check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "NodeValet replied: Transaction ID recorded for MN$i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
 
-                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-                echo -e "$TX" >> $INSTALLDIR/temp/txid
-                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-                rm $INSTALLDIR/temp/API.response$i.json --force
+TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+echo -e "$TX" >> $INSTALLDIR/temp/txid
+echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+rm $INSTALLDIR/temp/API.response$i.json --force

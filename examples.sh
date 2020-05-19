@@ -74,11 +74,11 @@ else echo "String has 0 length"
 fi
 
 
-# display countdown timer on screen   
-seconds=5; date1=$((`date +%s` + $seconds)); 
-while [ "$date1" -ge `date +%s` ]; do 
-  echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
-  sleep 0.5
+# display countdown timer on screen
+seconds=5; date1=$((`date +%s` + $seconds));
+while [ "$date1" -ge `date +%s` ]; do
+    echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+    sleep 0.5
 done
 
 # display the number of lines in a file

@@ -7,12 +7,6 @@
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
 
-if [ -e "$INSTALLDIR/temp/updating" ]
-then echo -e "$(date +%m.%d.%Y_%H:%M:%S) : Running masternodestatus.sh"
-    echo -e "It looks like I'm installing updates; skipping masternodestatus.\n"
-    exit
-fi
-
 # read first argument to string
 input=$1
 

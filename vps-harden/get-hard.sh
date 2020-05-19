@@ -146,18 +146,18 @@ function create_swap() {
         # sleep 2
         echo -e -n "${nocolor}"
     else
-        # set swap to twice the physical RAM but not less than 4GB
+        # set swap to three times the physical RAM but not less than 4GB
         PHYSRAM=$(grep MemTotal /proc/meminfo | awk '{print int($2 / 1024 / 1024 + 0.5)}')
-        let "SWAPSIZE=2*$PHYSRAM"
+        let "SWAPSIZE=3*$PHYSRAM"
         (($SWAPSIZE >= 1 && $SWAPSIZE >= 31)) && SWAPSIZE=31
         (($SWAPSIZE <= 6)) && SWAPSIZE=6
 
         fallocate -l ${SWAPSIZE}G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && cp /etc/fstab /etc/fstab.bak && echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
         echo -e -n "${lightgreen}"
-        echo -e "-------------------------------------------------- " | tee -a "$LOGFILE"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
+        echo -e "------------------------------------------------------ " | tee -a "$LOGFILE"
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${SWAPSIZE}GB SWAP CREATED SUCCESSFULLY " | tee -a "$LOGFILE"
         echo -e "--> Thanks @Cryptotron for supplying swap code <-- "
-        echo -e "-------------------------------------------------- \n" | tee -a "$LOGFILE"
+        echo -e "------------------------------------------------------ \n" | tee -a "$LOGFILE"
         # sleep 2
         echo -e -n "${nocolor}"
     fi
@@ -399,7 +399,7 @@ function collect_sshd() {
     echo -e -n "${lightcyan}"
     figlet SSH Config | tee -a "$LOGFILE"
     echo -e -n "${nocolor}"
-    SSHPORTWAS=$(sed -n -e '/^Port /p' $SSHDFILE)
+    SSHPORTWAS=$(sed -n -e '/Port /p' $SSHDFILE)
     echo -e -n "${yellow}"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : CONFIGURE SSH SETTINGS " | tee -a "$LOGFILE"
@@ -994,6 +994,17 @@ function motd_install() {
         cat etc/update-motd.d/99-esm > /etc/update-motd.d/99-esm
         sed -i 's,#Banner /etc/issue.net,Banner /etc/issue.net,' /etc/ssh/sshd_config
         cat etc/issue.net > /etc/issue.net
+
+    rm -rf /etc/motd
+    touch /etc/motd
+    chmod +x /etc/motd
+    echo -e "\033[1;37mHere are some scriptlets you can use to easily manage your masternodes:\e[0m" >> /etc/motd
+    echo -e "\033[1;36m showmlog | showconf | getinfo | masternodestatus | mnedit | addmn | clonesync\e[0m" >> /etc/motd
+ 
+EOMOTD
+PRINTLASTLOGIN=$(sed -n -e '/PrintLastLog /p' $SSHDFILE)
+sed -i "s/$PRINTLASTLOGIN/PrintLastLog no/" $SSHDFILE >> $LOGFILE 2>&1
+
         clear
         # Error Handling
         if [ $? -eq 0 ]
@@ -1128,7 +1139,7 @@ function install_complete() {
     echo -e -n "${lightcyan}"
     if [ "${KSPLICE,,}" = "yes" ] || [ "${KSPLICE,,}" = "y" ]
     then echo -e " You installed Oracle's Ksplice to update without reboot" | tee -a "$LOGFILE"
-    else echo -e " You chose NOT to auto-update OS with Oracle's Ksplice" | tee -a "$LOGFILE"
+    else :
     fi
     echo -e -n "${yellow}"
     echo -e "-------------------------------------------------------- " | tee -a "$LOGFILE"

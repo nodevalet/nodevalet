@@ -39,12 +39,12 @@ function shutdown_mn1() {
     echo -e " ${lightred}--> Masternode ${PROJECT}_n1 has been disabled...${nocolor}\n"
 }
 
-function remove_crons() {
+function remove_cron_function() {
     # disable the crons that could cause problems
     . /var/tmp/nodevalet/maintenance/remove_crons.sh
 }
 
-function restore_crons() {
+function restore_cron_function() {
     # restore maintenance crons that were previously disabled
     . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
@@ -62,7 +62,7 @@ function bootstrap() {
 
     # make provisions for snapshot files instead of bootstraps
     if curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .zip
-    then remove_crons
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -79,8 +79,8 @@ function bootstrap() {
             | cut -d '"' -f 4 \
             | wget -i -
 
-    elif curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .tgz
-    then remove_crons
+elif curl -s $GITAPI_URL | grep browser_download_url | grep napshot | grep .tgz
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt snapshot file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -97,8 +97,8 @@ function bootstrap() {
             | cut -d '"' -f 4 \
             | wget -i -
 
-    elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
-    then remove_crons
+elif curl -s $GITAPI_URL | grep browser_download_url | grep bootstrap
+    then remove_cron_function
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Bootstrap.sh detected $PROJECTt bootstrap file${nocolor}" | tee -a "$LOGFILE"
         echo -e " --> Downloading and installing $PROJECTt blockchain" | tee -a "$LOGFILE"
         echo -e " "
@@ -119,69 +119,77 @@ function bootstrap() {
         # checksync 1 ; not sure if this line is needed or not
         exit
     fi
-    
-echo -e "\n ${lightcyan}Bootstrap has been downloaded, extracting...${nocolor}\n"
-        BOOTSTRAPZIP="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
-        if [[ $BOOTSTRAPZIP == *.gz ]]
-        then tar -vxzf "$BOOTSTRAPZIP"
-        elif [[ $BOOTSTRAPZIP == *.tgz ]]
-        then tar -vxzf "$BOOTSTRAPZIP"
-        elif [[ $BOOTSTRAPZIP == *.zip ]]
-        then unzip "$BOOTSTRAPZIP"
-        else echo -e " ${lightred}An unknown bootstrap file was downloaded"  | tee -a "$LOGFILE"
-            echo -e " The name of the file was $BOOTSTRAPZIP."  | tee -a "$LOGFILE"
-            echo -e " I am not quite sure to do with that, aborting bootstrap.${nocolor}\n"
-            exit
+    echo -e "\n ${lightcyan}Bootstrap has been downloaded, extracting...${nocolor}\n"
+    BOOTSTRAPZIP="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
+
+    if [[ $BOOTSTRAPZIP == *.gz ]]
+    then tar -vxzf "$BOOTSTRAPZIP"
+elif [[ $BOOTSTRAPZIP == *.tgz ]]
+    then tar -vxzf "$BOOTSTRAPZIP"
+elif [[ $BOOTSTRAPZIP == *.zip ]]
+    then unzip "$BOOTSTRAPZIP"
+    else echo -e " ${lightred}An unknown bootstrap file was downloaded"  | tee -a "$LOGFILE"
+        echo -e " The name of the file was $BOOTSTRAPZIP."  | tee -a "$LOGFILE"
+        echo -e " I am not quite sure to do with that, aborting bootstrap.${nocolor}\n"
+        exit
+    fi
+
+    rm -f "$BOOTSTRAPZIP"
+
+    # take ownership of bootstrap files and folders
+    chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
+    chmod -R g=u $INSTALLDIR/temp/bootstrap
+
+    # need to shutdown 1st masternode
+    shutdown_mn1
+
+    echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
+    DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}1 -name "wallet.dat")
+        if [ -z "$DATAFOLDER" ]
+        then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n1.${nocolor}"
+            cd /var/lib/masternodes/"${PROJECT}"1
+        else echo "$DATAFOLDER" > $INSTALLDIR/temp/DATAFOLDER
+            sed -i "s/wallet.dat//" $INSTALLDIR/temp/DATAFOLDER 2>&1
+            cd $(cat $INSTALLDIR/temp/DATAFOLDER)
+            rm -rf $INSTALLDIR/temp/DATAFOLDER
         fi
+    cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+    sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
+    sleep 1
 
-        rm -f "$BOOTSTRAPZIP"
+    # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
+    echo -e "${white}  Copying bootstrap data to ${PROJECT}_n1...${nocolor}"
+    [ -d "$INSTALLDIR/temp/bootstrap/blocks" ] && cp -rp $INSTALLDIR/temp/bootstrap/blocks /var/lib/masternodes/"${PROJECT}"1/blocks
+    [ -d "$INSTALLDIR/temp/bootstrap/chainstate" ] && cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
+    [ -d "$INSTALLDIR/temp/bootstrap/sporks" ] && cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
+    [ -d "$INSTALLDIR/temp/bootstrap/zerocoin" ] && cp -rp $INSTALLDIR/temp/bootstrap/zerocoin /var/lib/masternodes/"${PROJECT}"1/zerocoin
 
-        # take ownership of bootstrap files and folders
-        chown -R masternode:masternode $INSTALLDIR/temp/bootstrap
-        chmod -R g=u $INSTALLDIR/temp/bootstrap
+    # remove bootstrap blockchain
+    rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
 
-        # need to shutdown 1st masternode
-        shutdown_mn1
+    echo -e "${lightcyan} --> The 1st masternode has been bootstrapped${nocolor}\n"
 
-        echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
-        cd /var/lib/masternodes/"${PROJECT}"1
-        sudo rm -rf !("wallet.dat"|"masternode.conf")
-        sleep .25
+    # this was previously used to navigate to the right folder in case of empty root folders
+    # cd  "$(\ls -1dt ./*/ | head -n 1)"
+    # find . -mindepth 2 -type f -print -exec mv {} . \;
 
-        # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
-        echo -e "${white}  Copying bootstrap data to ${PROJECT}_n1...${nocolor}"
-        [ -d "$INSTALLDIR/temp/bootstrap/blocks" ] && cp -rp $INSTALLDIR/temp/bootstrap/blocks /var/lib/masternodes/"${PROJECT}"1/blocks
-        [ -d "$INSTALLDIR/temp/bootstrap/chainstate" ] && cp -rp $INSTALLDIR/temp/bootstrap/chainstate /var/lib/masternodes/"${PROJECT}"1/chainstate
-        [ -d "$INSTALLDIR/temp/bootstrap/sporks" ] && cp -rp $INSTALLDIR/temp/bootstrap/sporks /var/lib/masternodes/"${PROJECT}"1/sporks
-        [ -d "$INSTALLDIR/temp/bootstrap/zerocoin" ] && cp -rp $INSTALLDIR/temp/bootstrap/zerocoin /var/lib/masternodes/"${PROJECT}"1/zerocoin
-
-        # remove bootstrap blockchain
-        rm -rf $INSTALLDIR/temp/bootstrap > /dev/null 2>&1
-
-        echo -e "${lightcyan} --> The 1st masternode has been bootstrapped${nocolor}\n"
-
-        # this was previously used to navigate to the right folder in case of empty root folders
-        # cd  "$(\ls -1dt ./*/ | head -n 1)"
-        # find . -mindepth 2 -type f -print -exec mv {} . \;
-
-        echo -e " --> Restarting $PROJECTt Masternode n1 \n" | tee -a "$LOGFILE"
-        # echo -e " Starting masternodes after installation of bootstrap" >> "$LOGFILE"
-        sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
-        sudo systemctl start "${PROJECT}"_n1
-        sleep 2
+    echo -e " --> $(date +%H:%M:%S) : ${lightgreen}Restarting the first $PROJECTt masternode${nocolor}\n" | tee -a "$LOGFILE"
+    sudo systemctl enable "${PROJECT}"_n1 > /dev/null 2>&1
+    sudo systemctl start "${PROJECT}"_n1
+    sleep 2
 }
 
 # this is where the bootstrap sequence begins
 check_if_synced
 bootstrap
 rm -rf $INSTALLDIR/temp/updating
-restore_crons
 
 # exit if there is only one masternode
 if [ $MNS = 1 ]
 then echo -e " This VPS has only one masternode, skipping clonesync_all.sh\n"  | tee -a "$LOGFILE"
-else bash $INSTALLDIR/maintenance/clonesync_all.sh 
+restore_cron_function
+else bash $INSTALLDIR/maintenance/clonesync_all.sh
 fi
 
 rm -f $INSTALLDIR/temp/bootstrapping --force

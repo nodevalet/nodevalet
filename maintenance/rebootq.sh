@@ -12,10 +12,10 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running rebootq.sh" | tee -a "$LOGFI
     exit
 fi
 
-# delay task if activate_masternodes is running
+# delay task (1 hour) if activate_masternodes is running
 if [ -e "$INSTALLDIR/temp/activating" ]
-then sleep 1800
-rm $INSTALLDIR/temp/activating
+then sleep 3600
+    rm -rf $INSTALLDIR/temp/activating
 fi
 
 # write which packages require it
@@ -32,15 +32,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    # touch $INSTALLDIR/temp/updating
-    # for ((i=1;i<=$MNS;i++));
-    # do
-    # echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Stopping masternode ${PROJECT}_n${i}"
-    # systemctl stop "${PROJECT}"_n${i}
-    # done
-    # rm -f $INSTALLDIR/temp/updating
     shutdown -r now "Server is going down for upgrade."
-
 else
     echo -e " No reboot is required at this time\n"
     rm $INSTALLDIR/temp/REBOOTREQ

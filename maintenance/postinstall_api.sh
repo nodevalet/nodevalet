@@ -20,25 +20,30 @@ function final_message() {
         # echo "/var/tmp/nodevalet/maintenance/bootstrap.sh" | at now +1 minutes
 
         # log successful reboot
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
-        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        rm -rf /var/tmp/nodevalet/logs/maintenance.log
+        touch /var/tmp/nodevalet/logs/maintenance.log
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-
-        # Remove postinstall_api.sh crontab
-        crontab -l | grep -v '/var/tmp/nodevalet/maintenance/postinstall_api.sh'  | crontab -
 
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
         echo -e " SERVER REBOOTED SUCCESSFULLY : $(date +%m.%d.%Y_%H:%M:%S)" | tee -a "$INSTALLDIR/temp/installation_complete"
 
-        # Remove postinstall from rc.local (for Ubuntu 18)
+        # Remove postinstall from rc.local
         sed -i '/postinstall_api.sh/d' /etc/rc.local
+
+        # Enable SmartStart on subsequent reboots
+        echo -e " Enabling SmartStart by adding task to /etc/rc.local \n" | tee -a /var/tmp/nodevalet/logs/maintenance.log
+        echo -e "sudo bash /var/tmp/nodevalet/maintenance/smartstart.sh &" >> /etc/rc.local
+        sed -i '/exit 0/d' /etc/rc.local
+        echo -e "exit 0" >> /etc/rc.local
 
         # Add a sequence to interpret the reply as success or fail $?
         rm $INSTALLDIR/temp/vpsvaletreboot.txt
-        
+
         # create file to signal that bootstrap is running
         touch $INSTALLDIR/temp/bootstrapping
 
@@ -47,7 +52,7 @@ function final_message() {
         sudo bash bootstrap.sh
 
         # create file to signal that bootstrap has finished
-        rm $INSTALLDIR/temp/bootstrapping
+        rm -rf $INSTALLDIR/temp/bootstrapping --force
 
     else :
     fi

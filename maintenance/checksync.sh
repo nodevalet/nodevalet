@@ -56,10 +56,15 @@ function sync_check() {
     # echo -e "NEWEST is set to $NEWEST"
     TIMEDIF=$(echo -e "$(($(date +%s)-NEWEST))")
     echo -e " This masternode is${yellow} $TIMEDIF seconds ${nocolor}behind the latest block."
-    # check if current to within 1.5 minutes
-    if ((TIMEDIF <= 90 && TIMEDIF >= -90))
+    # check if current to within 5 minutes
+    if ((TIMEDIF <= 300 && TIMEDIF >= -300))
     then echo -e " The blockchain is almost certainly synced.\n"
-        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
+
+    if [ -e "$INSTALLDIR/temp/smartstart" ] || [ -e "$INSTALLDIR/temp/bootstrapping" ]
+    then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}" | tee -a "$LOGFILE"
+    else echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightgreen}Masternode ${PROJECT}_n${i} synced completely ${nocolor}"
+    fi
+        touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
         SYNCED="yes"
     else echo -e " That's the same as${yellow} $((($(date +%s)-NEWEST)/3600)) hours${nocolor} or${yellow} $((($(date +%s)-NEWEST)/86400)) days${nocolor} behind the present.\n"
         SYNCED="no"
@@ -68,14 +73,16 @@ function sync_check() {
 
 function check_blocksync() {
 
-    # check if blockchain of n1 is synced for 24 hours (86400 seconds) before reporting failure
-    end=$((SECONDS+86400))
-    # end=$((SECONDS+86400))
+    # check if blockchain is synced for this amount of time before reporting failure
+    if [ -e "$INSTALLDIR/temp/smartstart" ]
+    then end=$((SECONDS+1800)) # 30 minutes (1800 seconds)
+    else end=$((SECONDS+86400)) # 24 hours (86400 seconds)
+    fi
 
     while [ $SECONDS -lt $end ]; do
-        # echo -e "Time $SECONDS"
         touch $INSTALLDIR/getinfo_n${i}
         /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf getinfo > $INSTALLDIR/getinfo_n${i}
+        [ ! -s $INSTALLDIR/getinfo_n${i} ] && echo -e "Empty getinfo during checksync" >> $INSTALLDIR/temp/nogetinfo_n${i}
         clear
 
         # if  masternode not running, echo masternode not running and break
@@ -101,42 +108,77 @@ function check_blocksync() {
         fi
 
         if [ "$SYNCED" = "yes" ]; then echo -e "              ${lightgreen}Masternode synced${nocolor}\n" ; break
-        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 30 seconds${nocolor}\n"
-            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}\n"
+        else echo -e "${white} Blockchain is ${lightred}not yet synced${nocolor}; will check again in 20 seconds${nocolor}\n"
+            echo -e " I have been checking this masternode for:${lightcyan} $SECONDS seconds${nocolor}"
+            echo -e "${white} Script will timeout if not synced in the next:${lightcyan} $((($end-SECONDS) / (60))) minutes${nocolor}\n"
+
+        # count number of lines in the file, save to variable
+        if [ -e $INSTALLDIR/temp/nogetinfo_n${i} ]
+        then countLINES=$(wc -l $INSTALLDIR/temp/nogetinfo_n${i} | awk '{ print $1 }')
+        else countLINES=0
+        fi
+
+        # delete range of lines 1 through difference above
+        if (( $countLINES >= 6 ))
+        then 
+            # stop and disable masternode
+            sudo systemctl disable "${PROJECT}"_n${i} > /dev/null 2>&1
+            # sudo /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf stop
+            systemctl stop "${PROJECT}"_n${i}
+
+            # occasional problems with rpcport prevent masternodes from starting
+            # Holy Hand Grenade will now reset the RPC port by adding 200 to fix this
+            RPCPORTIS=$(sed -n -e '/^rpcport/p' /etc/masternodes/${PROJECT}_n${i}.conf)
+            RPCPORTNUMBER=$(echo -e "$RPCPORTIS" | sed 's/[^0-9]*//g')
+            let "RPCPORTNUMBER=RPCPORTNUMBER+200"
+            (($RPCPORTNUMBER >= 65400)) && let "RPCPORTNUMBER=RPCPORTNUMBER-20000"
+            sed -i "s/${RPCPORTIS}/rpcport=${RPCPORTNUMBER}/" /etc/masternodes/${PROJECT}_n${i}.conf >> $LOGFILE 2>&1
+            echo -e "${lightpurple} Possible error with RPCport on Masternode n$i. Incrementing to $RPCPORTNUMBER ...${nocolor}" | tee -a "$LOGFILE"
+            rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
+
+            # enable and start masternode
+            sudo systemctl enable "${PROJECT}"_n${i} > /dev/null 2>&1
+            sudo systemctl start "${PROJECT}"_n${i}
+            sleep 5
+
+        fi
+
             # if clonesyncing, display warning not to interrupt it
             if [ -e $INSTALLDIR/temp/clonesyncing ]
             then echo -e " ${lightred}Clonesync_all in progress; DO NOT INTERRUPT THIS PROCESS!!${nocolor}"
                 echo -e " ${lightred}Bootstrap will resume once your first blockchain is synced.${nocolor}\n"
             else :
             fi
-            # insert a little humor
-            curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke'
+
+            # insert a little humor if it will be visible
+            if [ -e "$INSTALLDIR/temp/smartstart" ]
+            then :
+            else curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' 
+            fi
+
             echo -e "\n"
             rm -rf $INSTALLDIR/getinfo_n${i} --force
-            
-            # display countdown timer on screen   
-            countdown=30; date1=$((`date +%s` + $countdown)); 
-            while [ "$date1" -ge `date +%s` ]; do 
-            echo -ne "   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r"; 
-            sleep 0.5
+
+            # display countdown timer on screen
+            countdown=20; date1=$((`date +%s` + $countdown));
+            while [ "$date1" -ge `date +%s` ]; do
+                echo -ne "${lightcyan}   ---> Refreshing in:  $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r${nocolor}";
+                sleep 0.5
             done
         fi
     done
 
-    if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode n$i did not sync in the allowed time${nocolor}\n" | tee -a "$LOGFILE"
+    if [ "$SYNCED" = "no" ]; then echo -e "${lightred} Masternode n$i did not sync in the allowed time${nocolor}" | tee -a "$LOGFILE"
         # exit the script because syncing did not occur
-        rm -rf $INSTALLDIR/getinfo_n${i} --force
+        rm -rf $INSTALLDIR/getinfo_n${i}
+        rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
         exit
-else : ; fi
-
-    #   create file to signal that this blockchain is synced (I moved this to the cronchecksync)
-    #   echo -e " Setting flag at: $INSTALLDIR/temp/${PROJECT}_n${i}_synced\n"
-    #   touch $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
-
+    fi
 }
 
 # This is where the script actually starts
 check_blocksync
 
-rm -rf $INSTALLDIR/getinfo_n${i} --force
+rm -rf $INSTALLDIR/getinfo_n${i}
+rm -rf $INSTALLDIR/temp/nogetinfo_n${i}
 exit

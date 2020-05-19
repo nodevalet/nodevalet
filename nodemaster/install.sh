@@ -10,6 +10,25 @@ MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
 HNAME=$(<$INFODIR/vpshostname.info)
 PROJECT=$(<$INFODIR/vpscoin.info)
 
+### define colors ###
+lightred=$'\033[1;31m'  # light red
+red=$'\033[0;31m'  # red
+lightgreen=$'\033[1;32m'  # light green
+green=$'\033[0;32m'  # green
+lightblue=$'\033[1;34m'  # light blue
+blue=$'\033[0;34m'  # blue
+lightpurple=$'\033[1;35m'  # light purple
+purple=$'\033[0;35m'  # purple
+lightcyan=$'\033[1;36m'  # light cyan
+cyan=$'\033[0;36m'  # cyan
+lightgray=$'\033[0;37m'  # light gray
+white=$'\033[1;37m'  # white
+brown=$'\033[0;33m'  # brown
+yellow=$'\033[1;33m'  # yellow
+darkgray=$'\033[1;30m'  # dark gray
+black=$'\033[0;30m'  # black
+nocolor=$'\e[0m' # no color
+
 # This script was copied, modified, bastardized, improved, and wholly wrecked by Node Valet
 #  ███╗   ██╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗
 #  ████╗  ██║██╔═══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗
@@ -99,7 +118,7 @@ function show_help(){
     echo "-u or --update: Update a specific masternode daemon. Combine with the -p option";
     echo "-r or --release: Release version to be installed.";
     echo "-x or --startnodes: Start masternodes after installation to sync with blockchain";
-	exit 1;
+    exit 1;
 }
 
 #
@@ -112,13 +131,13 @@ function check_distro() {
         . /etc/os-release
         if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "18.04" ]] ; then
             echo "This script only supports Ubuntu 16.04 & 18.04 LTS, exiting."
-			if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
+            if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
             exit 1
         fi
     else
         # no, thats not ok!
         echo "This script only supports Ubuntu 16.04 & 18.04 LTS, exiting."
-		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
+        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: VPS is running an unsupported OS  ..."}' && echo -e " " ; fi
         exit 1
     fi
 }
@@ -134,18 +153,17 @@ function install_packages() {
     if [[ "${dEXISTT}" ]]
     then echo -e "${lightcyan}Binaries for ${PROJECT} already exist, no need to download crypto packages${nocolor}\n"   | tee -a ${SCRIPT_LOGFILE}
     else echo -e "${lightred}Did not find binaries for ${PROJECT} so downloading crypto packages${nocolor}"  | tee -a ${SCRIPT_LOGFILE}
-        echo -e "${lightred}${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a ${SCRIPT_LOGFILE}
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Server is now installing crypto packages because proper binaries could not be located ..."}' && echo -e " " ; fi
         # development and build packages
         # these are common on all cryptos
         echo "* Package installation!"
-        add-apt-repository -yu ppa:bitcoin/bitcoin  &>> ${SCRIPT_LOGFILE}
-        apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update  &>> ${SCRIPT_LOGFILE}
+        add-apt-repository -yu ppa:bitcoin/bitcoin | tee -a "$SCRIPT_LOGFILE"
+        apt-get -qq -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true update | tee -a "$SCRIPT_LOGFILE"
         apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install build-essential \
             libcurl4-gnutls-dev protobuf-compiler libboost-all-dev autotools-dev automake \
             libboost-all-dev libssl-dev make autoconf libtool git apt-utils g++ \
             libprotobuf-dev pkg-config libudev-dev libqrencode-dev bsdmainutils \
-            pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd &>> ${SCRIPT_LOGFILE}
+            pkg-config libgmp3-dev libevent-dev jp2a pv virtualenv libdb4.8-dev libdb4.8++-dev update-motd | tee -a "$SCRIPT_LOGFILE"
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Building '"$MNODE_DAEMOND"' from source ... this could take 20 to 40 minutes so you may take a break if needed ..."}' && echo -e " " ; fi
     fi
 
@@ -477,16 +495,16 @@ function source_config() {
             if [ ! -f "${MNODE_DAEMON}" ]; then
                 echo "UPDATE FAILED! Daemon hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
                 if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! Daemon not found  ..."}' && echo -e " " ; fi
-				exit 1
+                exit 1
             fi
             if [ ! -f "${MNODE_HELPER}"_"${CODENAME}" ]; then
                 echo "UPDATE FAILED! Masternode activation file ${MNODE_HELPER}_${CODENAME} hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
-				if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! Masternode activation file not found  ..."}' && echo -e " " ; fi
+                if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! Masternode activation file not found  ..."}' && echo -e " " ; fi
                 exit 1
             fi
             if [ ! -d "${MNODE_DATA_BASE}" ]; then
                 echo "UPDATE FAILED! ${MNODE_DATA_BASE} hasn't been found. Please try the normal installation process by omitting the upgrade parameter."
-				if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! MNODE_DATA_BASE was not found  ..."}' && echo -e " " ; fi
+                if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: UPDATE FAILED! MNODE_DATA_BASE was not found  ..."}' && echo -e " " ; fi
                 exit 1
             fi
         fi
@@ -617,7 +635,7 @@ function build_mn_from_source() {
     dEXISTT=$(ls /usr/local/bin | grep "${MNODE_DAEMOND}")
     if [ ! "${dEXISTT}" ]; then
         echo "COMPILATION FAILED! Please open an issue at https://github.com/masternodes/vps/issues. Thank you!"
-		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Compiling the wallet failed  ..."}' && echo -e " " ; fi
+        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Compiling the wallet failed  ..."}' && echo -e " " ; fi
         exit 1
     fi
 }
@@ -629,9 +647,9 @@ function final_call() {
     # note outstanding tasks that need manual work
     echo "************! ALMOST DONE !******************************"
     if [ "$update" -eq 0 ]; then
-        echo "There is still work to do in the configuration templates."
-        echo "These are located at ${MNODE_CONF_BASE}, one per masternode."
-        echo "Add your masternode private keys now."
+    #    echo "There is still work to do in the configuration templates."
+        echo "Your masternode templates are located at ${MNODE_CONF_BASE}, one per masternode."
+    #    echo "Add your masternode private keys now."
         echo "eg in /etc/masternodes/${CODENAME}_n1.conf"
     else
         echo "Your ${CODENAME} masternode daemon has been updated! (but not yet activated)"
@@ -640,7 +658,7 @@ function final_call() {
     echo "=> $(tput bold)$(tput setaf 2) All configuration files are in: ${MNODE_CONF_BASE} $(tput sgr0)"
     echo "=> $(tput bold)$(tput setaf 2) All Data directories are in: ${MNODE_DATA_BASE} $(tput sgr0)"
     echo ""
-    echo "$(tput bold)$(tput setaf 1)Important:$(tput sgr0) run $(tput setaf 2) /usr/local/bin/activate_masternodes_${CODENAME} $(tput sgr0) as root to activate your nodes."
+    # echo "$(tput bold)$(tput setaf 1)Important:$(tput sgr0) run $(tput setaf 2) /usr/local/bin/activate_masternodes_${CODENAME} $(tput sgr0) as root to activate your nodes. "
 
     # place future helper script accordingly on fresh install
     if [ "$update" -eq 0 ]; then
@@ -697,7 +715,7 @@ function prepare_mn_interfaces() {
     if [[ "${ETH_STATUS}" = "down" ]] || [[ "${ETH_STATUS}" = "" ]]; then
         echo "Default interface is down, fallback didn't work. Break here."
         if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Default interface is down. Rebuild VPS & try again  ..."}' && echo -e " " ; fi
-		exit 1
+        exit 1
     fi
 
     # DO ipv6 fix, are we on DO?
@@ -720,7 +738,7 @@ function prepare_mn_interfaces() {
     # check for vultr ipv6 box active
     if [ -z "${IPV6_INT_BASE}" ] && [ "${net}" -ne 4 ]; then
         echo "No IPv6 support on the VPS but IPv6 is the setup default. Please switch to ipv4 with flag \"-n 4\" if you want to continue."
-		if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: No IPv6 support on VPS but IPv6 was selected. Try again  ..."}' && echo -e " " ; fi		
+        if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: No IPv6 support on VPS but IPv6 was selected. Try again  ..."}' && echo -e " " ; fi
         echo ""
         echo "See the following link for instructions how to add multiple ipv4 addresses on vultr:"
         echo "${IPV4_DOC_LINK}"
