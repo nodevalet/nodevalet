@@ -51,12 +51,15 @@ function search_and_destroy() {
         echo -e "---------------------------------------------------------- ${white}\n"
 
         echo -e "${yellow}------------------------------------------------------------------ "
+        touch $INSTALLDIR/temp/smartstart
         for ((i=1;i<=$MNS;i++));
         do
             echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Stopping and disabling masternode ${PROJECT}_n${i}"
-            . /var/tmp/nodevalet/maintenance/mnstop.sh $i &e
+            
+            . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
         done
         sleep 20
+        rm -rf $INSTALLDIR/temp/smartstart
         for ((i=1;i<=$MNS;i++));
         do  
             find / -name "${PROJECT}_n${i}.service" -delete
@@ -91,7 +94,7 @@ while :; do
         sudo rm -rf /var/tmp/nvtemp
     break
     elif [[ $VERIFY == "n" || $VERIFY == "N" ]]
-    then echo -e "\n This folder will not be deleted${nocolor}\n"
+    then echo -e "\n"
     break
     fi
 done
