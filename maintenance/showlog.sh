@@ -12,7 +12,7 @@ then clear
     echo -e "\n This is not a VPS that was configured by NodeValet and"
     echo -e " as a result, there is no installation log to display. \n"
     echo -e "\n Did you expect something different? Let us know.\n"
-    exit
+    exit 1
 else cd $INSTALLDIR
 fi
 

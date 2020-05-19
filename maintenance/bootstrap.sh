@@ -145,10 +145,18 @@ elif [[ $BOOTSTRAPZIP == *.zip ]]
     shutdown_mn1
 
     echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n1...${nocolor}"
-    cd /var/lib/masternodes/"${PROJECT}"1
+    DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}1 -name "wallet.dat")
+        if [ -z "$DATAFOLDER" ]
+        then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n1.${nocolor}"
+            cd /var/lib/masternodes/"${PROJECT}"1
+        else echo "$DATAFOLDER" > $INSTALLDIR/temp/DATAFOLDER
+            sed -i "s/wallet.dat//" $INSTALLDIR/temp/DATAFOLDER 2>&1
+            cd $(cat $INSTALLDIR/temp/DATAFOLDER)
+            rm -rf $INSTALLDIR/temp/DATAFOLDER
+        fi
     cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
     sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
-    sleep .25
+    sleep 1
 
     # copy blocks/chainstate/sporks with permissions (cp -rp) or it will fail
     echo -e "${white}  Copying bootstrap data to ${PROJECT}_n1...${nocolor}"

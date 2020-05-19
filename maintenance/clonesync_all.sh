@@ -113,7 +113,15 @@ function bootstrap() {
     if [[ "${TARGETSYNC}" ]]
     then :
     else echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
-        cd /var/lib/masternodes/"${PROJECT}"${t}
+        DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}${t} -name "wallet.dat")
+            if [ -z "$DATAFOLDER" ]
+            then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n${t}.${nocolor}"
+                cd /var/lib/masternodes/"${PROJECT}"${t}
+            else echo "$DATAFOLDER" > $INSTALLDIR/temp/DATAFOLDER
+                sed -i "s/wallet.dat//" $INSTALLDIR/temp/DATAFOLDER 2>&1
+            cd $(cat $INSTALLDIR/temp/DATAFOLDER)
+            rm -rf $INSTALLDIR/temp/DATAFOLDER
+            fi
         cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
         sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
         sleep 1
