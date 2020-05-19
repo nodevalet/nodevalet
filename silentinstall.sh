@@ -250,32 +250,38 @@ elif [ "$ONLYNET" = 4 ]
 
     # read or collect masternode addresses
     if [ -e $INFODIR/vpsmnaddress.info ]
-    then :
-        # create a subroutine here to check memory and size MNS appropriately
-    else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
-        echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
-        echo -e " On your local wallet, generate the masternode addresses and send"
-        echo -e " your collateral transactions for masternodes you want to start"
-        echo -e " now. You may also add extra addresses even if you have not yet"
-        echo -e " funded them, and the script will still create the masternode"
-        echo -e " instance which you can later activate from your local wallet.\n"
-        echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
-        touch $INFODIR/vpsmnaddress.info
-        for ((i=1;i<=$MNS;i++));
-        do
-            while :; do
-                echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
-                read -p "  --> " MNADDP
-                echo -e "\n You entered the address: ${MNADDP} "
-                read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
-                echo " "
-                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then break
-                fi
+    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n"
+    else 
+        # Pull BLOCKEXP from $PROJECT.env
+        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+        if [ -n "$BLOCKEX" ]
+        then echo -e "\n NodeValet found no fully-supported block explorer." | tee -a "$LOGFILE"
+            echo -e " There is no need to query user for masternode addresses.\n" | tee -a "$LOGFILE"
+        else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
+            echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
+            echo -e " On your local wallet, generate the masternode addresses and send"
+            echo -e " your collateral transactions for masternodes you want to start"
+            echo -e " now. You may also add extra addresses even if you have not yet"
+            echo -e " funded them, and the script will still create the masternode"
+            echo -e " instance which you can later activate from your local wallet.\n"
+            echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
+            touch $INFODIR/vpsmnaddress.info
+            for ((i=1;i<=$MNS;i++));
+            do
+                while :; do
+                    echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
+                    read -p "  --> " MNADDP
+                    echo -e "\n You entered the address: ${MNADDP} "
+                    read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
+                    echo " "
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                    then break
+                    fi
+                done
+                echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
+                echo -e " -> Masternode $i address is: $MNADDP \n"
             done
-            echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-            echo -e " -> Masternode $i address is: $MNADDP \n"
-        done
+        fi
     fi
 
     # query to generate new genkeys or query for user input
@@ -328,27 +334,20 @@ elif [ "$ONLYNET" = 4 ]
 
     # query to collect TXIDs if not detected
     if [ -e $INFODIR/fullauto.info ]
-    then : echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
+    then echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
     else
-        echo -e "\n${white} If your project is supported by NodeValet, your VPS can likely retrieve the"
-        echo -e " masternodes' transaction IDs and indices from the blockchain. If you are "
-        echo -e " installing masternodes for a project that is not fully supported, then you "
-        echo -e " are able to provide your own transaction IDs and output indices. You can "
-        echo -e " also skip this step now and edit the masternode.conf file later. "
-        echo -e -n "${cyan}"
-        while :; do
-            echo -e "\n Would you like to manually enter your own TXIDs now? y/n "
-            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'no' " GETTXIDS
-            if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
-            then
-                break
-            fi
-        done
-        echo -e -n "${nocolor}"
-
-        if [ "${GETTXIDS,,}" = "Y" ] || [ "${GETTXIDS,,}" = "y" ]
-        then echo -e " User selected to manually enter TXIDs for $MNS masternodes" >> $LOGFILE 2>&1
-            echo -e "\n\n A transaction ID and index should look pretty similar to this: "
+        # Pull BLOCKEXP from $PROJECT.env
+        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+        if [ -n "$BLOCKEX" ]
+        then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
+            echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
+            echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
+            echo -e " collateral to each of your masternode addresses and wait for at least 1 confirmation. "
+            echo -e " Once you have done this, open${yellow} debug console ${white}and typically you will enter the command "
+            echo -e " ${yellow}masternode outputs${white}. This will display a list of all of your valid collateral transactions. "
+            echo -e " You will need to copy insert these transactions and their index number so NodeValet can "
+            echo -e " generate the masternode.conf file that you will paste into your local wallet.\n"
+            echo -e " A transaction ID and index should look pretty similar to this: "
             echo -e "${yellow}   b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
             VERIFY=
             touch $INFODIR/vpsmntxdata.info
@@ -374,10 +373,10 @@ elif [ "$ONLYNET" = 4 ]
                 echo -e -n "${nocolor}"
             done
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
-        else echo -e " User selected to have this VPS query TXIDs from NodeValet API\n" >> $LOGFILE 2>&1
-            echo -e "${nocolor}"
-            echo -e "\n Understood. The VPS will query NodeValet's API for TXIDs.${cyan}"
-        fi
+        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
+            echo -e " NodeValet will lookup your masternode transaction information using "
+            echo -e " the masternode addresses you entered earlier.\n" | tee -a "$LOGFILE"       
+       fi
     fi
 
     # create or assign customssh
@@ -501,7 +500,7 @@ function install_binaries() {
         # do not try to unpack and install if tarball does not exist
             if [ -z "$TARBALL" ]
             then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
-            else echo -e "${lightcyan} Unpacking and installing binaries.${nocolor}"
+            else echo -e "${lightcyan}Unpacking and installing binaries.${nocolor}"
                 if [[ $TARBALL == *.gz ]]
                 then tar -xzf "$TARBALL"
                 else unzip "$TARBALL"
@@ -683,7 +682,8 @@ EOT
                 # craft line to be injected into wallet.conf
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+                else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
