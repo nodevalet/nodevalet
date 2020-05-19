@@ -29,7 +29,7 @@ done
 
 echo -e "\n"
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running resync.sh" | tee -a "$LOGFILE"
-echo -e " User has manually asked to resync the chain on ${PROJECT}_n${i}.\n"  | tee -a "$LOGFILE"
+echo -e "${lightred} User has manually asked to resync the chain on ${PROJECT}_n${i}.${nocolor}\n"  | tee -a "$LOGFILE"
 
 touch $INSTALLDIR/temp/updating
 
@@ -46,7 +46,6 @@ sudo systemctl stop "${PROJECT}"_n${i}
 sleep 2
 
 DATAFOLDER=$(find /var/lib/masternodes/${PROJECT}${i} -name "wallet.dat")
-
 if [ -z "$DATAFOLDER" ]
 then echo -e "${lightred} NodeValet could not locate a wallet.dat file for Masternode ${PROJECT}_n${i}.${nocolor}"
     cd /var/lib/masternodes/"${PROJECT}"${i}
