@@ -59,6 +59,7 @@ function search_and_destroy() {
             . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
         done
         sleep 20
+        echo -e "\n"
         rm -rf $INSTALLDIR/temp/smartstart
         for ((i=1;i<=$MNS;i++));
         do  

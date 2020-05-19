@@ -482,6 +482,7 @@ function install_binaries() {
         sed -i "s/GITAPI_URL=//" $INFODIR/vps.GIT_API.info
         GITAPI_URL=$(<$INFODIR/vps.GIT_API.info)
         echo -e "$GITAPI_URL" | tee -a "$LOGFILE"
+        echo " "
 
         # Try and install Binaries now
         # Pull GITSTRING from $PROJECT.gitstring
@@ -497,19 +498,24 @@ function install_binaries() {
             | wget -qi -
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
-        if [[ $TARBALL == *.gz ]]
-        then tar -xzf "$TARBALL"
-        else unzip "$TARBALL"
-        fi
-        rm -f "$TARBALL"
-        cd  "$(\ls -1dt ./*/ | head -n 1)"
-        find . -mindepth 2 -type f -print -exec mv {} . \;
-        cp "${MNODE_BINARIES}"* '/usr/local/bin'
-        cd ..
-        rm -r -f *
-        cd
-        cd /usr/local/bin
-        chmod 777 "${MNODE_BINARIES}"*
+        # do not try to unpack and install if tarball does not exist
+            if [ -z "$TARBALL" ]
+            then echo -e "${lightred} Binaries matching $GITSTRING could not be located.${nocolor}"
+            else echo -e "${lightcyan} Unpacking and installing binaries.${nocolor}"
+                if [[ $TARBALL == *.gz ]]
+                then tar -xzf "$TARBALL"
+                else unzip "$TARBALL"
+                fi
+                rm -f "$TARBALL"
+                cd  "$(\ls -1dt ./*/ | head -n 1)"
+                find . -mindepth 2 -type f -print -exec mv {} . \;
+                cp "${MNODE_BINARIES}"* '/usr/local/bin'
+                cd ..
+                rm -r -f *
+                cd
+                cd /usr/local/bin
+                chmod 777 "${MNODE_BINARIES}"*
+            fi
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
@@ -524,7 +530,6 @@ function install_binaries() {
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "${lightred}Binaries for ${PROJECTt} could not be downloaded${nocolor}"  | tee -a "$LOGFILE"
-        echo -e "${lightred}${dEXIST} (dEXIST) was not found to exist${nocolor}\n"  | tee -a "$LOGFILE"
     fi
 
     # remove binaries temp folder
