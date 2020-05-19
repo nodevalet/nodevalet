@@ -561,7 +561,7 @@ function install_mns() {
         fi
 
         # activate masternodes, or activate just FIRST masternode
-        echo -e "Activating your $PROJECTt masternode(s)" | tee -a "$LOGFILE"
+        echo -e "${lightred}Attention: ${green}Your $PROJECTt masternode(s) are now activating...${nocolor} \n" | tee -a "$LOGFILE"
         activate_masternodes_"$PROJECT" echo -e | tee -a "$LOGFILE"
 
         # check if $PROJECTd was built correctly and started
