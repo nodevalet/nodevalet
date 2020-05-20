@@ -17,7 +17,7 @@ then echo -e "\n${lightred} $PROJECTt only supports IPv4 and one masternode per 
 fi
 
 # check for possible number of new masternodes
-NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 325}')
+NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
 MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
 let PNODES=$MAXNODES-$MNS
 (($PNODES <= 0)) && echo " ${lightred}This server cannot support any more masternodes${nocolor}\n" && exit
