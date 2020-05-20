@@ -65,7 +65,7 @@ function search_and_destroy() {
         do  
             find / -name "${PROJECT}_n${i}.service" -delete
         done
-        echo -e "------------------------------------------------------------------------------ ${white}\n"
+        echo -e "------------------------------------------------------------------\n"
 
         echo -e "\n${yellow}-------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
@@ -89,7 +89,8 @@ while :; do
     echo -e " Installation variables and data are stored in the nvtemp folder.${nocolor}\n"
     read -n 1 -s -r -p "  --> Would you like to remove this folder now? y/n  " VERIFY
     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-    then echo -e "${yellow}------------------------------------------------------- "
+    then echo -e "\n"
+        echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp

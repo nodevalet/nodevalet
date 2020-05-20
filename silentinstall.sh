@@ -375,7 +375,7 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
             echo -e " NodeValet will lookup your masternode transaction information using "
-            echo -e " the masternode addresses you entered earlier.\n" | tee -a "$LOGFILE"       
+            echo -e " the masternode address(es) you entered earlier." | tee -a "$LOGFILE"       
        fi
     fi
 
