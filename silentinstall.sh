@@ -249,8 +249,7 @@ elif [ "$ONLYNET" = 4 ]
 
     # read or collect masternode addresses
     if [ -e $INFODIR/vpsmnaddress.info ]
-    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n"
-        cat $INFODIR/vpsmnaddress.info >> "$LOGFILE"
+    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else 
         # Pull BLOCKEXP from $PROJECT.env
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
