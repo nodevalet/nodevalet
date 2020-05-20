@@ -250,6 +250,7 @@ elif [ "$ONLYNET" = 4 ]
     # read or collect masternode addresses
     if [ -e $INFODIR/vpsmnaddress.info ]
     then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n"
+        cat $INFODIR/vpsmnaddress.info >> "$LOGFILE"
     else 
         # Pull BLOCKEXP from $PROJECT.env
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -278,7 +279,8 @@ elif [ "$ONLYNET" = 4 ]
                     fi
                 done
                 echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-                echo -e " -> Masternode $i address is: $MNADDP \n"
+                echo -e " -> $PROJECT_n$i is: $MNADDP \n"  | tee -a "$LOGFILE"
+
             done
         fi
     fi
@@ -375,7 +377,7 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
             echo -e " NodeValet will lookup your masternode transaction information using "
-            echo -e " the masternode address(es) you entered earlier." | tee -a "$LOGFILE"       
+            echo -e " the masternode address(es) you entered earlier."
        fi
     fi
 
