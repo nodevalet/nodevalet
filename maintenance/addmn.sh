@@ -489,6 +489,15 @@ function restore_crons() {
     . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
 
+function update_rclocal() {
+    # Update SmartStart and rc.local
+    echo -e " Updating SmartStart and rc.local \n"
+    sed -i '/smartstart.sh/d' /etc/rc.local
+    echo -e "sudo bash /var/tmp/nodevalet/maintenance/smartstart.sh &" >> /etc/rc.local
+    sed -i '/exit 0/d' /etc/rc.local
+    echo -e "exit 0" >> /etc/rc.local
+}
+
 # This is where the script actually starts
 remove_crons
 collect_nnodes
@@ -501,15 +510,8 @@ change_vpsnumber
 start_mns
 restore_crons
 make_newconf
+update_rclocal
 
-# echo -e "\n These are your vpsmnaddresses:"
-# cat $INFODIR/vpsmnaddress.info
-# echo -e "\n These are your genkeys:"
-# cat $INFODIR/vpsgenkeys.info
-# echo -e "\n These are your ip addresses:"
-# cat $INFODIR/vps.ipaddresses.info
-# echo -e "\n These are your tx id data:"
-# cat $INFODIR/vps.mntxdata.info
 rm $INSTALLDIR/temp/updating --force
 exit
 
