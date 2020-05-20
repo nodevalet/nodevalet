@@ -97,10 +97,9 @@ function gather_info() {
             exit 1
         fi
         
-    echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your "
-    echo -e " server and masternodes. This interactive script will first prompt you"
-    echo -e " for information about your setup. Then it will update your VPS and"
-    echo -e " securely install the masternodes you specifiy.\n "
+    echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
+    echo -e " This interactive script will first prompt you for information about your"
+    echo -e " setup. Then it will update your VPS and securely install the masternodes.\n"
     echo -e " In most cases, this script will function correctly on supported VPS"
     echo -e " platforms without extra steps. Some providers require extra care.\n"
     echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
@@ -255,8 +254,8 @@ elif [ "$ONLYNET" = 4 ]
         # Pull BLOCKEXP from $PROJECT.env
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
         if [ -n "$BLOCKEX" ]
-        then echo -e "\n NodeValet found no fully-supported block explorer." | tee -a "$LOGFILE"
-            echo -e " There is no need to query user for masternode addresses.\n" | tee -a "$LOGFILE"
+        then echo -e "\n ${lightred}NodeValet found no fully-supported block explorer." | tee -a "$LOGFILE"
+            echo -e " There is no need to query user for masternode addresses.${nocolor}\n" | tee -a "$LOGFILE"
         else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
             echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
             echo -e " On your local wallet, generate the masternode addresses and send"
@@ -342,13 +341,14 @@ elif [ "$ONLYNET" = 4 ]
         then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
             echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
             echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
-            echo -e " collateral to each of your masternode addresses and wait for at least 1 confirmation. "
-            echo -e " Once you have done this, open${yellow} debug console ${white}and typically you will enter the command "
-            echo -e " ${yellow}masternode outputs${white}. This will display a list of all of your valid collateral transactions. "
-            echo -e " You will need to copy insert these transactions and their index number so NodeValet can "
-            echo -e " generate the masternode.conf file that you will paste into your local wallet.\n"
+            echo -e " collateral to each of your masternode addresses and wait for at least 1 "
+            echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
+            echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a"
+            echo -e " list of all of your valid collateral transactions. You will need to copy and"
+            echo -e " insert these transactions and their index number so NodeValet can generate"
+            echo -e " the masternode.conf file that you will paste into your local wallet.\n"
             echo -e " A transaction ID and index should look pretty similar to this: "
-            echo -e "${yellow}   b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+            echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
             VERIFY=
             touch $INFODIR/vpsmntxdata.info
             for ((i=1;i<=$MNS;i++));
@@ -697,11 +697,11 @@ EOT
                 else break
                 fi
 
-                if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
+                if [ ${#KEYXIST} = "0" ] && [ "${P}" = "42" ]
                 then echo " "
                     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkeys"}' && echo -e " "
                     echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
-                    echo -e "I patiently tried 35 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
+                    echo -e "I patiently tried 42 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
                     exit
                 fi
             done
