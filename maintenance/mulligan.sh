@@ -89,6 +89,7 @@ function search_and_destroy() {
         rm -rf /usr/local/bin/*
         rm -rf /root/.${PROJECT}
         rm -rf /etc/rc.local
+        rm -rf /var/log/server_hardening.log
 
 while :; do
     printf "${cyan}"

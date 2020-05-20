@@ -376,8 +376,8 @@ elif [ "$ONLYNET" = 4 ]
             done
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
-            echo -e " NodeValet will lookup your masternode transaction information using "
-            echo -e " the masternode address(es) you entered earlier."
+            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
+            echo -e " the masternode address(es) you entered earlier.${nocolor}"
        fi
     fi
 
@@ -386,7 +386,7 @@ elif [ "$ONLYNET" = 4 ]
     then SSHPORT=$(<$INFODIR/vpssshport.info)
         echo -e " Setting SSH port to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n\n${nocolor} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
+        echo -e "\n\n${white} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
         echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
 
         # what I consider a good example of a complicated query for numerical data
