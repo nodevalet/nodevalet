@@ -1,7 +1,11 @@
 #!/bin/bash
 # Compare number of running nodes to number of installed nodes; restart daemon if different
-# Add the following to the crontab (i.e. crontab -e)
-# (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
 
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh

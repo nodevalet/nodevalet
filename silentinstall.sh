@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 function setup_environment() {
     # Set Variables
     INSTALLDIR='/var/tmp/nodevalet'
@@ -91,11 +97,6 @@ function gather_info() {
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
     else
-        # exit with error if not run as root/sudo
-        if [ "$(id -u)" != "0" ]; then
-            echo "Please re-run as root or sudo."
-            exit 1
-        fi
         
     echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
     echo -e " This interactive script will first prompt you for information about your"

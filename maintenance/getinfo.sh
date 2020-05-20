@@ -1,18 +1,17 @@
 #!/bin/bash
 # This script will give users the 'getinfo' of installed masternodes
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
 # extglob was necessary to make rm -- ! possible
 shopt -s extglob
-
-# disable this-- is it necessary?
-# if [ -e "$INSTALLDIR/temp/updating" ]
-# then echo -e " ${nocolor}$(date +%m.%d.%Y_%H:%M:%S) : Running getinfo.sh"
-#    echo -e " It looks like I'm busy with something else; sorry.\n"
-#    exit
-# fi
 
 # read first argument to string
 input=$1
