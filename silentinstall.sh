@@ -167,7 +167,7 @@ function gather_info() {
         while :; do
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
             read -p "  --> " VPSAPI
-            echo -e "\n You entered this API Key: ${VPSAPI} "
+            echo -e "\n ${white}You entered this API Key: ${yellow}${VPSAPI} ${nocolor}"
             read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
             if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
             then APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
@@ -271,7 +271,7 @@ elif [ "$ONLYNET" = 4 ]
                 while :; do
                     echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
                     read -p "  --> " MNADDP
-                    echo -e "\n You entered the address: ${MNADDP} "
+                    echo -e "\n${white} You entered the address: ${yellow}${MNADDP}${nocolor} "
                     read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
                     echo " "
                     if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
@@ -279,7 +279,7 @@ elif [ "$ONLYNET" = 4 ]
                     fi
                 done
                 echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-                echo -e " -> $PROJECT_n$i is: $MNADDP \n"  | tee -a "$LOGFILE"
+                echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
 
             done
         fi
@@ -290,7 +290,7 @@ elif [ "$ONLYNET" = 4 ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
         echo -e "${white}\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
+        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${white}generate them for you. Both are equally "
         echo -e " secure, but it's faster if your server does it for you. An example of "
         echo -e " when you would want to enter them yourself would be if you are trying "
         echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
@@ -314,7 +314,7 @@ elif [ "$ONLYNET" = 4 ]
                 while :; do
                     echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
-                    echo -e "\n You entered the address: ${UGENKEY} "
+                    echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
@@ -360,8 +360,8 @@ elif [ "$ONLYNET" = 4 ]
                     echo -e "\n Please enter the transaction ID and index for masternode #$i"
                     echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
                     read -p "  --> " UTXID
-                    echo -e "\n You entered the transaction ID and index:"
-                    echo -e " ${UTXID} ${cyan}"
+                    echo -e "\n${white} You entered the transaction ID and index:"
+                    echo -e "${yellow} ${UTXID} ${cyan}"
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
