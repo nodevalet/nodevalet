@@ -116,11 +116,11 @@ function setup_environment() {
 function begin_log() {
     # Create Log File and Begin
     echo -e -n "${lightcyan}"
-    echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
-    echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " | tee -a "$LOGFILE"
-    echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
+    echo -e "---------------------------------------------------- " >> "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " >> "$LOGFILE"
+    echo -e "---------------------------------------------------- " >> "$LOGFILE"
+    echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " >> "$LOGFILE"
+    echo -e "---------------------------------------------------- \n" >> "$LOGFILE"
     echo -e -n "${nocolor}"
     # sleep 2
 }
@@ -1158,7 +1158,6 @@ function display_banner() {
 
     echo -e -n "${lightcyan}"
     cat << "EOF"
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      _    _  __                     _         ____ _   ___   __
     / \  | |/ /___ _ __ _   _ _ __ | |_ ___  / ___| | | \ \ / /
    / _ \ | ' // __| '__| | | | '_ \| __/ _ \| |  _| | | |\ V /
@@ -1168,7 +1167,7 @@ function display_banner() {
             __  __             __  __  ___          __
   -->  \  /|__)/__`   |__| /\ |__)|  \|__ |\ |||\ |/ _`  <--
         \/ |   .__/   |  |/~~\|  \|__/|___| \||| \|\__>
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 EOF
     echo -e -n "${nocolor}"
 }

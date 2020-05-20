@@ -288,13 +288,13 @@ elif [ "$ONLYNET" = 4 ]
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "${white}\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${white}generate them for you. Both are equally "
+        echo -e "${lightcyan}\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
         echo -e " secure, but it's faster if your server does it for you. An example of "
         echo -e " when you would want to enter them yourself would be if you are trying "
         echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
         while :; do
-            echo -e "\n Would you like your server to generate genkeys for you? y/n "
+            echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
             read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
             if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
             then
