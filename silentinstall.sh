@@ -474,7 +474,8 @@ function install_binaries() {
     fi
 
     # check for binaries and install if found
-    echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    echo -e "\n${lightcyan}Attempting to download and install $PROJECTt binaries from:"
+    echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:" >> "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)

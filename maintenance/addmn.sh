@@ -130,9 +130,9 @@ then  echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
-                        # save TXID to vpsmntxdata.info if length is greater than 5
-                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
-                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
+                        # save TXID to vps.mntxdata.info if length is greater than 5
+                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
+                        else echo -e "null null" >> $INFODIR/vps.mntxdata.info
                         fi
                         break
                     fi
