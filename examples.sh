@@ -93,5 +93,8 @@ find / -name "helium_n*" -delete
 # to install NodeValet on Contabo , you must first enable IPv6
 # execute the command "enable_ipv6" and restart your server.
 
-# this is the way we add an IPv6 address:
+# this is the way we add an IPv6 address (must add to /etc/rc.local for it to be persistant):
 # ip -6 addr add 2001:470:1f2f:86:554e::10/64 dev eth0
+
+# hide output errors from screen
+cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat 2>/dev/null
