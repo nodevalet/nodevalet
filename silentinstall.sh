@@ -78,9 +78,9 @@ EOTRC
     echo -e " #   |_| \_|\___/ \__,_|\___| \_/ \__,_|_|\___|\__(_)_|\___/    #" | tee -a "$LOGFILE"
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
     echo -e " ################################################################" | tee -a "$LOGFILE"
-    echo -e " ${yellow}---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " ${yellow}------------------------------------------------ " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : BEGIN INSTALLATION SCRIPT " | tee -a "$LOGFILE"
-    echo -e " ---------------------------------------------------- ${nocolor}\n" | tee -a "$LOGFILE"
+    echo -e " ------------------------------------------------ ${nocolor}\n" | tee -a "$LOGFILE"
 }
 
 #####################
@@ -181,7 +181,7 @@ function gather_info() {
             fi
         done
         echo -e "$VPSAPI" > $INFODIR/vpsapi.info
-        echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
+        echo -e " NodeValet API Key set to :${lightgreen} $VPSAPI ${nocolor}" >> $LOGFILE
     fi
 
     # set mnode daemon name from project.env
