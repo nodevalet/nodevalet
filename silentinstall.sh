@@ -328,7 +328,7 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
             echo -e "${nocolor}"
-            echo -e "\n No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
         fi
     fi
 
@@ -454,7 +454,7 @@ function harden_vps() {
     sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
-    echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
+    echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightblue}\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -547,7 +547,7 @@ function install_mns() {
     else
         cd $INSTALLDIR/nodemaster || exit
         echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
+        echo -e "Launching Nodemaster using ${white}bash install.sh -n $ONLYNET -p $PROJECT -c $MNS ${nocolor}" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
         
