@@ -66,7 +66,7 @@ EOTRC
     fi
 
     # install curl
-    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq
 
     # Create Log File and Begin
     clear
@@ -215,7 +215,7 @@ function gather_info() {
     then MNS=$(<$INFODIR/vpsnumber.info)
         echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
         # check memory and set max MNS appropriately then prompt user how many they would like to build
-elif [ "$ONLYNET" = 4 ]
+    elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
@@ -242,46 +242,123 @@ elif [ "$ONLYNET" = 4 ]
 
     # create or assign mnprefix
     if [ -s $INFODIR/vpsmnprefix.info ]
-    then :
-        echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
+    then echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
     else MNPREFIX=$(hostname)
         echo -e " Generating aliases from hostname : vpsmnprefix.info not found" >> $LOGFILE
+        echo -e "$MNPREFIX" > $INFODIR/vpsmnprefix.info
     fi
 
     # read or collect masternode addresses
     if [ -e $INFODIR/vpsmnaddress.info ]
     then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else 
-        # Pull BLOCKEXP from $PROJECT.env
-        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-        if [ -n "$BLOCKEX" ]
-        then echo -e "\n ${lightred}NodeValet found no fully-supported block explorer." | tee -a "$LOGFILE"
-            echo -e " There is no need to query user for masternode addresses.${nocolor}\n" | tee -a "$LOGFILE"
-        else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
+    
+            # Gather new MN addresses
+            # Pull BLOCKEXP from $PROJECT.env
+            BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+            if [ -n "$BLOCKEX" ]
+            then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
+            echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
+            echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
+            echo -e " collateral to each of your masternode addresses and wait for at least 1 "
+            echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
+            echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
+            echo -e " all of your valid collateral transactions. You will need to copy and insert "
+            echo -e " these transactions and their index number so NodeValet can generate the"
+            echo -e " masternode.conf file that you will paste into your local wallet.\n"
+            echo -e " A transaction ID and index should look pretty similar to this: "
+            echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+            VERIFY=
+            touch $INFODIR/vpsmntxdata.info
+            for ((i=1;i<=$MNS;i++));
+            do
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
+                    echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
+                    read -p "  --> " UTXID
+                    echo -e "\n${white} You entered the transaction ID and index:"
+                    echo -e "${yellow} ${UTXID} ${cyan}"
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        # save TXID to vpsmntxdata.info if length is greater than 5
+                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
+                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
+                        fi
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+            done
+            echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
+
+            else 
+            echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
             echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
-            echo -e " On your local wallet, generate the masternode addresses and send"
+            echo -e " In your local wallet, generate the masternode addresses and send"
             echo -e " your collateral transactions for masternodes you want to start"
             echo -e " now. You may also add extra addresses even if you have not yet"
             echo -e " funded them, and the script will still create the masternode"
             echo -e " instance which you can later activate from your local wallet.\n"
             echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
             touch $INFODIR/vpsmnaddress.info
-            for ((i=1;i<=$MNS;i++));
-            do
-                while :; do
-                    echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
-                    read -p "  --> " MNADDP
-                    echo -e "\n${white} You entered the address: ${yellow}${MNADDP}${nocolor} "
-                    read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
-                    echo " "
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                    then break
-                    fi
-                done
-                echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-                echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
 
-            done
+    # Pull BLOCKEXP from $PROJECT.env
+    BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$BLOCKEX" ]
+    then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+        sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+        BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
+    else echo -e "No block explorer was identified in $PROJECT.env \n"
+    fi
+
+    for ((i=1;i<=$MNS;i++));
+    do
+        while :; do
+            echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
+            read -p "  --> " MNADDP
+            echo -e "\n"
+
+            CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
+
+            # store NoveValets response in a local file
+            curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+            # read curl API response into variable
+            APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+            # check if API response is invalid
+            [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+            [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+            [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+            [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+            # check if stored file (API.response$i.json) has NOT length greater than zero
+            ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+            # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+            ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+            TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+            echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+            echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+            echo " "
+            read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
+            echo " "
+            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+            then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
+                rm $INSTALLDIR/temp/API.response$i.json --force
+                break
+            else rm $INSTALLDIR/temp/TXID$i --force
+            fi
+        done
+
+        echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
+        echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
+    done
+
         fi
     fi
 
@@ -334,52 +411,18 @@ elif [ "$ONLYNET" = 4 ]
     fi
 
     # query to collect TXIDs if not detected
-    if [ -e $INFODIR/fullauto.info ]
-    then echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
-    else
-        # Pull BLOCKEXP from $PROJECT.env
-        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-        if [ -n "$BLOCKEX" ]
-        then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
-            echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
-            echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
-            echo -e " collateral to each of your masternode addresses and wait for at least 1 "
-            echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
-            echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
-            echo -e " all of your valid collateral transactions. You will need to copy and insert "
-            echo -e " these transactions and their index number so NodeValet can generate the"
-            echo -e " masternode.conf file that you will paste into your local wallet.\n"
-            echo -e " A transaction ID and index should look pretty similar to this: "
-            echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
-            VERIFY=
-            touch $INFODIR/vpsmntxdata.info
-            for ((i=1;i<=$MNS;i++));
-            do
-                echo -e "${cyan}"
-                while :; do
-                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
-                    echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
-                    read -p "  --> " UTXID
-                    echo -e "\n${white} You entered the transaction ID and index:"
-                    echo -e "${yellow} ${UTXID} ${cyan}"
-                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-                    then echo -e -n "${nocolor}"
-                        # save TXID to vpsmntxdata.info if length is greater than 5
-                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
-                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
-                        fi
-                        break
-                    fi
-                done
-                echo -e -n "${nocolor}"
-            done
-            echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
-        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
-            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
-            echo -e " the masternode address(es) you entered earlier.${nocolor}"
-       fi
-    fi
+#    if [ -e $INFODIR/fullauto.info ]
+#    then echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
+#    else
+#        # Pull BLOCKEXP from $PROJECT.env
+#        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+#        if [ -n "$BLOCKEX" ]
+#        then :
+#        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
+#            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
+#           echo -e " the masternode address(es) you entered earlier.${nocolor}"
+#       fi
+#   fi
 
     # create or assign customssh
     if [ -s $INFODIR/vpssshport.info ]
@@ -451,8 +494,8 @@ function harden_vps() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e " Installing jq and jp2a and figlet and unzip and at packages" >> $LOGFILE
-    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
+    echo -e " Installing jp2a and figlet and unzip and at packages" >> $LOGFILE
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
     echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightblue}\n" | tee -a "$LOGFILE"

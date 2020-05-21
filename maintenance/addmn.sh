@@ -106,7 +106,7 @@ function collect_addresses() {
 # Pull BLOCKEXP from $PROJECT.env
 BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
 if [ -n "$BLOCKEX" ]
-then  echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}"
+then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}"
     echo -e " You must manually enter your transaction IDs for new masternodes to work.\n"
     echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
     echo -e " collateral to each new masternode addresses and wait for at least 1 "
