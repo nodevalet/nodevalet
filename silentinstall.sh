@@ -362,7 +362,7 @@ function gather_info() {
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "${lightcyan}\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
         echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
         echo -e " secure, but it's faster if your server does it for you. An example of "
         echo -e " when you would want to enter them yourself would be if you are trying "
