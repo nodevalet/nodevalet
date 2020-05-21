@@ -90,7 +90,7 @@ EOTRC
 #####################
 function gather_info() {
     # read or set project name
-    if [ -s $INFODIR/vps.coin.info ]
+    if [ -s $INFODIR/vps.sshport.info ]
     then PROJECT=$(cat $INFODIR/vps.coin.info)
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
@@ -98,9 +98,7 @@ function gather_info() {
         echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vps.coin.info found" >> $LOGFILE
-    else
-
-        echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
+    else echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
         echo -e " This interactive script will first prompt you for information about your"
         echo -e " setup. Then it will update your VPS and securely install the masternodes.\n"
         echo -e " In most cases, this script will function correctly on supported VPS"
@@ -250,12 +248,11 @@ function gather_info() {
     fi
 
     # read or collect masternode addresses
-    if [ -e $INFODIR/vps.mnaddress.info ]
-    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vps.mnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
+    if [ -e $INFODIR/fullauto.info ]
+    then echo -e " \n\nThere is no need to collect addreses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else
-
-        # Gather new MN addresses
-        # Pull BLOCKEXP from $PROJECT.env
+        # Gather MN addresses
+        # Check if blockchain is fully-supported
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
         if [ -n "$BLOCKEX" ]
         then echo -e "\n\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
