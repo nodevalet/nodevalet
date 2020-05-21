@@ -6,6 +6,9 @@ then echo -e "\n Please re-run as root or sudo.\n"
     exit 1
 fi
 
+# install curl & jq
+sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq
+
 function setup_environment() {
     # Set Variables
     INSTALLDIR='/var/tmp/nodevalet'
@@ -62,11 +65,8 @@ function setup_environment() {
 exit 0
 
 EOTRC
-        chmod 777 /etc/rc.local
+    chmod 777 /etc/rc.local
     fi
-
-    # install curl
-    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq
 
     # Create Log File and Begin
     clear
@@ -218,7 +218,7 @@ function gather_info() {
     elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n\n This server's memory can safely support $MAXNODES masternodes.\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"

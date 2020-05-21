@@ -17,7 +17,7 @@ then echo -e "\n${lightred} $PROJECTt only supports IPv4 and one masternode per 
 fi
 
 # check for possible number of new masternodes
-NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
+NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
 MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
 let PNODES=$MAXNODES-$MNS
 (($PNODES <= 0)) && echo " ${lightred}This server cannot support any more masternodes${nocolor}\n" && exit
@@ -58,7 +58,7 @@ function collect_nnodes() {
 
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
     echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
-    echo -e "\n Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.\n"
+    echo -e "\n${lightpurple} Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.${nocolor}\n"
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
     echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
@@ -141,7 +141,7 @@ then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.$
     done
     echo -e " User manually entered TXIDs and indices for $NNODES new masternodes\n"
 
-else echo -e "\n Next, we need to collect your $NNODES new masternode address(es)."
+else echo -e "\n${lightpurple} Next, we need to collect your $NNODES new masternode address(es).${nocolor}"
     let TNODES=$NNODES+$MNS
     for ((i=($MNS+1);i<=$TNODES;i++));
     do
