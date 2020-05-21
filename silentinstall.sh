@@ -245,7 +245,6 @@ function gather_info() {
     then echo -e " Setting masternode aliases from vps.mnprefix.info file" >> $LOGFILE
     else MNPREFIX=$(hostname)
         echo -e " Generating aliases from hostname : vps.mnprefix.info not found" >> $LOGFILE
-        echo -e "$MNPREFIX" > $INFODIR/vps.mnprefix.info
     fi
 
     # read or collect masternode addresses
@@ -257,7 +256,7 @@ function gather_info() {
         # Pull BLOCKEXP from $PROJECT.env
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
         if [ -n "$BLOCKEX" ]
-        then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
+        then echo -e "\n\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
             echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
             echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
             echo -e " collateral to each of your masternode addresses and wait for at least 1 "
@@ -289,7 +288,7 @@ function gather_info() {
                         break
                     fi
                 done
-                echo -e -n "${nocolor}"
+                echo -e -n "${nocolor}\n"
             done
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
 
@@ -514,7 +513,7 @@ function install_binaries() {
     fi
 
     # check for binaries and install if found
-    echo -e "\n${lightcyan}Attempting to download and install $PROJECTt binaries from:"
+    echo -e "\n${lightcyan}Attempting to download and install $PROJECTt binaries from:${nocolor}"
     echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:" >> "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
@@ -719,7 +718,7 @@ EOT
                 elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
                 elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
