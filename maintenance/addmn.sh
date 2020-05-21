@@ -199,6 +199,16 @@ function install_mns() {
     sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$TNODES"
     echo -e "\n"
 
+        # add support for deterministic wallets so they don't break everything
+        if [ "${PROJECT,,}" = "mue" ]
+        then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
+            let TNODES=$NNODES+$MNS
+            for ((i=($MNS+1);i<=$TNODES;i++));
+            do
+                sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
+            done
+        fi
+
     # check for presence of config file to presume success, cancel and report error if does not exist
 
     # check if $PROJECTd was built correctly and started
