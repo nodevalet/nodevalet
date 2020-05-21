@@ -78,9 +78,9 @@ function collect_api() {
     else echo -e "${lightred} Your original NodeValet Deployment Key is no longer valid\n${nocolor}"
         echo -e " Before we can begin, we need to collect your NodeValet API Key."
         echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
-        cp $INFODIR/vpsapi.info $INFODIR/vpsapi.old
-        rm -rf $INFODIR/vpsapi.info
-        touch $INFODIR/vpsapi.info
+        cp $INFODIR/vps.api.info $INFODIR/vpsapi.old
+        rm -rf $INFODIR/vps.api.info
+        touch $INFODIR/vps.api.info
         echo -e -n " "
         while :; do
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
@@ -96,7 +96,7 @@ function collect_api() {
             else echo " "
             fi
         done
-        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
+        echo -e "$VPSAPI" > $INFODIR/vps.api.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
     fi
 }
@@ -186,7 +186,7 @@ else echo -e "\n Next, we need to collect your $NNODES new masternode address(es
             fi
         done
 
-        echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
+        echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
         echo -e " -> New masternode $i address is: $MNADDP\n"
     done
 fi
@@ -235,7 +235,7 @@ function install_mns() {
 }
 
 function change_vpsnumber() {
-    echo -e "$TNODES" > $INFODIR/vpsnumber.info
+    echo -e "$TNODES" > $INFODIR/vps.number.info
     echo -e "Changing total number of masternodes on this server to $TNODES. \n" | tee -a "$LOGFILE"
 }
 
@@ -251,7 +251,7 @@ else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
     # gather existing masternode variables as files for .conf
     for ((i=1;i<=$MNS;i++));
     do
-        echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
+        echo -e "$(sed -n ${i}p $INFODIR/vps.genkeys.info)" > $INSTALLDIR/temp/GENKEY$i
 
         # append "masternodeprivkey="
         paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
@@ -264,11 +264,11 @@ else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
         do
             # create masternode genkeys (smart is special "smartnodes")
             if [ -e $INSTALLDIR/temp/bogus ] ; then :
-            elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vpsgenkeys.info
-            elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-            elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-        else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vpsgenkeys.info ; fi
-            echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
+            elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vps.genkeys.info
+            elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vps.genkeys.info
+            elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vps.genkeys.info
+        else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vps.genkeys.info ; fi
+            echo -e "$(sed -n ${i}p $INFODIR/vps.genkeys.info)" > $INSTALLDIR/temp/GENKEY$i
 
             KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
@@ -379,7 +379,7 @@ EOT
         echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
         # create masternode address files
-        echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+        echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
 
         # append "masternodeprivkey="
         paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN

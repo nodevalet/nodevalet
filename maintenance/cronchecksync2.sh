@@ -10,14 +10,14 @@ fi
 . /var/tmp/nodevalet/maintenance/vars.sh
 
 # set hostname variable to the name planted by API installation script
-if [ -e /var/tmp/nodevalet/info/vpshostname.info ]
-then HNAME=$(<$INFODIR/vpshostname.info)
+if [ -e /var/tmp/nodevalet/info/vps.hostname.info ]
+then HNAME=$(<$INFODIR/vps.hostname.info)
 else HNAME=$(hostname)
 fi
 
 # read or assign number of masternodes that are installed
-if [ -e $INFODIR/vpsnumber.info ]
-then MNS=$(<$INFODIR/vpsnumber.info)
+if [ -e $INFODIR/vps.number.info ]
+then MNS=$(<$INFODIR/vps.number.info)
 else MNS=1
 fi
 

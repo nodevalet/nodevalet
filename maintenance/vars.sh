@@ -11,14 +11,14 @@ fi
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
+MNS=$(<$INFODIR/vps.number.info)
 PROJECT=$(<$INFODIR/vpscoin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-HNAME=$(<$INFODIR/vpshostname.info)
-VPSAPI=$(<$INFODIR/vpsapi.info)
+MNODE_DAEMON=$(<$INFODIR/vps.mnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
+HNAME=$(<$INFODIR/vps.hostname.info)
+VPSAPI=$(<$INFODIR/vps.api.info)
 ONLYNET=$(<$INFODIR/vps.onlynet.info)
 BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
 

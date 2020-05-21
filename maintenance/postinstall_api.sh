@@ -17,8 +17,8 @@ function final_message() {
     if [ -e $INSTALLDIR/temp/vpsvaletreboot.txt ]; then
 
         # set hostname variable to the name planted by install script
-        if [ -e $INFODIR/vpshostname.info ]
-        then HNAME=$(<$INFODIR/vpshostname.info)
+        if [ -e $INFODIR/vps.hostname.info ]
+        then HNAME=$(<$INFODIR/vps.hostname.info)
         else HNAME=$(hostname)
         fi
 

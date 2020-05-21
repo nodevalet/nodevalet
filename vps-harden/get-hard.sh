@@ -109,7 +109,7 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     INFODIR='/var/tmp/nvtemp'
 
-    HNAME=$(<$INFODIR/vpshostname.info)
+    HNAME=$(<$INFODIR/vps.hostname.info)
     PROJECT=$(cat $INFODIR/vpscoin.info)
 }
 
@@ -414,8 +414,8 @@ function collect_sshd() {
     while :; do
         echo -e -n "${cyan}"
         # check for SSHPORT and set variable or use 22 as default
-        if [ -s $INFODIR/vpssshport.info ]
-        then SSHPORT=$(<$INFODIR/vpssshport.info)
+        if [ -s $INFODIR/vps.sshport.info ]
+        then SSHPORT=$(<$INFODIR/vps.sshport.info)
             echo -e "Detected $INFODIR/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
         else SSHPORT=22
             echo -e "$INFODIR/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"

@@ -143,27 +143,27 @@ function gather_info() {
     fi
 
     # set hostname variable to the name planted by install script
-    if [ -e $INFODIR/vpshostname.info ]
-    then HNAME=$(<$INFODIR/vpshostname.info)
-        echo -e " Setting Hostname to $HNAME : vpshostname.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.hostname.info ]
+    then HNAME=$(<$INFODIR/vps.hostname.info)
+        echo -e " Setting Hostname to $HNAME : vps.hostname.info found" >> $LOGFILE
     else HNAME=$(hostname)
-        touch $INFODIR/vpshostname.info
-        echo -e "$HNAME" > $INFODIR/vpshostname.info
+        touch $INFODIR/vps.hostname.info
+        echo -e "$HNAME" > $INFODIR/vps.hostname.info
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
     fi
     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " "
     sleep 4
 
     # read API key if it exists, if not prompt for it
-    if [ -e $INFODIR/vpsapi.info ]
-    then VPSAPI=$(<$INFODIR/vpsapi.info)
-        echo -e " Setting NodeValet API key to provided value : vpsapi.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.api.info ]
+    then VPSAPI=$(<$INFODIR/vps.api.info)
+        echo -e " Setting NodeValet API key to provided value : vps.api.info found" >> $LOGFILE
     else echo -e "${lightcyan}\n\n Before we begin, we need to verify your NodeValet API Key."
         echo -e " If you do not already have one, you may purchase a NodeValet "
         echo -e " API Key at ${white}https://www.nodevalet.io/purchase.php${lightcyan}. Purchased"
         echo -e " keys permit 5 server installations and expire after 30 days.\n"
         echo -e "${lightgreen} !! Please double-check your NodeValet API Key for accuracy !!${nocolor}"
-        touch $INFODIR/vpsapi.info
+        touch $INFODIR/vps.api.info
         echo -e -n " "
         while :; do
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
@@ -180,7 +180,7 @@ function gather_info() {
             else echo " "
             fi
         done
-        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
+        echo -e "$VPSAPI" > $INFODIR/vps.api.info
         echo -e " NodeValet API Key set to :${lightgreen} $VPSAPI ${nocolor}" >> $LOGFILE
     fi
 
@@ -190,12 +190,12 @@ function gather_info() {
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vps.mnode_daemon.info
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
-    echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
-    MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
-    echo -e " Setting masternode-binaries to MNODE_BINARIES : vpsbinaries.info" >> $LOGFILE
+    echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vps.binaries.info 2>&1
+    MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
+    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vps.mnode_daemon.info" >> $LOGFILE
+    echo -e " Setting masternode-binaries to MNODE_BINARIES : vps.binaries.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -211,12 +211,12 @@ function gather_info() {
     fi
 
     # read or assign number of masternodes to install
-    if [ -e $INFODIR/vpsnumber.info ]
-    then MNS=$(<$INFODIR/vpsnumber.info)
-        echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.number.info ]
+    then MNS=$(<$INFODIR/vps.number.info)
+        echo -e " Setting number of masternodes to $MNS : vps.number.info found" >> $LOGFILE
         # check memory and set max MNS appropriately then prompt user how many they would like to build
     elif [ "$ONLYNET" = 4 ]
-    then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
+    then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
@@ -233,24 +233,24 @@ function gather_info() {
         elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
-                touch $INFODIR/vpsnumber.info
-                echo -e "${MNS}" > $INFODIR/vpsnumber.info
+                touch $INFODIR/vps.number.info
+                echo -e "${MNS}" > $INFODIR/vps.number.info
                 break   # exit the loop
             fi
         done
     fi
 
     # create or assign mnprefix
-    if [ -s $INFODIR/vpsmnprefix.info ]
-    then echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
+    if [ -s $INFODIR/vps.mnprefix.info ]
+    then echo -e " Setting masternode aliases from vps.mnprefix.info file" >> $LOGFILE
     else MNPREFIX=$(hostname)
-        echo -e " Generating aliases from hostname : vpsmnprefix.info not found" >> $LOGFILE
-        echo -e "$MNPREFIX" > $INFODIR/vpsmnprefix.info
+        echo -e " Generating aliases from hostname : vps.mnprefix.info not found" >> $LOGFILE
+        echo -e "$MNPREFIX" > $INFODIR/vps.mnprefix.info
     fi
 
     # read or collect masternode addresses
-    if [ -e $INFODIR/vpsmnaddress.info ]
-    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vpsmnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
+    if [ -e $INFODIR/vps.mnaddress.info ]
+    then echo -e " \n\nThere is no need to collect addreses, ${yellow}vps.mnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else 
     
             # Gather new MN addresses
@@ -269,7 +269,7 @@ function gather_info() {
             echo -e " A transaction ID and index should look pretty similar to this: "
             echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
             VERIFY=
-            touch $INFODIR/vpsmntxdata.info
+            touch $INFODIR/vps.mntxdata.info
             for ((i=1;i<=$MNS;i++));
             do
                 echo -e "${cyan}"
@@ -282,9 +282,9 @@ function gather_info() {
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
-                        # save TXID to vpsmntxdata.info if length is greater than 5
-                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
-                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
+                        # save TXID to vps.mntxdata.info if length is greater than 5
+                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
+                        else echo -e "null null" >> $INFODIR/vps.mntxdata.info
                         fi
                         break
                     fi
@@ -302,7 +302,7 @@ function gather_info() {
             echo -e " funded them, and the script will still create the masternode"
             echo -e " instance which you can later activate from your local wallet.\n"
             echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
-            touch $INFODIR/vpsmnaddress.info
+            touch $INFODIR/vps.mnaddress.info
 
     # Pull BLOCKEXP from $PROJECT.env
     BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -355,7 +355,7 @@ function gather_info() {
             fi
         done
 
-        echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
+        echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
         echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
     done
 
@@ -412,7 +412,7 @@ function gather_info() {
 
     # query to collect TXIDs if not detected
 #    if [ -e $INFODIR/fullauto.info ]
-#    then echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
+#    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
 #    else
 #        # Pull BLOCKEXP from $PROJECT.env
 #        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -425,8 +425,8 @@ function gather_info() {
 #   fi
 
     # create or assign customssh
-    if [ -s $INFODIR/vpssshport.info ]
-    then SSHPORT=$(<$INFODIR/vpssshport.info)
+    if [ -s $INFODIR/vps.sshport.info ]
+    then SSHPORT=$(<$INFODIR/vps.sshport.info)
         echo -e " Setting SSH port to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
         echo -e "\n\n${white} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
@@ -443,8 +443,8 @@ function gather_info() {
         done
 
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
-        touch $INFODIR/vpssshport.info
-        echo "$SSHPORT" >> $INFODIR/vpssshport.info
+        touch $INFODIR/vps.sshport.info
+        echo "$SSHPORT" >> $INFODIR/vps.sshport.info
     fi
     echo -e " \n"
     echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS \n" >> $LOGFILE
@@ -756,8 +756,8 @@ EOT
         for ((i=1;i<=$MNS;i++));
         do
             # get or iterate mnprefixes
-            if [ -s $INFODIR/vpsmnprefix.info ]
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INFODIR/vps.mnaliases.info
+            if [ -s $INFODIR/vps.mnprefix.info ]
+            then echo -e "$(sed -n ${i}p $INFODIR/vps.mnprefix.info)" >> $INFODIR/vps.mnaliases.info
             else echo -e "${MNPREFIX}-MN$i" >> $INFODIR/vps.mnaliases.info
             fi
 
@@ -765,7 +765,7 @@ EOT
             echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
             # create masternode address files
-            echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+            echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
 
             # append "masternodeprivkey="
             paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
@@ -818,12 +818,12 @@ EOT
             fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
-            if [ -e $INFODIR/vpsmntxdata.info ]
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
+            if [ -e $INFODIR/vps.mntxdata.info ]
+            then echo -e "$(sed -n ${i}p $INFODIR/vps.mntxdata.info)" > $INSTALLDIR/temp/TXID$i
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " Read transaction ID for MN$i from vpsmntxdata.info; set to : " >> $LOGFILE
+                echo -e " Read transaction ID for MN$i from vps.mntxdata.info; set to : " >> $LOGFILE
                 echo -e " $TX " >> $LOGFILE
 
             else
@@ -943,8 +943,8 @@ EOT
 
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        cp $INSTALLDIR/temp/genkeys $INFODIR/vpsgenkeys.info
-        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
+        cp $INSTALLDIR/temp/genkeys $INFODIR/vps.genkeys.info
+#        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force

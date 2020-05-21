@@ -36,7 +36,7 @@ fi
 
 TOTAL=$(ps aux | grep -i "$MNODE_DAEMON" | wc -l)
 CUR_DAEMON=$(expr "$TOTAL" - 1)
-EXP_DAEMON=$(cat $INFODIR/vpsnumber.info)
+EXP_DAEMON=$(cat $INFODIR/vps.number.info)
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
