@@ -7,6 +7,8 @@ then echo -e "\n Please re-run as root or sudo.\n"
 fi
 
 # install curl & jq
+echo -e "\n Please wait a moment while we prepare the installer.\n"
+sudo apt-get update
 sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq
 
 function setup_environment() {
