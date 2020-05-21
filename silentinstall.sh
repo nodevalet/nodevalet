@@ -65,7 +65,7 @@ function setup_environment() {
 exit 0
 
 EOTRC
-    chmod 777 /etc/rc.local
+        chmod 777 /etc/rc.local
     fi
 
     # Create Log File and Begin
@@ -97,15 +97,15 @@ function gather_info() {
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
         echo -e " Setting Project Name to $PROJECTt : vps.coin.info found" >> $LOGFILE
     else
-        
-    echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
-    echo -e " This interactive script will first prompt you for information about your"
-    echo -e " setup. Then it will update your VPS and securely install the masternodes.\n"
-    echo -e " In most cases, this script will function correctly on supported VPS"
-    echo -e " platforms without extra steps. Some providers require extra care.\n"
-    echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
-    echo -e "${lightcyan} and reboot your VPS before you proceed.${cyan}"
-            while :; do
+
+        echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
+        echo -e " This interactive script will first prompt you for information about your"
+        echo -e " setup. Then it will update your VPS and securely install the masternodes.\n"
+        echo -e " In most cases, this script will function correctly on supported VPS"
+        echo -e " platforms without extra steps. Some providers require extra care.\n"
+        echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
+        echo -e "${lightcyan} and reboot your VPS before you proceed.${cyan}"
+        while :; do
             echo -e "\n"
             read -n 1 -s -r -p " Are you ready to continue the installation now? y/n  " INSTALLNOW
             if [[ ${INSTALLNOW,,} == "y" || ${INSTALLNOW,,} == "Y" || ${INSTALLNOW,,} == "N" || ${INSTALLNOW,,} == "n" ]]
@@ -114,16 +114,16 @@ function gather_info() {
             fi
         done
         echo -e "${nocolor}"
-    if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
-    then  clear
-        echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
-    else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
-        exit 1
-    fi
+        if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
+        then  clear
+            echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
+        else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
+            exit 1
+        fi
 
-    # check if VPS supports IPv6  
-    [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
-            
+        # check if VPS supports IPv6
+        [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
+
         echo -e "${white} Please choose from one of the following supported coins to install:${nocolor}"
         echo -e "${lightpurple}    helium | audax | pivx | phore | mue | squorum${nocolor}\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
@@ -251,13 +251,13 @@ function gather_info() {
     # read or collect masternode addresses
     if [ -e $INFODIR/vps.mnaddress.info ]
     then echo -e " \n\nThere is no need to collect addreses, ${yellow}vps.mnaddress.info ${nocolor}exists\n" | tee -a "$LOGFILE"
-    else 
-    
-            # Gather new MN addresses
-            # Pull BLOCKEXP from $PROJECT.env
-            BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-            if [ -n "$BLOCKEX" ]
-            then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
+    else
+
+        # Gather new MN addresses
+        # Pull BLOCKEXP from $PROJECT.env
+        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+        if [ -n "$BLOCKEX" ]
+        then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
             echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
             echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
             echo -e " collateral to each of your masternode addresses and wait for at least 1 "
@@ -293,8 +293,7 @@ function gather_info() {
             done
             echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
 
-            else 
-            echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
+        else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
             echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
             echo -e " In your local wallet, generate the masternode addresses and send"
             echo -e " your collateral transactions for masternodes you want to start"
@@ -304,61 +303,59 @@ function gather_info() {
             echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
             touch $INFODIR/vps.mnaddress.info
 
-    # Pull BLOCKEXP from $PROJECT.env
-    BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-    if [ -n "$BLOCKEX" ]
-    then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
-        sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
-        BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
-    else echo -e "No block explorer was identified in $PROJECT.env \n"
-    fi
-
-    for ((i=1;i<=$MNS;i++));
-    do
-        while :; do
-            echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
-            read -p "  --> " MNADDP
-            echo -e "\n"
-
-            CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
-
-            # store NoveValets response in a local file
-            curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
-
-            # read curl API response into variable
-            APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
-
-            # check if API response is invalid
-            [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (API.response$i.json) has NOT length greater than zero
-            ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
-            ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
-
-            TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-            echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-            echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
-            echo " "
-            read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
-            echo " "
-            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-            then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
-                rm $INSTALLDIR/temp/API.response$i.json --force
-                break
-            else rm $INSTALLDIR/temp/TXID$i --force
+            # Pull BLOCKEXP from $PROJECT.env
+            BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+            if [ -n "$BLOCKEX" ]
+            then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+                sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+                BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
+            else echo -e "No block explorer was identified in $PROJECT.env \n"
             fi
-        done
 
-        echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
-        echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
-    done
+            for ((i=1;i<=$MNS;i++));
+            do
+                while :; do
+                    echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
+                    read -p "  --> " MNADDP
+                    echo -e "\n"
 
+                    CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
+
+                    # store NoveValets response in a local file
+                    curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+                    # read curl API response into variable
+                    APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+                    # check if API response is invalid
+                    [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                    # check if stored file (API.response$i.json) has NOT length greater than zero
+                    ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                    # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+                    ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+                    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+                    echo " "
+                    read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
+                    echo " "
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                    then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
+                        rm $INSTALLDIR/temp/API.response$i.json --force
+                        break
+                    else rm $INSTALLDIR/temp/TXID$i --force
+                    fi
+                done
+                echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
+                echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
+            done
         fi
     fi
 
@@ -411,18 +408,18 @@ function gather_info() {
     fi
 
     # query to collect TXIDs if not detected
-#    if [ -e $INFODIR/fullauto.info ]
-#    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
-#    else
-#        # Pull BLOCKEXP from $PROJECT.env
-#        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-#        if [ -n "$BLOCKEX" ]
-#        then :
-#        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
-#            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
-#           echo -e " the masternode address(es) you entered earlier.${nocolor}"
-#       fi
-#   fi
+    #    if [ -e $INFODIR/fullauto.info ]
+    #    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
+    #    else
+    #        # Pull BLOCKEXP from $PROJECT.env
+    #        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    #        if [ -n "$BLOCKEX" ]
+    #        then :
+    #        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
+    #            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
+    #           echo -e " the masternode address(es) you entered earlier.${nocolor}"
+    #       fi
+    #   fi
 
     # create or assign customssh
     if [ -s $INFODIR/vps.sshport.info ]
@@ -544,23 +541,23 @@ function install_binaries() {
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         # do not try to unpack and install if tarball does not exist
-            if [ -z "$TARBALL" ]
-            then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
-            else echo -e "${lightcyan}Unpacking and installing binaries.${nocolor}"
-                if [[ $TARBALL == *.gz ]]
-                then tar -xzf "$TARBALL"
-                else unzip "$TARBALL"
-                fi
-                rm -f "$TARBALL"
-                cd  "$(\ls -1dt ./*/ | head -n 1)"
-                find . -mindepth 2 -type f -print -exec mv {} . \;
-                cp "${MNODE_BINARIES}"* '/usr/local/bin'
-                cd ..
-                rm -r -f *
-                cd
-                cd /usr/local/bin
-                chmod 777 "${MNODE_BINARIES}"*
+        if [ -z "$TARBALL" ]
+        then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
+        else echo -e "${lightcyan}Unpacking and installing binaries.${nocolor}"
+            if [[ $TARBALL == *.gz ]]
+            then tar -xzf "$TARBALL"
+            else unzip "$TARBALL"
             fi
+            rm -f "$TARBALL"
+            cd  "$(\ls -1dt ./*/ | head -n 1)"
+            find . -mindepth 2 -type f -print -exec mv {} . \;
+            cp "${MNODE_BINARIES}"* '/usr/local/bin'
+            cd ..
+            rm -r -f *
+            cd
+            cd /usr/local/bin
+            chmod 777 "${MNODE_BINARIES}"*
+        fi
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
@@ -595,14 +592,14 @@ function install_mns() {
         echo -e "Launching Nodemaster using ${white}bash install.sh -n $ONLYNET -p $PROJECT -c $MNS ${nocolor}" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
-        
+
         # add support for deterministic wallets so they don't break everything
         if [ "${PROJECT,,}" = "mue" ]
         then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
-        for ((i=1;i<=$MNS;i++));
-        do
-        sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
-        done
+            for ((i=1;i<=$MNS;i++));
+            do
+                sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
+            done
         fi
 
         # activate masternodes, or activate just FIRST masternode
@@ -944,7 +941,7 @@ EOT
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
         cp $INSTALLDIR/temp/genkeys $INFODIR/vps.genkeys.info
-#        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
+        #        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force

@@ -102,94 +102,93 @@ function collect_api() {
 }
 
 function collect_addresses() {
-# Gather new MN addresses
-# Pull BLOCKEXP from $PROJECT.env
-BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-if [ -n "$BLOCKEX" ]
-then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}"
-    echo -e " You must manually enter your transaction IDs for new masternodes to work.\n"
-    echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
-    echo -e " collateral to each new masternode addresses and wait for at least 1 "
-    echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
-    echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
-    echo -e " all of your valid collateral transactions. You will need pick out the"
-    echo -e " new transactions and their index numbers so NodeValet can generate the"
-    echo -e " masternode.conf file that you will paste into your local wallet.\n"
-    echo -e " A transaction ID and index should look pretty similar to this: "
-    echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
-    let TNODES=$NNODES+$MNS
-    for ((i=($MNS+1);i<=$TNODES;i++));
-    do
-                echo -e "${cyan}"
-                while :; do
-                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
-                    echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
-                    read -p "  --> " UTXID
-                    echo -e "\n${white} You entered the transaction ID and index:"
-                    echo -e "${yellow} ${UTXID} ${cyan}"
-                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-                    then echo -e -n "${nocolor}"
-                        # save TXID to vps.mntxdata.info if length is greater than 5
-                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
-                        else echo -e "null null" >> $INFODIR/vps.mntxdata.info
-                        fi
-                        break
+    # Gather new MN addresses
+    # Pull BLOCKEXP from $PROJECT.env
+    BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$BLOCKEX" ]
+    then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}"
+        echo -e " You must manually enter your transaction IDs for new masternodes to work.\n"
+        echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
+        echo -e " collateral to each new masternode addresses and wait for at least 1 "
+        echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
+        echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
+        echo -e " all of your valid collateral transactions. You will need pick out the"
+        echo -e " new transactions and their index numbers so NodeValet can generate the"
+        echo -e " masternode.conf file that you will paste into your local wallet.\n"
+        echo -e " A transaction ID and index should look pretty similar to this: "
+        echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+        let TNODES=$NNODES+$MNS
+        for ((i=($MNS+1);i<=$TNODES;i++));
+        do
+            echo -e "${cyan}"
+            while :; do
+                echo -e "\n Please enter the transaction ID and index for masternode #$i"
+                echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
+                read -p "  --> " UTXID
+                echo -e "\n${white} You entered the transaction ID and index:"
+                echo -e "${yellow} ${UTXID} ${cyan}"
+                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                then echo -e -n "${nocolor}"
+                    # save TXID to vps.mntxdata.info if length is greater than 5
+                    if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
+                    else echo -e "null null" >> $INFODIR/vps.mntxdata.info
                     fi
-                done
-                echo -e -n "${nocolor}"
-    done
-    echo -e " User manually entered TXIDs and indices for $NNODES new masternodes\n"
-
-else echo -e "\n${lightpurple} Next, we need to collect your $NNODES new masternode address(es).${nocolor}"
-    let TNODES=$NNODES+$MNS
-    for ((i=($MNS+1);i<=$TNODES;i++));
-    do
-        while :; do
-            echo -e "\n${cyan} Please enter the $PROJECTt address for new masternode #$i${nocolor}"
-            read -p "  --> " MNADDP
-            # echo -e "\n You entered the address: ${MNADDP} \n"
-            echo -e "\n"
-
-            CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
-
-            # store NoveValets response in a local file
-            curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
-
-            # read curl API response into variable
-            APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
-
-            # check if API response is invalid
-            [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (API.response$i.json) has NOT length greater than zero
-            ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
-            ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
-
-            TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-            echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-            echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
-            echo " "
-            read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
-            echo " "
-            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-            then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
-                rm $INSTALLDIR/temp/API.response$i.json --force
-                break
-            else rm $INSTALLDIR/temp/TXID$i --force
-            fi
+                    break
+                fi
+            done
+            echo -e -n "${nocolor}"
         done
+        echo -e " User manually entered TXIDs and indices for $NNODES new masternodes\n"
 
-        echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
-        echo -e " -> New masternode $i address is: $MNADDP\n"
-    done
-fi
+    else echo -e "\n${lightpurple} Next, we need to collect your $NNODES new masternode address(es).${nocolor}"
+        let TNODES=$NNODES+$MNS
+        for ((i=($MNS+1);i<=$TNODES;i++));
+        do
+            while :; do
+                echo -e "\n${cyan} Please enter the $PROJECTt address for new masternode #$i${nocolor}"
+                read -p "  --> " MNADDP
+                # echo -e "\n You entered the address: ${MNADDP} \n"
+                echo -e "\n"
+
+                CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
+
+                # store NoveValets response in a local file
+                curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+                # read curl API response into variable
+                APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+                # check if API response is invalid
+                [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (API.response$i.json) has NOT length greater than zero
+                ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+                ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+                echo " "
+                read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
+                echo " "
+                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
+                    rm $INSTALLDIR/temp/API.response$i.json --force
+                    break
+                else rm $INSTALLDIR/temp/TXID$i --force
+                fi
+            done
+            echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
+            echo -e " -> New masternode $i address is: $MNADDP\n"
+        done
+    fi
 }
 
 function install_mns() {
