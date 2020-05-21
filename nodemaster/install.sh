@@ -8,7 +8,7 @@ INFODIR='/var/tmp/nvtemp'
 MNODE_DAEMOND=$(<$INFODIR/vps.mnode_daemon.info)
 MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
 HNAME=$(<$INFODIR/vps.hostname.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
+PROJECT=$(<$INFODIR/vps.coin.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red

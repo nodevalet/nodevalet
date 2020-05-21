@@ -88,14 +88,14 @@ EOTRC
 #####################
 function gather_info() {
     # read or set project name
-    if [ -s $INFODIR/vpscoin.info ]
-    then PROJECT=$(cat $INFODIR/vpscoin.info)
+    if [ -s $INFODIR/vps.coin.info ]
+    then PROJECT=$(cat $INFODIR/vps.coin.info)
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
         touch $INFODIR/fullauto.info
         echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
-        echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
+        echo -e " Setting Project Name to $PROJECTt : vps.coin.info found" >> $LOGFILE
     else
         
     echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
@@ -130,9 +130,9 @@ function gather_info() {
         while :; do
             read -p "  --> " PROJECT
             if [ -d $INSTALLDIR/nodemaster/config/"${PROJECT,,}" ]
-            then touch $INFODIR/vpscoin.info
-                echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
-                PROJECT=$(cat $INFODIR/vpscoin.info)
+            then touch $INFODIR/vps.coin.info
+                echo -e "${PROJECT,,}" > $INFODIR/vps.coin.info
+                PROJECT=$(cat $INFODIR/vps.coin.info)
                 PROJECTl=${PROJECT,,}
                 PROJECTt=${PROJECTl~}
                 echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE

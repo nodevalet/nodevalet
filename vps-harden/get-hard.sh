@@ -110,7 +110,7 @@ function setup_environment() {
     INFODIR='/var/tmp/nvtemp'
 
     HNAME=$(<$INFODIR/vps.hostname.info)
-    PROJECT=$(cat $INFODIR/vpscoin.info)
+    PROJECT=$(cat $INFODIR/vps.coin.info)
 }
 
 function begin_log() {
