@@ -56,8 +56,6 @@ function collect_nnodes() {
         exit
     fi
 
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
-    echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
     echo -e "\n${lightpurple} Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.${nocolor}\n"
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
@@ -555,5 +553,9 @@ make_newconf
 update_rclocal
 
 rm $INSTALLDIR/temp/updating --force
+
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> /var/tmp/nodevalet/logs/maintenance.log
+echo -e " ${lightcyan}User has added $NNODES new MN(s) to this VPS.${nocolor}\n"  >> /var/tmp/nodevalet/logs/maintenance.log
+
 exit
 
