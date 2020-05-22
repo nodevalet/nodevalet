@@ -7,9 +7,9 @@ then echo -e "\n Please re-run as root or sudo.\n"
 fi
 
 # install curl & jq
-echo -e "\n Please wait a moment while we prepare the installer.\n"
-sudo apt-get update
-sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq
+echo -e "\n Please wait a moment while we prepare the installer...\n"
+sudo apt-get update > /dev/null 2>&1
+sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq > /dev/null 2>&1
 
 function setup_environment() {
     # Set Variables
@@ -592,7 +592,7 @@ function install_mns() {
         echo -e "\n"
 
         # add support for deterministic wallets so they don't break everything
-        if [ "${PROJECT,,}" = "mue" ]
+        if [ "${PROJECT,,}" = "mue" ] || [ "${PROJECT,,}" = "audax" ]
         then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
             for ((i=1;i<=$MNS;i++));
             do
