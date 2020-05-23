@@ -101,6 +101,8 @@ function update_binaries() {
 
         if [[ $TARBALL == *.gz ]]
         then tar -xzf "$TARBALL"
+        elif [[ $TARBALL == *.tgz ]]
+        then tar -xzf "$TARBALL"
         else unzip "$TARBALL"
         fi
         rm -f "$TARBALL"
