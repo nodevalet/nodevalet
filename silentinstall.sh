@@ -710,7 +710,7 @@ EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
-            for ((P=1;P<=35;P++));
+            for ((P=1;P<=42;P++));
             do
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
@@ -776,7 +776,7 @@ EOT
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
-        elif [ "${PROJECT,,}" = "zcoin" ]
+            elif [ "${PROJECT,,}" = "zcoin" ]
             then
                 sed -i "s/^znodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^znodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
