@@ -743,7 +743,7 @@ EOT
                     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkeys"}' && echo -e " "
                     echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
                     echo -e "I patiently tried 42 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
-                    exit
+                    exit 1
                 fi
             done
         done
