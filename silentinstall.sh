@@ -567,7 +567,8 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_BINARIES}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
+    then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}"   | tee -a "$LOGFILE"
+    echo -e "\nThey are now located in the {white}/usr/local/bin\n"   | tee -a "$LOGFILE"
         curl -s "$GITAPI_URL" \
             | grep tag_name > $INSTALLDIR/temp/currentversion
 
