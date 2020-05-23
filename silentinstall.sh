@@ -7,7 +7,7 @@ then echo -e "\n Please re-run as root or sudo.\n"
 fi
 
 # install curl & jq
-echo -e "\n Please wait a moment while we prepare the installer...\n"
+echo -e "\n\033[1;36mPlease wait a moment while we install 'curl' and 'jq'...\n\e[0m"
 sudo apt-get update > /dev/null 2>&1
 sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq > /dev/null 2>&1
 
@@ -256,7 +256,7 @@ function gather_info() {
         BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
         if [ -n "$BLOCKEX" ]
         then echo -e "\n\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
-            echo -e " You must manually enter your transaction IDs for your masternodes to work.\n" | tee -a "$LOGFILE"
+            echo -e " ${lightred}You must manually enter your transaction IDs for your masternodes to work.\n${nocolor}" | tee -a "$LOGFILE"
             echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
             echo -e " collateral to each of your masternode addresses and wait for at least 1 "
             echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
