@@ -124,7 +124,7 @@ function gather_info() {
         # check if VPS supports IPv6
         [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
 
-        echo -e "${white} Please choose from one of the following supported coins to install:${nocolor}"
+        echo -e "${white} Please choose from one of the following supported coins to install:\n${nocolor}"
         echo -e "${lightpurple}    audax | phore | pivx | squorum | mue${nocolor}\n"
         echo -e "${lightpurple}    sierra | stakecube | wagerr    ${nocolor}\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
@@ -221,7 +221,7 @@ function gather_info() {
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
-        echo -e "\n\n This server's memory can safely support $MAXNODES masternodes.\n"
+        echo -e "\n\n${white} This server's memory can safely support $MAXNODES masternodes.${nocolor}\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
 
         while :; do
@@ -569,9 +569,8 @@ function install_binaries() {
 
     if [[ "${dEXIST}" ]]
     then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}"   | tee -a "$LOGFILE"
-    echo -e "\nThey are now located in the {white}/usr/local/bin\n"   | tee -a "$LOGFILE"
-        curl -s "$GITAPI_URL" \
-            | grep tag_name > $INSTALLDIR/temp/currentversion
+    echo -e "\nThey are now located in the ${white}/usr/local/bin\n"   | tee -a "$LOGFILE"
+    curl -s "$GITAPI_URL" | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "${lightred}Binaries for ${PROJECTt} were not installed.\n${nocolor}"  | tee -a "$LOGFILE"
     fi

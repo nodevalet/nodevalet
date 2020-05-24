@@ -93,7 +93,7 @@ function search_and_destroy() {
 
 while :; do
     printf "${cyan}"
-    echo -e " Installation variables and data are stored in the nvtemp folder.${nocolor}\n"
+    echo -e " Installation variables and data are stored in the nvtemp folder.${white}\n"
     read -n 1 -s -r -p "  --> Would you like to remove this folder now? y/n  " VERIFY
     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
     then echo -e "\n"
@@ -117,6 +117,13 @@ done
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
         echo -e "------------------------------------------------------------------ ${white}\n"
         sudo rm -rf /var/tmp/nodevalet 
+
+        echo -e "${yellow}------------------------------------------------------------------ "
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing login banner & message-of-the-day"
+        echo -e "------------------------------------------------------------------ ${white}\n"
+        sudo rm -rf /etc/motd 
+        sudo rm -rf /etc/update-motd.d
+        sudo rm -rf /etc/issue.net
 
         echo -e "${lightgreen}------------------------------------------------------------------------- "
         echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : NodeValet was scrubbed from this Server"
