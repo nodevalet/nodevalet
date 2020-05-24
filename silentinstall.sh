@@ -126,7 +126,7 @@ function gather_info() {
 
         echo -e "${white} Please choose from one of the following supported coins to install:\n${nocolor}"
         echo -e "${lightpurple}    audax | phore | pivx | squorum | mue${nocolor}\n"
-        echo -e "${lightpurple}    sierra | stakecube | wagerr    ${nocolor}\n"
+        echo -e "${lightpurple}    sierra | stakecube | wagerr | smart    ${nocolor}\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT

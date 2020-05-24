@@ -16,7 +16,7 @@ Self-hosting your own masternodes has a number of benefits. For starters, it is 
 
 API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
-For now NodeValet supports **sQuorum, Audax, MUE, Phore, PIVX, Wagerr, SierraCoin, and StakeCube**. To try it out please head over to https://www.nodevalet.io.
+For now NodeValet supports **sQuorum, Audax, MUE, Phore, PIVX, Wagerr, SierraCoin, StakeCube, and Smart**. To try it out please head over to https://www.nodevalet.io.
 We're working to add a variety of other masternode coins to the service in the near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
