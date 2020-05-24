@@ -722,7 +722,7 @@ EOT
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 
-                elif [ "${PROJECT,,}" = "pivx" ] || [ "${PROJECT,,}" = "squorum" ] || [ "${PROJECT,,}" = "wagerr" ] || [ "${PROJECT,,}" = "alqo" ]
+                elif [ "${PROJECT,,}" = "pivx" ] || [ "${PROJECT,,}" = "squorum" ] || [ "${PROJECT,,}" = "wagerr" ] || [ "${PROJECT,,}" = "empty" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
 
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
