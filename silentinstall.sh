@@ -122,7 +122,7 @@ function gather_info() {
         fi
 
         # check if VPS supports IPv6
-        [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
+        [ -f /proc/net/if_inet6 ] && echo -e "${lightgreen} It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
 
         echo -e "${white} Please choose from one of the following supported coins to install:\n${nocolor}"
         echo -e "${lightpurple}    audax | phore | pivx | squorum | mue${nocolor}\n"
