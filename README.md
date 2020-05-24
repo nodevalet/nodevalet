@@ -1,8 +1,8 @@
 # NodeValet.io
 
-This is the repository for the https://nodevalet.io masternode installation service.
+This is the repository for the https://www.nodevalet.io masternode installation service.
 
-To get started, visit us on the web https://nodevalet.io and click the "Get Started" link, or if you already have your own ipv6-enabled VPS started and running Ubuntu 16, 18, or 20, go ahead and launch a our "headless" installation script from terminal:
+To get started, visit us on the web https://www.nodevalet.io and click the "Get Started" link, or if you already have your own ipv6-enabled VPS started and running Ubuntu 16, 18, or 20, go ahead and launch a our "headless" installation script from terminal:
 
 ```bash
 cd /var/tmp && sudo git clone https://github.com/nodevalet/nodevalet && cd nodevalet && sudo bash silentinstall.sh
@@ -16,7 +16,7 @@ Self-hosting your own masternodes has a number of benefits. For starters, it is 
 
 API access to your VPS host provider is only necessary for the 30 seconds it takes to connect to your account and deploy your masternode server. After that is done, you are reminded to disable the API or regenerate the API key.
 
-For now NodeValet supports sQuorum, Audax, MUE, Phore, PIVX, Wagerr, SierraCoin, and StakeCube. To try it out please head over to https://www.nodevalet.io.
+For now NodeValet supports **sQuorum, Audax, MUE, Phore, PIVX, Wagerr, SierraCoin, and StakeCube**. To try it out please head over to https://www.nodevalet.io.
 We're working to add a variety of other masternode coins to the service in the near future. 
 
 Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster script.](https://github.com/masternodes/vps)
@@ -29,12 +29,21 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 - Automatically generated masternode.conf, copy paste ready into your local wallet.
 - Automated maintenance. Your VPS will continuously monitor the status of your masternode and fix it if needed.
 - Automatic wallet updates. Your VPS will check your coin's Github twice a day, and when it sees an update, install it.
-- Full integration with "headless" installations. This allows you to use our service while bypassing the API requirement on many different VPS providers (Vultr, DigitalOcean, Contabo, Hetzner, ArubaCloud, etc).
+- Full integration with "headless" installations allow you to use our service while bypassing the API requirement.
 - Add new masternodes to your existing VPS by running our `addmn` scriptlet which will prompt for new addresses and info.
 
 **Planned features**
 
 - On demand system updates. This will allow the user to update their NodeValet masternode with the latest features without compromising server security.
+
+# Supported VPS providers
+
+ - Vultr supports headless and GUI installations
+ - DigitalOcean supports headless and GUI installations
+ - Contabo supports headless installations after running `enable_ipv6` and restarting
+ - Hetzner supports headless installations
+ - ArubaCloud supports headless installations
+ - Please contact us with others that work or don't work and we will add them to this list
 
 # Guides
 
