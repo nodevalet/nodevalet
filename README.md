@@ -32,7 +32,7 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
 - Full integration with "headless" installations allow you to use our service while bypassing the API requirement.
 - Add new masternodes to your existing VPS by running our `addmn` scriptlet which will prompt for new addresses and info.
 
-**Planned features**
+## Planned features 
 
 - On demand system updates. This will allow the user to update their NodeValet masternode with the latest features without compromising server security.
 
@@ -43,7 +43,7 @@ Part of NodeValet runs on an adapted version of [Florian Maier's Nodemaster scri
  - Contabo supports headless installations after running `enable_ipv6` and restarting
  - Hetzner supports headless installations
  - ArubaCloud supports headless installations
- - Please contact us with others that work or don't work and we will add them to this list
+ - *Please contact us with others that work or don't work and we will add them to this list*
 
 # Guides
 
