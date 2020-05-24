@@ -1,6 +1,12 @@
 #!/bin/bash
 # This script will give users the masternode status of installed masternodes
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
@@ -26,7 +32,7 @@ else
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Checking masternode status of ${PROJECT}_n${input}"
     if [ "${PROJECT,,}" = "smart" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf smartnode status)
-    elif [ "${PROJECT,,}" = "squorum" ]
+    elif [ "${PROJECT,,}" = "pivx" ] || [ "${PROJECT,,}" = "squorum" ] || [ "${PROJECT,,}" = "wagerr" ] || [ "${PROJECT,,}" = "empty" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf masternodedebug)
     else MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${input}.conf masternode status)
     fi
@@ -42,7 +48,7 @@ do
     echo -e "\n $(date +%m.%d.%Y_%H:%M:%S) : Checking masternode status of ${PROJECT}_n${i}"
     if [ "${PROJECT,,}" = "smart" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf smartnode status)
-    elif [ "${PROJECT,,}" = "squorum" ]
+    elif [ "${PROJECT,,}" = "pivx" ] || [ "${PROJECT,,}" = "squorum" ] || [ "${PROJECT,,}" = "wagerr" ] || [ "${PROJECT,,}" = "empty" ]
     then MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf masternodedebug)
     else MNSTATUS=$(/usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n${i}.conf masternode status)
     fi

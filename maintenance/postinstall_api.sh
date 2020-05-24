@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set Variables
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
@@ -11,8 +17,8 @@ function final_message() {
     if [ -e $INSTALLDIR/temp/vpsvaletreboot.txt ]; then
 
         # set hostname variable to the name planted by install script
-        if [ -e $INFODIR/vpshostname.info ]
-        then HNAME=$(<$INFODIR/vpshostname.info)
+        if [ -e $INFODIR/vps.hostname.info ]
+        then HNAME=$(<$INFODIR/vps.hostname.info)
         else HNAME=$(hostname)
         fi
 
@@ -22,7 +28,7 @@ function final_message() {
         # log successful reboot
         rm -rf /var/tmp/nodevalet/logs/maintenance.log
         touch /var/tmp/nodevalet/logs/maintenance.log
-        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully " | tee -a "$LOGFILE"
+        echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server rebooted successfully \e[0m" | tee -a "$LOGFILE"
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother

@@ -1,6 +1,12 @@
 #!/bin/bash
 # This script will scrub NodeValet from your VPS
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
@@ -65,7 +71,7 @@ function search_and_destroy() {
         do  
             find / -name "${PROJECT}_n${i}.service" -delete
         done
-        echo -e "------------------------------------------------------------------------------ ${white}\n"
+        echo -e "------------------------------------------------------------------\n"
 
         echo -e "\n${yellow}-------------------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all masternodes and blockchain data"
@@ -83,13 +89,15 @@ function search_and_destroy() {
         rm -rf /usr/local/bin/*
         rm -rf /root/.${PROJECT}
         rm -rf /etc/rc.local
+        rm -rf /var/log/server_hardening.log
 
 while :; do
     printf "${cyan}"
-    echo -e " Installation variables and data are stored in the nvtemp folder.${nocolor}\n"
+    echo -e " Installation variables and data are stored in the nvtemp folder.${white}\n"
     read -n 1 -s -r -p "  --> Would you like to remove this folder now? y/n  " VERIFY
     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-    then echo -e "${yellow}------------------------------------------------------- "
+    then echo -e "\n"
+        echo -e "${yellow}------------------------------------------------------- "
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing folder /var/tmp/nvtemp"
         echo -e "------------------------------------------------------- ${white}\n"
         sudo rm -rf /var/tmp/nvtemp
@@ -109,6 +117,13 @@ done
         echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing all files from /var/tmp/nodevalet"
         echo -e "------------------------------------------------------------------ ${white}\n"
         sudo rm -rf /var/tmp/nodevalet 
+
+        echo -e "${yellow}------------------------------------------------------------------ "
+        echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Removing login banner & message-of-the-day"
+        echo -e "------------------------------------------------------------------ ${white}\n"
+        sudo rm -rf /etc/motd 
+        sudo rm -rf /etc/update-motd.d
+        sudo rm -rf /etc/issue.net
 
         echo -e "${lightgreen}------------------------------------------------------------------------- "
         echo " $(date +%m.%d.%Y_%H:%M:%S) : SUCCESS : NodeValet was scrubbed from this Server"

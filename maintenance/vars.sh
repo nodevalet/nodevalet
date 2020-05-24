@@ -1,18 +1,24 @@
 #!/bin/bash
 # load common variables used by NodeValet scripts
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 ### load variables ###
 LOGFILE='/var/tmp/nodevalet/logs/maintenance.log'
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
-MNS=$(<$INFODIR/vpsnumber.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
+MNS=$(<$INFODIR/vps.number.info)
+PROJECT=$(<$INFODIR/vps.coin.info)
 PROJECTl=${PROJECT,,}
 PROJECTt=${PROJECTl~}
-MNODE_DAEMON=$(<$INFODIR/vpsmnode_daemon.info)
-MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-HNAME=$(<$INFODIR/vpshostname.info)
-VPSAPI=$(<$INFODIR/vpsapi.info)
+MNODE_DAEMON=$(<$INFODIR/vps.mnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
+HNAME=$(<$INFODIR/vps.hostname.info)
+VPSAPI=$(<$INFODIR/vps.api.info)
 ONLYNET=$(<$INFODIR/vps.onlynet.info)
 BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
 

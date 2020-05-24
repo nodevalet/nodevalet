@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# Abort script if not running on a NodeValet VPS
-
-# check for presence of vars.sh and run it if it exists, else wget it
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
 
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
@@ -15,7 +17,7 @@ then echo -e "\n${lightred} $PROJECTt only supports IPv4 and one masternode per 
 fi
 
 # check for possible number of new masternodes
-NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 325}')
+NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
 MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
 let PNODES=$MAXNODES-$MNS
 (($PNODES <= 0)) && echo " ${lightred}This server cannot support any more masternodes${nocolor}\n" && exit
@@ -54,9 +56,7 @@ function collect_nnodes() {
         exit
     fi
 
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
-    echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
-    echo -e "\n Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.\n"
+    echo -e "\n${lightpurple} Perfect.  We are going to try and add $NNODES new MN(s) to this VPS.${nocolor}\n"
     LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> $LOGFILE
     echo -e " ${lightcyan}User has requested to add $NNODES new MN(s) to this VPS.${nocolor}\n"  >> $LOGFILE
@@ -76,9 +76,9 @@ function collect_api() {
     else echo -e "${lightred} Your original NodeValet Deployment Key is no longer valid\n${nocolor}"
         echo -e " Before we can begin, we need to collect your NodeValet API Key."
         echo -e "   ! ! Please double check your NodeValet API Key for accuracy ! !"
-        cp $INFODIR/vpsapi.info $INFODIR/vpsapi.old
-        rm -rf $INFODIR/vpsapi.info
-        touch $INFODIR/vpsapi.info
+        cp $INFODIR/vps.api.info $INFODIR/vpsapi.old
+        rm -rf $INFODIR/vps.api.info
+        touch $INFODIR/vps.api.info
         echo -e -n " "
         while :; do
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
@@ -94,67 +94,99 @@ function collect_api() {
             else echo " "
             fi
         done
-        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
+        echo -e "$VPSAPI" > $INFODIR/vps.api.info
         echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
     fi
 }
 
 function collect_addresses() {
     # Gather new MN addresses
-
-    echo -e "\n Next, we need to collect your $NNODES new masternode address(es)."
-
-    let TNODES=$NNODES+$MNS
-    for ((i=($MNS+1);i<=$TNODES;i++));
-    do
-        while :; do
-            echo -e "\n${cyan} Please enter the $PROJECTt address for new masternode #$i${nocolor}"
-            read -p "  --> " MNADDP
-            # echo -e "\n You entered the address: ${MNADDP} \n"
-            echo -e "\n"
-
-            CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
-
-            # store NoveValets response in a local file
-            curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
-
-            # log and display original curl API and response
-            # [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo " --> Your VPS sent NodeValet following request <--"   | tee -a "$LOGFILE"
-            # [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo -e " curl -s $CURLAPI \n"   | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | tee -a "$LOGFILE" && echo -e "\n" | tee -a "$LOGFILE"
-
-            # read curl API response into variable
-            APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
-
-            # check if API response is invalid
-            [[ "${APIRESPONSE}" == "Invalid key" ]] && echo "NodeValet replied: Invalid API Key"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo "NodeValet replied: Invalid Coin"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "Invalid address" ]] && echo "NodeValet replied: Invalid Address"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-            [[ "${APIRESPONSE}" == "null" ]] && echo "NodeValet replied: Null (no collateral transaction found)"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (API.response$i.json) has NOT length greater than zero
-            ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
-
-            # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
-            ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
-
-            TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
-            echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-            echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
-
-            echo " "
-            read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
-            echo " "
-            if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-            then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
-                rm $INSTALLDIR/temp/API.response$i.json --force
-                break
-            else rm $INSTALLDIR/temp/TXID$i --force
-            fi
+    # Pull BLOCKEXP from $PROJECT.env
+    BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    if [ -n "$BLOCKEX" ]
+    then echo -e "\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}"
+        echo -e " You must manually enter your transaction IDs for new masternodes to work.\n"
+        echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
+        echo -e " collateral to each new masternode addresses and wait for at least 1 "
+        echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
+        echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
+        echo -e " all of your valid collateral transactions. You will need pick out the"
+        echo -e " new transactions and their index numbers so NodeValet can generate the"
+        echo -e " masternode.conf file that you will paste into your local wallet.\n"
+        echo -e " A transaction ID and index should look pretty similar to this: "
+        echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+        let TNODES=$NNODES+$MNS
+        for ((i=($MNS+1);i<=$TNODES;i++));
+        do
+            echo -e "${cyan}"
+            while :; do
+                echo -e "\n Please enter the transaction ID and index for masternode #$i"
+                echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
+                read -p "  --> " UTXID
+                echo -e "\n${white} You entered the transaction ID and index:"
+                echo -e "${yellow} ${UTXID} ${cyan}"
+                read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                then echo -e -n "${nocolor}"
+                    # save TXID to vps.mntxdata.info if length is greater than 5
+                    if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
+                    else echo -e "null null" >> $INFODIR/vps.mntxdata.info
+                    fi
+                    break
+                fi
+            done
+            echo -e -n "${nocolor}"
         done
+        echo -e " User manually entered TXIDs and indices for $NNODES new masternodes\n"
 
-        echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-        echo -e " -> New masternode $i address is: $MNADDP\n"
-    done
+    else echo -e "\n${lightpurple} Next, we need to collect your $NNODES new masternode address(es).${nocolor}"
+        let TNODES=$NNODES+$MNS
+        for ((i=($MNS+1);i<=$TNODES;i++));
+        do
+            while :; do
+                echo -e "\n${cyan} Please enter the $PROJECTt address for new masternode #$i${nocolor}"
+                read -p "  --> " MNADDP
+                # echo -e "\n You entered the address: ${MNADDP} \n"
+                echo -e "\n"
+
+                CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
+
+                # store NoveValets response in a local file
+                curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+                # read curl API response into variable
+                APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+                # check if API response is invalid
+                [[ "${APIRESPONSE}" == "Invalid key" ]] && echo -e "NodeValet replied: ${lightred}Invalid API Key${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo -e "NodeValet replied: ${lightred}Invalid Coin${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "Invalid address" ]] && echo -e "NodeValet replied: ${lightred}Invalid Address${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                [[ "${APIRESPONSE}" == "null" ]] && echo -e "NodeValet replied: Null ${lightred}(no collateral transaction found)${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (API.response$i.json) has NOT length greater than zero
+                ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+                ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+                TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+                echo " "
+                read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
+                echo " "
+                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
+                    rm $INSTALLDIR/temp/API.response$i.json --force
+                    break
+                else rm $INSTALLDIR/temp/TXID$i --force
+                fi
+            done
+            echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
+            echo -e " -> New masternode $i address is: $MNADDP\n"
+        done
+    fi
 }
 
 function install_mns() {
@@ -164,6 +196,16 @@ function install_mns() {
     echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$TNODES" | tee -a "$LOGFILE"
     sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$TNODES"
     echo -e "\n"
+
+        # add support for deterministic wallets so they don't break everything
+        if [ "${PROJECT,,}" = "mue" ]
+        then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
+            let TNODES=$NNODES+$MNS
+            for ((i=($MNS+1);i<=$TNODES;i++));
+            do
+                sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
+            done
+        fi
 
     # check for presence of config file to presume success, cancel and report error if does not exist
 
@@ -200,7 +242,7 @@ function install_mns() {
 }
 
 function change_vpsnumber() {
-    echo -e "$TNODES" > $INFODIR/vpsnumber.info
+    echo -e "$TNODES" > $INFODIR/vps.number.info
     echo -e "Changing total number of masternodes on this server to $TNODES. \n" | tee -a "$LOGFILE"
 }
 
@@ -216,7 +258,7 @@ else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
     # gather existing masternode variables as files for .conf
     for ((i=1;i<=$MNS;i++));
     do
-        echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
+        echo -e "$(sed -n ${i}p $INFODIR/vps.genkeys.info)" > $INSTALLDIR/temp/GENKEY$i
 
         # append "masternodeprivkey="
         paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
@@ -229,11 +271,11 @@ else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
         do
             # create masternode genkeys (smart is special "smartnodes")
             if [ -e $INSTALLDIR/temp/bogus ] ; then :
-            elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vpsgenkeys.info
-            elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-            elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vpsgenkeys.info
-        else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vpsgenkeys.info ; fi
-            echo -e "$(sed -n ${i}p $INFODIR/vpsgenkeys.info)" > $INSTALLDIR/temp/GENKEY$i
+            elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INFODIR/vps.genkeys.info
+            elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vps.genkeys.info
+            elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INFODIR/vps.genkeys.info
+        else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INFODIR/vps.genkeys.info ; fi
+            echo -e "$(sed -n ${i}p $INFODIR/vps.genkeys.info)" > $INSTALLDIR/temp/GENKEY$i
 
             KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
@@ -344,7 +386,7 @@ EOT
         echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
         # create masternode address files
-        echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+        echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
 
         # append "masternodeprivkey="
         paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
@@ -487,6 +529,15 @@ function restore_crons() {
     . /var/tmp/nodevalet/maintenance/restore_crons.sh
 }
 
+function update_rclocal() {
+    # Update SmartStart and rc.local
+    echo -e " Updating SmartStart and rc.local \n"
+    sed -i '/smartstart.sh/d' /etc/rc.local
+    echo -e "sudo bash /var/tmp/nodevalet/maintenance/smartstart.sh &" >> /etc/rc.local
+    sed -i '/exit 0/d' /etc/rc.local
+    echo -e "exit 0" >> /etc/rc.local
+}
+
 # This is where the script actually starts
 remove_crons
 collect_nnodes
@@ -499,15 +550,12 @@ change_vpsnumber
 start_mns
 restore_crons
 make_newconf
+update_rclocal
 
-# echo -e "\n These are your vpsmnaddresses:"
-# cat $INFODIR/vpsmnaddress.info
-# echo -e "\n These are your genkeys:"
-# cat $INFODIR/vpsgenkeys.info
-# echo -e "\n These are your ip addresses:"
-# cat $INFODIR/vps.ipaddresses.info
-# echo -e "\n These are your tx id data:"
-# cat $INFODIR/vps.mntxdata.info
 rm $INSTALLDIR/temp/updating --force
+
+echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Running addmn.sh"  >> /var/tmp/nodevalet/logs/maintenance.log
+echo -e " ${lightcyan}User has added $NNODES new MN(s) to this VPS.${nocolor}\n"  >> /var/tmp/nodevalet/logs/maintenance.log
+
 exit
 

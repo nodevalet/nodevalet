@@ -109,18 +109,18 @@ function setup_environment() {
     INSTALLDIR='/var/tmp/nodevalet'
     INFODIR='/var/tmp/nvtemp'
 
-    HNAME=$(<$INFODIR/vpshostname.info)
-    PROJECT=$(cat $INFODIR/vpscoin.info)
+    HNAME=$(<$INFODIR/vps.hostname.info)
+    PROJECT=$(cat $INFODIR/vps.coin.info)
 }
 
 function begin_log() {
     # Create Log File and Begin
     echo -e -n "${lightcyan}"
-    echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " | tee -a "$LOGFILE"
-    echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
-    echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " | tee -a "$LOGFILE"
-    echo -e "---------------------------------------------------- \n" | tee -a "$LOGFILE"
+    echo -e "---------------------------------------------------- " >> "$LOGFILE"
+    echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SCRIPT STARTED SUCCESSFULLY " >> "$LOGFILE"
+    echo -e "---------------------------------------------------- " >> "$LOGFILE"
+    echo -e "------- AKcryptoGUY's VPS Hardening Script --------- " >> "$LOGFILE"
+    echo -e "---------------------------------------------------- \n" >> "$LOGFILE"
     echo -e -n "${nocolor}"
     # sleep 2
 }
@@ -414,8 +414,8 @@ function collect_sshd() {
     while :; do
         echo -e -n "${cyan}"
         # check for SSHPORT and set variable or use 22 as default
-        if [ -s $INFODIR/vpssshport.info ]
-        then SSHPORT=$(<$INFODIR/vpssshport.info)
+        if [ -s $INFODIR/vps.sshport.info ]
+        then SSHPORT=$(<$INFODIR/vps.sshport.info)
             echo -e "Detected $INFODIR/vpssshport, SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
         else SSHPORT=22
             echo -e "$INFODIR/vpssshport, not detected SSHPORT set to $SSHPORT" | tee -a "$LOGFILE"
@@ -1158,7 +1158,6 @@ function display_banner() {
 
     echo -e -n "${lightcyan}"
     cat << "EOF"
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      _    _  __                     _         ____ _   ___   __
     / \  | |/ /___ _ __ _   _ _ __ | |_ ___  / ___| | | \ \ / /
    / _ \ | ' // __| '__| | | | '_ \| __/ _ \| |  _| | | |\ V /
@@ -1168,7 +1167,7 @@ function display_banner() {
             __  __             __  __  ___          __
   -->  \  /|__)/__`   |__| /\ |__)|  \|__ |\ |||\ |/ _`  <--
         \/ |   .__/   |  |/~~\|  \|__/|___| \||| \|\__>
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 EOF
     echo -e -n "${nocolor}"
 }

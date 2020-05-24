@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
+# install curl & jq
+echo -e "\n\033[1;36mPlease wait a moment while we install 'curl' and 'jq'...\n\e[0m"
+sudo apt-get update > /dev/null 2>&1
+sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl jq > /dev/null 2>&1
+
 function setup_environment() {
     # Set Variables
     INSTALLDIR='/var/tmp/nodevalet'
@@ -59,9 +70,6 @@ EOTRC
         chmod 777 /etc/rc.local
     fi
 
-    # install curl
-    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install curl
-
     # Create Log File and Begin
     clear
     echo -e "${white} ################################################################" | tee -a "$LOGFILE"
@@ -72,9 +80,9 @@ EOTRC
     echo -e " #   |_| \_|\___/ \__,_|\___| \_/ \__,_|_|\___|\__(_)_|\___/    #" | tee -a "$LOGFILE"
     echo -e " #                                 Masternodes Made Easier      #" | tee -a "$LOGFILE"
     echo -e " ################################################################" | tee -a "$LOGFILE"
-    echo -e " ${yellow}---------------------------------------------------- " | tee -a "$LOGFILE"
+    echo -e " ${yellow}------------------------------------------------ " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : BEGIN INSTALLATION SCRIPT " | tee -a "$LOGFILE"
-    echo -e " ---------------------------------------------------- ${nocolor}\n" | tee -a "$LOGFILE"
+    echo -e " ------------------------------------------------ ${nocolor}\n" | tee -a "$LOGFILE"
 }
 
 #####################
@@ -82,30 +90,22 @@ EOTRC
 #####################
 function gather_info() {
     # read or set project name
-    if [ -s $INFODIR/vpscoin.info ]
-    then PROJECT=$(cat $INFODIR/vpscoin.info)
+    if [ -s $INFODIR/vps.sshport.info ]
+    then PROJECT=$(cat $INFODIR/vps.coin.info)
         PROJECTl=${PROJECT,,}
         PROJECTt=${PROJECTl~}
         touch $INFODIR/fullauto.info
         echo -e "${nocolor} Script was invoked by NodeValet and is on full-auto\n" | tee -a "$LOGFILE"
         echo -e " Script was invoked by NodeValet and is on full-auto\n" >> $INFODIR/fullauto.info
-        echo -e " Setting Project Name to $PROJECTt : vpscoin.info found" >> $LOGFILE
-    else
-        # exit with error if not run as root/sudo
-        if [ "$(id -u)" != "0" ]; then
-            echo "Please re-run as root or sudo."
-            exit 1
-        fi
-        
-    echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your "
-    echo -e " server and masternodes. This interactive script will first prompt you"
-    echo -e " for information about your setup. Then it will update your VPS and"
-    echo -e " securely install the masternodes you specifiy.\n "
-    echo -e " In most cases, this script will function correctly on supported VPS"
-    echo -e " platforms without extra steps. Some providers require extra care.\n"
-    echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
-    echo -e "${lightcyan} and reboot your VPS before you proceed.${cyan}"
-            while :; do
+        echo -e " Setting Project Name to $PROJECTt : vps.coin.info found" >> $LOGFILE
+    else echo -e " ${lightcyan}We are pleased that you have chosen to let NodeValet configure your VPS."
+        echo -e " This interactive script will first prompt you for information about your"
+        echo -e " setup. Then it will update your VPS and securely install the masternodes.\n"
+        echo -e " In most cases, this script will function correctly on supported VPS"
+        echo -e " platforms without extra steps. Some providers require extra care.\n"
+        echo -e " If you are running on${yellow} Contabo${lightcyan}, you must run the command${yellow} enable_ipv6"
+        echo -e "${lightcyan} and reboot your VPS before you proceed.${cyan}"
+        while :; do
             echo -e "\n"
             read -n 1 -s -r -p " Are you ready to continue the installation now? y/n  " INSTALLNOW
             if [[ ${INSTALLNOW,,} == "y" || ${INSTALLNOW,,} == "Y" || ${INSTALLNOW,,} == "N" || ${INSTALLNOW,,} == "n" ]]
@@ -114,25 +114,26 @@ function gather_info() {
             fi
         done
         echo -e "${nocolor}"
-    if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
-    then  clear
-        echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
-    else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
-        exit 1
-    fi
+        if [ "${INSTALLNOW,,}" = "Y" ] || [ "${INSTALLNOW,,}" = "y" ]
+        then  clear
+            echo -e "\n ${yellow}Great; let's proceed with installation now... ${nocolor}\n"
+        else echo -e "\n ${lightred}Exiting script per user request, re-run when ready.${nocolor}\n"
+            exit 1
+        fi
 
-    # check if VPS supports IPv6  
-    [ -f /proc/net/if_inet6 ] && echo -e " It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
-            
-        echo -e "${white} Please choose from one of the following supported coins to install:${nocolor}"
-        echo -e "${lightpurple}    helium | audax | pivx | phore | mue | squorum${nocolor}\n"
+        # check if VPS supports IPv6
+        [ -f /proc/net/if_inet6 ] && echo -e "${lightgreen} It looks like your system supports IPv6. This is good!\n" || echo -e "${lightred} IPv6 support was not found! Look into this if the script fails.${nocolor}\n"
+
+        echo -e "${white} Please choose from one of the following supported coins to install:\n${nocolor}"
+        echo -e "${lightpurple}    audax | phore | pivx | squorum | mue${nocolor}\n"
+        echo -e "${lightpurple}    sierra | stakecube | wagerr    ${nocolor}\n"
         echo -e "${cyan} In one word, which coin are installing today? ${nocolor}"
         while :; do
             read -p "  --> " PROJECT
             if [ -d $INSTALLDIR/nodemaster/config/"${PROJECT,,}" ]
-            then touch $INFODIR/vpscoin.info
-                echo -e "${PROJECT,,}" > $INFODIR/vpscoin.info
-                PROJECT=$(cat $INFODIR/vpscoin.info)
+            then touch $INFODIR/vps.coin.info
+                echo -e "${PROJECT,,}" > $INFODIR/vps.coin.info
+                PROJECT=$(cat $INFODIR/vps.coin.info)
                 PROJECTl=${PROJECT,,}
                 PROJECTt=${PROJECTl~}
                 echo -e " Setting Project Name to $PROJECTt : user provided input" >> $LOGFILE
@@ -143,32 +144,32 @@ function gather_info() {
     fi
 
     # set hostname variable to the name planted by install script
-    if [ -e $INFODIR/vpshostname.info ]
-    then HNAME=$(<$INFODIR/vpshostname.info)
-        echo -e " Setting Hostname to $HNAME : vpshostname.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.hostname.info ]
+    then HNAME=$(<$INFODIR/vps.hostname.info)
+        echo -e " Setting Hostname to $HNAME : vps.hostname.info found" >> $LOGFILE
     else HNAME=$(hostname)
-        touch $INFODIR/vpshostname.info
-        echo -e "$HNAME" > $INFODIR/vpshostname.info
+        touch $INFODIR/vps.hostname.info
+        echo -e "$HNAME" > $INFODIR/vps.hostname.info
         echo -e " Setting Hostname to $HNAME : read from server hostname" >> $LOGFILE
     fi
     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Your new VPS is online and reporting installation status ..."}' && echo -e " "
     sleep 4
 
     # read API key if it exists, if not prompt for it
-    if [ -e $INFODIR/vpsapi.info ]
-    then VPSAPI=$(<$INFODIR/vpsapi.info)
-        echo -e " Setting NodeValet API key to provided value : vpsapi.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.api.info ]
+    then VPSAPI=$(<$INFODIR/vps.api.info)
+        echo -e " Setting NodeValet API key to provided value : vps.api.info found" >> $LOGFILE
     else echo -e "${lightcyan}\n\n Before we begin, we need to verify your NodeValet API Key."
         echo -e " If you do not already have one, you may purchase a NodeValet "
         echo -e " API Key at ${white}https://www.nodevalet.io/purchase.php${lightcyan}. Purchased"
         echo -e " keys permit 5 server installations and expire after 30 days.\n"
         echo -e "${lightgreen} !! Please double-check your NodeValet API Key for accuracy !!${nocolor}"
-        touch $INFODIR/vpsapi.info
+        touch $INFODIR/vps.api.info
         echo -e -n " "
         while :; do
             echo -e "\n${cyan} Please enter your NodeValet API Key.${nocolor}"
             read -p "  --> " VPSAPI
-            echo -e "\n You entered this API Key: ${VPSAPI} "
+            echo -e "\n ${white}You entered this API Key: ${yellow}${VPSAPI} ${nocolor}"
             read -n 1 -s -r -p "  ${cyan}--> Is this correct? y/n  ${nocolor}" VERIFY
             if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
             then APITEST="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=$VPSAPI"
@@ -180,8 +181,8 @@ function gather_info() {
             else echo " "
             fi
         done
-        echo -e "$VPSAPI" > $INFODIR/vpsapi.info
-        echo -e " NodeValet API Key set to : $VPSAPI" >> $LOGFILE
+        echo -e "$VPSAPI" > $INFODIR/vps.api.info
+        echo -e " NodeValet API Key set to :${lightgreen} $VPSAPI ${nocolor}" >> $LOGFILE
     fi
 
     # set mnode daemon name from project.env
@@ -190,12 +191,12 @@ function gather_info() {
     sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
     cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
     MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+    cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vps.mnode_daemon.info
     rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
-    echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
-    MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vpsmnode_daemon.info" >> $LOGFILE
-    echo -e " Setting masternode-binaries to MNODE_BINARIES : vpsbinaries.info" >> $LOGFILE
+    echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vps.binaries.info 2>&1
+    MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
+    echo -e " Setting masternode-daemon to $MNODE_DAEMON : vps.mnode_daemon.info" >> $LOGFILE
+    echo -e " Setting masternode-binaries to MNODE_BINARIES : vps.binaries.info" >> $LOGFILE
 
     # create or assign onlynet from project.env
     ONLYNET=$(grep ^ONLYNET $INSTALLDIR/nodemaster/config/"${PROJECT}"/"${PROJECT}".env)
@@ -211,16 +212,16 @@ function gather_info() {
     fi
 
     # read or assign number of masternodes to install
-    if [ -e $INFODIR/vpsnumber.info ]
-    then MNS=$(<$INFODIR/vpsnumber.info)
-        echo -e " Setting number of masternodes to $MNS : vpsnumber.info found" >> $LOGFILE
+    if [ -e $INFODIR/vps.number.info ]
+    then MNS=$(<$INFODIR/vps.number.info)
+        echo -e " Setting number of masternodes to $MNS : vps.number.info found" >> $LOGFILE
         # check memory and set max MNS appropriately then prompt user how many they would like to build
-elif [ "$ONLYNET" = 4 ]
-    then touch $INFODIR/vpsnumber.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vpsnumber.info
+    elif [ "$ONLYNET" = 4 ]
+    then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 400}')
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
-        echo -e "\n\n This server's memory can safely support $MAXNODES masternodes.\n"
+        echo -e "\n\n${white} This server's memory can safely support $MAXNODES masternodes.${nocolor}\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
 
         while :; do
@@ -233,62 +234,141 @@ elif [ "$ONLYNET" = 4 ]
         elif ! (($MNS >= 1 && $MNS <= $MAXNODES))
             then echo -e "\n ${lightred}$MNS is not a number between 1 and $MAXNODES, try another number.${nocolor}"
             else echo -e " Setting number of masternodes to $MNS : user provided input" >> $LOGFILE
-                touch $INFODIR/vpsnumber.info
-                echo -e "${MNS}" > $INFODIR/vpsnumber.info
+                touch $INFODIR/vps.number.info
+                echo -e "${MNS}" > $INFODIR/vps.number.info
                 break   # exit the loop
             fi
         done
     fi
 
     # create or assign mnprefix
-    if [ -s $INFODIR/vpsmnprefix.info ]
-    then :
-        echo -e " Setting masternode aliases from vpsmnprefix.info file" >> $LOGFILE
+    if [ -s $INFODIR/vps.mnprefix.info ]
+    then echo -e " Setting masternode aliases from vps.mnprefix.info file" >> $LOGFILE
     else MNPREFIX=$(hostname)
-        echo -e " Generating aliases from hostname : vpsmnprefix.info not found" >> $LOGFILE
+        echo -e " Generating aliases from hostname : vps.mnprefix.info not found" >> $LOGFILE
     fi
 
     # read or collect masternode addresses
-    if [ -e $INFODIR/vpsmnaddress.info ]
-    then :
-        # create a subroutine here to check memory and size MNS appropriately
-    else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
-        echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
-        echo -e " On your local wallet, generate the masternode addresses and send"
-        echo -e " your collateral transactions for masternodes you want to start"
-        echo -e " now. You may also add extra addresses even if you have not yet"
-        echo -e " funded them, and the script will still create the masternode"
-        echo -e " instance which you can later activate from your local wallet.\n"
-        echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
-        touch $INFODIR/vpsmnaddress.info
-        for ((i=1;i<=$MNS;i++));
-        do
-            while :; do
-                echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
-                read -p "  --> " MNADDP
-                echo -e "\n You entered the address: ${MNADDP} "
-                read -n 1 -s -r -p "${cyan}  --> Is this correct? y/n  ${nocolor}" VERIFY
-                echo " "
-                if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
-                then break
-                fi
+    if [ -e $INFODIR/fullauto.info ]
+    then echo -e " \n\nThere is no need to collect addreses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
+    else
+        # Gather MN addresses
+        # Check if blockchain is fully-supported
+        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+        if [ -n "$BLOCKEX" ]
+        then echo -e "\n\n ${lightcyan}NodeValet found no fully-supported block explorer.${nocolor}" | tee -a "$LOGFILE"
+            echo -e " ${lightred}You must manually enter your transaction IDs for your masternodes to work.\n${nocolor}" | tee -a "$LOGFILE"
+            echo -e "\n${white} In order to retrieve your transaction IDs, you should first send the required "
+            echo -e " collateral to each of your masternode addresses and wait for at least 1 "
+            echo -e " confirmation. Once you have done this, open${yellow} debug console ${white}and typically "
+            echo -e " you will enter the command ${yellow}masternode outputs${white}. This will display a list of"
+            echo -e " all of your valid collateral transactions. You will need to copy and insert "
+            echo -e " these transactions and their index number so NodeValet can generate the"
+            echo -e " masternode.conf file that you will paste into your local wallet.\n"
+            echo -e " A transaction ID and index should look pretty similar to this: "
+            echo -e "${yellow} b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
+            VERIFY=
+            touch $INFODIR/vps.mntxdata.info
+            for ((i=1;i<=$MNS;i++));
+            do
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
+                    echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
+                    read -p "  --> " UTXID
+                    echo -e "\n${white} You entered the transaction ID and index:"
+                    echo -e "${yellow} ${UTXID} ${cyan}"
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        # save TXID to vps.mntxdata.info if length is greater than 5
+                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vps.mntxdata.info
+                        else echo -e "null null" >> $INFODIR/vps.mntxdata.info
+                        fi
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}\n"
             done
-            echo -e "$MNADDP" >> $INFODIR/vpsmnaddress.info
-            echo -e " -> Masternode $i address is: $MNADDP \n"
-        done
+            echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
+
+        else echo -e "\n\n${lightcyan} Before we can begin, we need to collect${white} $MNS masternode addresses.${lightcyan}"
+            echo -e " Manually collecting masternode addresses from user..." >> $LOGFILE 2>&1
+            echo -e " In your local wallet, generate the masternode addresses and send"
+            echo -e " your collateral transactions for masternodes you want to start"
+            echo -e " now. You may also add extra addresses even if you have not yet"
+            echo -e " funded them, and the script will still create the masternode"
+            echo -e " instance which you can later activate from your local wallet.\n"
+            echo -e "${lightgreen}   ! ! Please double-check your addresses for accuracy ! !${nocolor}"
+            touch $INFODIR/vps.mnaddress.info
+
+            # Pull BLOCKEXP from $PROJECT.env
+            BLOCKEX=$(grep ^BLOCKEXP $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+            if [ -n "$BLOCKEX" ]
+            then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
+                sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
+                BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
+            else echo -e "No block explorer was identified in $PROJECT.env \n"
+            fi
+
+            for ((i=1;i<=$MNS;i++));
+            do
+                while :; do
+                    echo -e "\n${cyan} Please enter the $PROJECTt address for masternode #$i${nocolor}"
+                    read -p "  --> " MNADDP
+                    echo -e "\n"
+
+                    CURLAPI=$(echo -e "$BLOCKEXP${MNADDP}&key=$VPSAPI")
+
+                    # store NoveValets response in a local file
+                    curl -s "$CURLAPI" > $INSTALLDIR/temp/API.response$i.json
+
+                    # read curl API response into variable
+                    APIRESPONSE=$(cat $INSTALLDIR/temp/API.response$i.json)
+
+                    # check if API response is invalid
+                    [[ "${APIRESPONSE}" == "Invalid key" ]] && echo -e "NodeValet replied: ${lightred}Invalid API Key${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "Invalid coin" ]] && echo -e "NodeValet replied: ${lightred}Invalid Coin${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "Invalid address" ]] && echo -e "NodeValet replied: ${lightred}Invalid Address${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+                    [[ "${APIRESPONSE}" == "null" ]] && echo -e "NodeValet replied: Null ${lightred}(no collateral transaction found)${nocolor}"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                    # check if stored file (API.response$i.json) has NOT length greater than zero
+                    ! [[ -s $INSTALLDIR/temp/API.response$i.json ]] && echo "--> Server did not respond or response was empty"   | tee -a "$LOGFILE" && echo -e "null\nnull" > $INSTALLDIR/temp/TXID$i
+
+                    # check if stored file (TXID$i) does NOT exist (then no errors were detected above)
+                    ! [[ -e $INSTALLDIR/temp/TXID$i ]] && echo "It looks like this is a valid masternode address." && echo "NodeValet replied with a collateral transaction ID for masternode $i"  | tee -a "$LOGFILE" && cat $INSTALLDIR/temp/API.response$i.json | jq '.["txid","txindex"]' | tr -d '["]' > $INSTALLDIR/temp/TXID$i && cat $INSTALLDIR/temp/API.response$i.json | jq '.'
+
+                    TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
+                    echo -e "$TX" > $INSTALLDIR/temp/TXID$i
+                    echo -e " NodeValet API returned $TX as txid for masternode $i " >> $LOGFILE
+
+                    echo " "
+                    read -n 1 -s -r -p "${cyan}  --> Is this what you expected? y/n  ${nocolor}" VERIFY
+                    echo " "
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" || $VERIFY == "yes" || $VERIFY == "Yes" ]]
+                    then echo -e "$TX" >> $INFODIR/vps.mntxdata.info
+                        rm $INSTALLDIR/temp/API.response$i.json --force
+                        break
+                    else rm $INSTALLDIR/temp/TXID$i --force
+                    fi
+                done
+                echo -e "$MNADDP" >> $INFODIR/vps.mnaddress.info
+                echo -e " -> Address $i is: $MNADDP \n"  | tee -a "$LOGFILE"
+            done
+        fi
     fi
 
     # query to generate new genkeys or query for user input
     if [ -e $INFODIR/fullauto.info ]
     then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
     else
-        echo -e "${white}\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${MNODE_DAEMON::-1}-cli generate them for you. Both are equally "
+        echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
+        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
         echo -e " secure, but it's faster if your server does it for you. An example of "
         echo -e " when you would want to enter them yourself would be if you are trying "
         echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
         while :; do
-            echo -e "\n Would you like your server to generate genkeys for you? y/n "
+            echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
             read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
             if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
             then
@@ -307,7 +387,7 @@ elif [ "$ONLYNET" = 4 ]
                 while :; do
                     echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
                     read -p "  --> " UGENKEY
-                    echo -e "\n You entered the address: ${UGENKEY} "
+                    echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
@@ -322,70 +402,30 @@ elif [ "$ONLYNET" = 4 ]
             echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
         else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
             echo -e "${nocolor}"
-            echo -e "\n No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
         fi
     fi
 
     # query to collect TXIDs if not detected
-    if [ -e $INFODIR/fullauto.info ]
-    then : echo -e "\n Transaction IDs and indices will be retrieved from vpsmntxdata.info.\n" >> $LOGFILE 2>&1
-    else
-        echo -e "\n${white} If your project is supported by NodeValet, your VPS can likely retrieve the"
-        echo -e " masternodes' transaction IDs and indices from the blockchain. If you are "
-        echo -e " installing masternodes for a project that is not fully supported, then you "
-        echo -e " are able to provide your own transaction IDs and output indices. You can "
-        echo -e " also skip this step now and edit the masternode.conf file later. "
-        echo -e -n "${cyan}"
-        while :; do
-            echo -e "\n Would you like to manually enter your own TXIDs now? y/n "
-            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'no' " GETTXIDS
-            if [[ $GETTXIDS == "y" || $GETTXIDS == "Y" || $GETTXIDS == "N" || $GETTXIDS == "n" ]]
-            then
-                break
-            fi
-        done
-        echo -e -n "${nocolor}"
-
-        if [ "${GETTXIDS,,}" = "Y" ] || [ "${GETTXIDS,,}" = "y" ]
-        then echo -e " User selected to manually enter TXIDs for $MNS masternodes" >> $LOGFILE 2>&1
-            echo -e "\n\n A transaction ID and index should look pretty similar to this: "
-            echo -e "${yellow}   b1097524b3e08f8d7e71be99b916b38702269c6ea37161bba49ba538a631dd56 1 ${nocolor}"
-            VERIFY=
-            touch $INFODIR/vpsmntxdata.info
-            for ((i=1;i<=$MNS;i++));
-            do
-                echo -e "${cyan}"
-                while :; do
-                    echo -e "\n Please enter the transaction ID and index for masternode #$i"
-                    echo -e " Leave this field blank if this masternode is not yet funded.${nocolor}"
-                    read -p "  --> " UTXID
-                    echo -e "\n You entered the transaction ID and index:"
-                    echo -e " ${UTXID} ${cyan}"
-                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
-                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
-                    then echo -e -n "${nocolor}"
-                        # save TXID to vpsmntxdata.info if length is greater than 5
-                        if [ ${#UTXID} -ge 5 ]; then echo -e "$UTXID" >> $INFODIR/vpsmntxdata.info
-                        else echo -e "null null" >> $INFODIR/vpsmntxdata.info
-                        fi
-                        break
-                    fi
-                done
-                echo -e -n "${nocolor}"
-            done
-            echo -e " User manually entered TXIDs and indices for $MNS masternodes\n" >> $LOGFILE 2>&1
-        else echo -e " User selected to have this VPS query TXIDs from NodeValet API\n" >> $LOGFILE 2>&1
-            echo -e "${nocolor}"
-            echo -e "\n Understood. The VPS will query NodeValet's API for TXIDs.${cyan}"
-        fi
-    fi
+    #    if [ -e $INFODIR/fullauto.info ]
+    #    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
+    #    else
+    #        # Pull BLOCKEXP from $PROJECT.env
+    #        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
+    #        if [ -n "$BLOCKEX" ]
+    #        then :
+    #        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
+    #            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
+    #           echo -e " the masternode address(es) you entered earlier.${nocolor}"
+    #       fi
+    #   fi
 
     # create or assign customssh
-    if [ -s $INFODIR/vpssshport.info ]
-    then SSHPORT=$(<$INFODIR/vpssshport.info)
+    if [ -s $INFODIR/vps.sshport.info ]
+    then SSHPORT=$(<$INFODIR/vps.sshport.info)
         echo -e " Setting SSH port to $SSHPORT as found in vpsshport.info \n" >> $LOGFILE
     else
-        echo -e "\n\n${nocolor} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
+        echo -e "\n\n${white} Your current SSH port is : ${yellow}$(sed -n -e '/Port /p' /etc/ssh/sshd_config) ${nocolor}\n"
         echo -e "${cyan} Enter a custom port for SSH between 11000 and 65535 or use 22 : ${nocolor}"
 
         # what I consider a good example of a complicated query for numerical data
@@ -399,8 +439,8 @@ elif [ "$ONLYNET" = 4 ]
         done
 
         echo -e " Setting SSHPORT to $SSHPORT : user provided input \n" >> $LOGFILE
-        touch $INFODIR/vpssshport.info
-        echo "$SSHPORT" >> $INFODIR/vpssshport.info
+        touch $INFODIR/vps.sshport.info
+        echo "$SSHPORT" >> $INFODIR/vps.sshport.info
     fi
     echo -e " \n"
     echo -e " I am going to install $MNS $PROJECTt masternodes on this VPS \n" >> $LOGFILE
@@ -450,11 +490,11 @@ function harden_vps() {
         cd $INSTALLDIR/vps-harden || exit
         bash get-hard.sh
     fi
-    echo -e " Installing jq and jp2a and figlet and unzip and at packages" >> $LOGFILE
-    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at
+    echo -e " Installing jp2a and figlet and unzip and at packages" >> $LOGFILE
+    sudo apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jp2a unzip figlet at
     # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install jq jp2a unzip figlet at | tee -a "$LOGFILE"
 
-    echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightcyan}\n" | tee -a "$LOGFILE"
+    echo -e "\nInserting random Chuck Norris joke to keep things spicy ${lightblue}\n" | tee -a "$LOGFILE"
     curl -s "http://api.icndb.com/jokes/random" | jq '.value.joke' | tee -a "$LOGFILE"
 }
 
@@ -473,7 +513,8 @@ function install_binaries() {
     fi
 
     # check for binaries and install if found
-    echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:"  | tee -a "$LOGFILE"
+    echo -e "\n${lightcyan}Attempting to download and install $PROJECTt binaries from:${nocolor}"
+    echo -e "\n${nocolor}Attempting to download and install $PROJECTt binaries from:" >> "$LOGFILE"
 
     # Pull GITAPI_URL from $PROJECT.env
     GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
@@ -499,23 +540,25 @@ function install_binaries() {
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         # do not try to unpack and install if tarball does not exist
-            if [ -z "$TARBALL" ]
-            then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
-            else echo -e "${lightcyan} Unpacking and installing binaries.${nocolor}"
-                if [[ $TARBALL == *.gz ]]
-                then tar -xzf "$TARBALL"
-                else unzip "$TARBALL"
-                fi
-                rm -f "$TARBALL"
-                cd  "$(\ls -1dt ./*/ | head -n 1)"
-                find . -mindepth 2 -type f -print -exec mv {} . \;
-                cp "${MNODE_BINARIES}"* '/usr/local/bin'
-                cd ..
-                rm -r -f *
-                cd
-                cd /usr/local/bin
-                chmod 777 "${MNODE_BINARIES}"*
+        if [ -z "$TARBALL" ]
+        then echo -e "${lightred}Binaries for ${PROJECTt} matching ${yellow}$GITSTRING${lightred} could not be located.${nocolor}"
+        else echo -e "${lightcyan}Unpacking and installing binaries.${nocolor}"
+            if [[ $TARBALL == *.gz ]]
+            then tar -xzf "$TARBALL"
+            elif [[ $TARBALL == *.tgz ]]
+            then tar -xzf "$TARBALL"
+            else unzip "$TARBALL"
             fi
+            rm -f "$TARBALL"
+            cd  "$(\ls -1dt ./*/ | head -n 1)"
+            find . -mindepth 2 -type f -print -exec mv {} . \;
+            cp "${MNODE_BINARIES}"* '/usr/local/bin'
+            cd ..
+            rm -r -f *
+            cd
+            cd /usr/local/bin
+            chmod 777 "${MNODE_BINARIES}"*
+        fi
 
     else
         echo -e "Cannot download binaries; no GITAPI_URL was detected \n" | tee -a "$LOGFILE"
@@ -525,9 +568,9 @@ function install_binaries() {
     dEXIST=$(ls /usr/local/bin | grep "${MNODE_BINARIES}")
 
     if [[ "${dEXIST}" ]]
-    then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}\n"   | tee -a "$LOGFILE"
-        curl -s "$GITAPI_URL" \
-            | grep tag_name > $INSTALLDIR/temp/currentversion
+    then echo -e "\n${lightcyan}Binaries for ${PROJECTt} were successfully downloaded and installed${nocolor}"   | tee -a "$LOGFILE"
+    echo -e "\nThey are now located in the ${white}/usr/local/bin\n"   | tee -a "$LOGFILE"
+    curl -s "$GITAPI_URL" | grep tag_name > $INSTALLDIR/temp/currentversion
 
     else echo -e "${lightred}Binaries for ${PROJECTt} were not installed.\n${nocolor}"  | tee -a "$LOGFILE"
     fi
@@ -547,17 +590,17 @@ function install_mns() {
     else
         cd $INSTALLDIR/nodemaster || exit
         echo -e "Invoking local Nodemaster's VPS script" | tee -a "$LOGFILE"
-        echo -e "Launching Nodemaster using bash install.sh -n $ONLYNET -p $PROJECT" -c "$MNS" | tee -a "$LOGFILE"
+        echo -e "Launching Nodemaster using ${white}bash install.sh -n $ONLYNET -p $PROJECT -c $MNS ${nocolor}" | tee -a "$LOGFILE"
         sudo bash install.sh -n $ONLYNET -p "$PROJECT" -c "$MNS"
         echo -e "\n"
-        
+
         # add support for deterministic wallets so they don't break everything
-        if [ "${PROJECT,,}" = "mue" ]
+        if [ "${PROJECT,,}" = "mue" ] || [ "${PROJECT,,}" = "audax" ]
         then echo -e "${lightcyan} Setting masternode services to not use deterministic seeds for wallets\n${nocolor}" | tee -a "$LOGFILE"
-        for ((i=1;i<=$MNS;i++));
-        do
-        sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
-        done
+            for ((i=1;i<=$MNS;i++));
+            do
+                sed -i "s/${MNODE_DAEMON}/${MNODE_DAEMON} -usehd=0/" /etc/systemd/system/${PROJECT}_n$i.service >> $LOGFILE 2>&1
+            done
         fi
 
         # activate masternodes, or activate just FIRST masternode
@@ -670,20 +713,25 @@ EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
-            for ((P=1;P<=35;P++));
+            for ((P=1;P<=42;P++));
             do
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
-                elif [ "${PROJECT,,}" = "smart" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
-                elif [ "${PROJECT,,}" = "pivx" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-                elif [ "${PROJECT,,}" = "squorum" ] ; then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
-            else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                
+                elif [ "${PROJECT,,}" = "smart" ]
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
+                
+                elif [ "${PROJECT,,}" = "pivx" ] || [ "${PROJECT,,}" = "squorum" ] || [ "${PROJECT,,}" = "wagerr" ] || [ "${PROJECT,,}" = "empty" ]
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
+
+                else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
-            else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1 ; fi
+                else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
@@ -697,12 +745,12 @@ EOT
                 else break
                 fi
 
-                if [ ${#KEYXIST} = "0" ] && [ "${P}" = "35" ]
+                if [ ${#KEYXIST} = "0" ] && [ "${P}" = "42" ]
                 then echo " "
                     [ -e $INFODIR/fullauto.info ] && curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Error: Could not generate masternode genkeys"}' && echo -e " "
                     echo -e "Problem creating masternode $i. Could not obtain masternode genkey." | tee -a "$LOGFILE"
-                    echo -e "I patiently tried 35 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
-                    exit
+                    echo -e "I patiently tried 42 times but something isn't working correctly.\n" | tee -a "$LOGFILE"
+                    exit 1
                 fi
             done
         done
@@ -710,8 +758,8 @@ EOT
         for ((i=1;i<=$MNS;i++));
         do
             # get or iterate mnprefixes
-            if [ -s $INFODIR/vpsmnprefix.info ]
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmnprefix.info)" >> $INFODIR/vps.mnaliases.info
+            if [ -s $INFODIR/vps.mnprefix.info ]
+            then echo -e "$(sed -n ${i}p $INFODIR/vps.mnprefix.info)" >> $INFODIR/vps.mnaliases.info
             else echo -e "${MNPREFIX}-MN$i" >> $INFODIR/vps.mnaliases.info
             fi
 
@@ -719,7 +767,7 @@ EOT
             echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
             # create masternode address files
-            echo -e "$(sed -n ${i}p $INFODIR/vpsmnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+            echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
 
             # append "masternodeprivkey="
             paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
@@ -735,7 +783,7 @@ EOT
                 masternodeprivkeyafter=$(grep ^smartnodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
-        elif [ "${PROJECT,,}" = "zcoin" ]
+            elif [ "${PROJECT,,}" = "zcoin" ]
             then
                 sed -i "s/^znodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^znodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
@@ -772,12 +820,12 @@ EOT
             fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
-            if [ -e $INFODIR/vpsmntxdata.info ]
-            then echo -e "$(sed -n ${i}p $INFODIR/vpsmntxdata.info)" > $INSTALLDIR/temp/TXID$i
+            if [ -e $INFODIR/vps.mntxdata.info ]
+            then echo -e "$(sed -n ${i}p $INFODIR/vps.mntxdata.info)" > $INSTALLDIR/temp/TXID$i
                 TX=$(echo $(cat $INSTALLDIR/temp/TXID$i))
                 echo -e "$TX" >> $INSTALLDIR/temp/txid
                 echo -e "$TX" > $INSTALLDIR/temp/TXID$i
-                echo -e " Read transaction ID for MN$i from vpsmntxdata.info; set to : " >> $LOGFILE
+                echo -e " Read transaction ID for MN$i from vps.mntxdata.info; set to : " >> $LOGFILE
                 echo -e " $TX " >> $LOGFILE
 
             else
@@ -897,8 +945,8 @@ EOT
 
         # round 2: cleanup and declutter
         echo -e "Cleaning up clutter and taking out trash... \n" | tee -a "$LOGFILE"
-        cp $INSTALLDIR/temp/genkeys $INFODIR/vpsgenkeys.info
-        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
+        cp $INSTALLDIR/temp/genkeys $INFODIR/vps.genkeys.info
+        #        cp $INSTALLDIR/temp/txid $INFODIR/vps.mntxdata.info
         rm $INSTALLDIR/temp/complete --force        ;   rm $INSTALLDIR/temp/masternode.all --force
         rm $INSTALLDIR/temp/masternode.1 --force    ;   rm $INSTALLDIR/temp/masternode.l* --force
         rm $INSTALLDIR/temp/DONATION --force        ;   rm $INSTALLDIR/temp/DONATEADDR --force

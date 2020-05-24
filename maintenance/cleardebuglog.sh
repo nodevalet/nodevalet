@@ -1,8 +1,12 @@
 #!/bin/bash
 # Clear debug.log every week
 # Trim excess sync flags
-# Add the following to the crontab (i.e. crontab -e)
-# (crontab -l ; echo "@weekly $INSTALLDIR/maintenance/cleardebuglog.sh") | crontab -
+
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
 
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh

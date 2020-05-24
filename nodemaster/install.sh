@@ -5,10 +5,10 @@ INSTALLDIR='/var/tmp/nodevalet'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
 INFODIR='/var/tmp/nvtemp'
 # NOTE: below is MNODE_DAEMOND not MNODE_DAEMON (don't break it!)
-MNODE_DAEMOND=$(<$INFODIR/vpsmnode_daemon.info)
-MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
-HNAME=$(<$INFODIR/vpshostname.info)
-PROJECT=$(<$INFODIR/vpscoin.info)
+MNODE_DAEMOND=$(<$INFODIR/vps.mnode_daemon.info)
+MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
+HNAME=$(<$INFODIR/vps.hostname.info)
+PROJECT=$(<$INFODIR/vps.coin.info)
 
 ### define colors ###
 lightred=$'\033[1;31m'  # light red
@@ -657,7 +657,6 @@ function final_call() {
     echo ""
     echo "=> $(tput bold)$(tput setaf 2) All configuration files are in: ${MNODE_CONF_BASE} $(tput sgr0)"
     echo "=> $(tput bold)$(tput setaf 2) All Data directories are in: ${MNODE_DATA_BASE} $(tput sgr0)"
-    echo ""
     # echo "$(tput bold)$(tput setaf 1)Important:$(tput sgr0) run $(tput setaf 2) /usr/local/bin/activate_masternodes_${CODENAME} $(tput sgr0) as root to activate your nodes. "
 
     # place future helper script accordingly on fresh install

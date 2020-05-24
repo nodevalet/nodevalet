@@ -1,6 +1,12 @@
 #!/bin/bash
 # to be added to crontab to updatebinaries using any means necessary
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
@@ -27,10 +33,10 @@ echo -e "$MNODE_DAEMON" > $INSTALLDIR/temp/MNODE_DAEMON
 sed -i "s/MNODE_DAEMON=\${MNODE_DAEMON:-\/usr\/local\/bin\///" $INSTALLDIR/temp/MNODE_DAEMON  2>&1
 cat $INSTALLDIR/temp/MNODE_DAEMON | tr -d '[}]' > $INSTALLDIR/temp/MNODE_DAEMON1
 MNODE_DAEMON=$(<$INSTALLDIR/temp/MNODE_DAEMON1)
-cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vpsmnode_daemon.info
+cat $INSTALLDIR/temp/MNODE_DAEMON1 > $INFODIR/vps.mnode_daemon.info
 rm $INSTALLDIR/temp/MNODE_DAEMON1 ; rm $INSTALLDIR/temp/MNODE_DAEMON
-echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vpsbinaries.info 2>&1
-MNODE_BINARIES=$(<$INFODIR/vpsbinaries.info)
+echo -e "${MNODE_DAEMON::-1}" > $INFODIR/vps.binaries.info 2>&1
+MNODE_BINARIES=$(<$INFODIR/vps.binaries.info)
 
 # Pull GITAPI_URL from $PROJECT.env
 GIT_API=$(grep ^GITAPI_URL $INSTALLDIR/nodemaster/config/${PROJECT}/${PROJECT}.env)
@@ -94,6 +100,8 @@ function update_binaries() {
         TARBALL="$(find . -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")"
 
         if [[ $TARBALL == *.gz ]]
+        then tar -xzf "$TARBALL"
+        elif [[ $TARBALL == *.tgz ]]
         then tar -xzf "$TARBALL"
         else unzip "$TARBALL"
         fi

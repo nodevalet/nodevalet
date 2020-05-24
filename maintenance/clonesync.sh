@@ -1,6 +1,12 @@
 #!/bin/bash
 # Find a synced masternode, stop it, copy its blockchain, then restart them both.
 
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
+
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
 
@@ -91,7 +97,7 @@ else echo -e "${lightcyan} Clonesync will now attempt to clone the blockchain "
 
     echo -e "${lightred} Removing relevant target blockchain data.${nocolor}\n"
     cd /var/lib/masternodes/"${PROJECT}"${t}
-    cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat
+    cp wallet.dat wallet_backup.$(date +%m.%d.%y).dat 2>/dev/null
     sudo rm -rf !("wallet_backup.$(date +%m.%d.%y).dat"|"masternode.conf")
     sleep 2
 

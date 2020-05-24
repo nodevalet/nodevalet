@@ -1,7 +1,11 @@
 #!/bin/bash
 # Check if reboot is required, and if so, reboot
-# Add the following to the crontab (i.e. crontab -e)
-# (crontab -l ; echo "30 */10 * * * $INSTALLDIR/maintenance/rebootq.sh") | crontab -
+
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
 
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
@@ -32,7 +36,7 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    shutdown -r now "Server is going down for upgrade."
+    reboot
 else
     echo -e " No reboot is required at this time\n"
     rm $INSTALLDIR/temp/REBOOTREQ

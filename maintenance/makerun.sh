@@ -1,7 +1,11 @@
 #!/bin/bash
 # Compare number of running nodes to number of installed nodes; restart daemon if different
-# Add the following to the crontab (i.e. crontab -e)
-# (crontab -l ; echo "*/5 * * * * $INSTALLDIR/maintenance/makerun.sh") | crontab -
+
+# exit with error if not run as root/sudo
+if [ "$(id -u)" != "0" ]
+then echo -e "\n Please re-run as root or sudo.\n"
+    exit 1
+fi
 
 # Set common variables
 . /var/tmp/nodevalet/maintenance/vars.sh
@@ -32,7 +36,7 @@ fi
 
 TOTAL=$(ps aux | grep -i "$MNODE_DAEMON" | wc -l)
 CUR_DAEMON=$(expr "$TOTAL" - 1)
-EXP_DAEMON=$(cat $INFODIR/vpsnumber.info)
+EXP_DAEMON=$(cat $INFODIR/vps.number.info)
 
 if [ "$CUR_DAEMON" != "$EXP_DAEMON" ]
 then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : I expected $EXP_DAEMON daemons but found only $CUR_DAEMON. Restarting... \n" | tee -a "$LOGFILE"
