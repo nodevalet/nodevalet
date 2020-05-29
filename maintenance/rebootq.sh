@@ -36,7 +36,8 @@ then echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Checking if system requires a reboot
     echo -e "${lightred} --> $(cat ${INSTALLDIR}/temp/REBOOTREQ) ${nocolor}\n" | tee -a "$LOGFILE"
 
     rm $INSTALLDIR/temp/REBOOTREQ
-    reboot
+    sudo reboot
+    sudo shutdown -r now
 else
     echo -e " No reboot is required at this time\n"
     rm $INSTALLDIR/temp/REBOOTREQ
