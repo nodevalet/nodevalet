@@ -17,6 +17,7 @@ rm -f $INSTALLDIR/temp/shuttingdown
 rm -f $INSTALLDIR/temp/clonesyncing
 rm -f $INSTALLDIR/temp/gettinginfo
 rm -f $INSTALLDIR/temp/activating
+rm -f $INSTALLDIR/temp/updating
 
 clear
 

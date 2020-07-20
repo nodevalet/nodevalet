@@ -670,6 +670,7 @@ function add_scriptlets() {
     sudo ln -s $INSTALLDIR/maintenance/showdebug.sh /usr/local/bin/showdebug
     sudo ln -s $INSTALLDIR/maintenance/showmlog.sh /usr/local/bin/showmlog
     sudo ln -s $INSTALLDIR/maintenance/smartstart.sh /usr/local/bin/smartstart
+    sudo ln -s $INSTALLDIR/maintenance/rpc.sh /usr/local/bin/rpc
 }
 
 ######################
