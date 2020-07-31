@@ -219,7 +219,7 @@ function gather_info() {
     elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
         echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 440}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n\n${white} This server's memory can safely support $MAXNODES masternodes.${nocolor}\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
@@ -719,6 +719,8 @@ EOT
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 
+                # add something for Dash and Sierra here
+
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 
