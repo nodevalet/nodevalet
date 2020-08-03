@@ -369,7 +369,7 @@ function gather_info() {
                 # collect Payout Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for masternode #$i${nocolor}"
+                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for masternode #1${nocolor}"
                     read -p "  --> " PAYOUTADDR
                     echo -e "\n${white} You entered the address: ${yellow}${PAYOUTADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -385,7 +385,7 @@ function gather_info() {
                 # collect Owner Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for masternode #$i${nocolor}"
+                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for masternode #1${nocolor}"
                     read -p "  --> " OWNERADDR
                     echo -e "\n${white} You entered the address: ${yellow}${OWNERADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -401,7 +401,7 @@ function gather_info() {
                 # collect Voting Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for masternode #$i${nocolor}"
+                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for masternode #1${nocolor}"
                     read -p "  --> " VOTINGADDR
                     echo -e "\n${white} You entered the address: ${yellow}${VOTINGADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -761,7 +761,7 @@ EOT
                 
                 # add something for Dash and Sierra here
                 elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
-                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/blsprivkey
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/genkeys
 
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
@@ -770,12 +770,13 @@ EOT
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
 
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
-                
+
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                elif [ "${PROJECT,,}" = "sierra" ] ; then echo "masternodeblsprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 fi
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
@@ -835,7 +836,12 @@ EOT
                 masternodeprivkeyafter=$(grep ^znodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
-
+            elif [ "${PROJECT,,}" = "sierra" ]
+            then
+                sed -i "s/^masternodeblsprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
+                masternodeprivkeyafter=$(grep ^masternodeblsprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
+                echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
+                echo -e " $masternodeprivkeyafter" >> $LOGFILE
             else
                 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^masternodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
