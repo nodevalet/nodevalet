@@ -764,9 +764,10 @@ EOT
                 
                 # add something for Dash and Sierra here
                 elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
-                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/genkeys
-                cat $INSTALLDIR/temp/genkeys | jq '.["secret"]' | tr -d '["]' > $INFODIR/vps.blssecret.info
-                cat $INSTALLDIR/temp/genkeys | jq '.["public"]' | tr -d '["]' > $INFODIR/vps.blspublic.info
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/blsgenkeys
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["secret"]' | tr -d '["]' >> $INSTALLDIR/temp/genkeys
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["secret"]' | tr -d '["]' >> $INFODIR/vps.blssecret.info
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["public"]' | tr -d '["]' >> $INFODIR/vps.blspublic.info
 
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
@@ -823,15 +824,12 @@ EOT
             then echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
             fi
 
-            # append "masternodeprivkey="
+            # append "masternodeprivkey="         
             paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
             tr -d '[:blank:]' < $INSTALLDIR/temp/GENKEY${i}FIN > $INSTALLDIR/temp/MNPRIVKEY$i
-
+            
             # assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
-            if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
-            then GENKEYVAR=$(cat $INFODIR/vps.blssecret.info)
-            else GENKEYVAR=$(cat $INSTALLDIR/temp/MNPRIVKEY$i)
-            fi
+            GENKEYVAR=$(cat $INSTALLDIR/temp/MNPRIVKEY$i)
 
             # insert new genkey into project_n$i.conf files (special case for smartnodes)
             if [ "${PROJECT,,}" = "smart" ]
