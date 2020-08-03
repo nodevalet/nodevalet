@@ -986,15 +986,22 @@ EOT
         else echo -e "complete|${VPSAPI}|headless" > $INSTALLDIR/temp/complete
         fi
 
-        # comment out lines that contain no txid or index
-        # sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
-
         # replace necessary spaces with + temporarily
         sed -i 's/ /+/g' $INSTALLDIR/temp/masternode.all
         # merge "complete" line with masternode.all file and remove line breaks (\n)
         paste -s $INSTALLDIR/temp/complete $INSTALLDIR/temp/masternode.all |  tr -d '\n' > $INSTALLDIR/temp/masternode.1
         tr -d '[:blank:]' < $INSTALLDIR/temp/masternode.1 > $INSTALLDIR/temp/masternode.return
         sed -i 's/+/ /g' $INSTALLDIR/temp/masternode.return
+
+        # prepare masternode registration transaction for Sierra and Dash       
+        if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+        then echo -e " Preparing $PROJECTt masternode ProRegTx command" | tee -a "$LOGFILE" 
+        echo "protx register_prepare" > $INSTALLDIR/temp/register
+        echo "0" > $INSTALLDIR/temp/zero
+        paste -d ' ' $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prepare
+        rm $INSTALLDIR/temp/register --force
+        rm $INSTALLDIR/temp/zero --force
+        fi
 
         # append masternode.conf file
         cat <<EOT >> $INSTALLDIR/masternode.conf
