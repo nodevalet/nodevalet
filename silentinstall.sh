@@ -250,7 +250,7 @@ function gather_info() {
 
     # read or collect masternode addresses
     if [ -e $INFODIR/fullauto.info ]
-    then echo -e " \n\nThere is no need to collect addreses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
+    then echo -e " \n\nThere is no need to collect addresses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else
         # Gather MN addresses
         # Check if blockchain is fully-supported
@@ -360,65 +360,105 @@ function gather_info() {
 
     # query to generate new genkeys or query for user input
     if [ -e $INFODIR/fullauto.info ]
-    then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
-    else
-        echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
-        echo -e " secure, but it's faster if your server does it for you. An example of "
-        echo -e " when you would want to enter them yourself would be if you are trying "
-        echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
-        while :; do
-            echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
-            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
-            if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
-            then
-                break
-            fi
-        done
-        echo -e -n "${nocolor}"
+    then echo -e "\n Genkeys will be automatically generated for $MNS masternodes if needed.\n" >> $LOGFILE 2>&1
+    else echo -e "\n Checking to see if genkeys are needed\n"
+         # Special Check for Dash or Sierra
+        if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+        then echo -e " $PROJECTt requires additional addresses to configure this masternode."
 
-        if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
-        then touch $INSTALLDIR/temp/genkeys
-            echo -e " User selected to manually enter genkeys for $MNS masternodes" >> $LOGFILE 2>&1
-            touch $INSTALLDIR/temp/owngenkeys
-            for ((i=1;i<=$MNS;i++));
-            do
+                # collect Payout Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
-                    read -p "  --> " UGENKEY
-                    echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
+                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for masternode #$i${nocolor}"
+                    read -p "  --> " PAYOUTADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${PAYOUTADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
-                        echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
-                        echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
-                        echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
+                        echo -e "$PAYOUTADDR" >> $INFODIR/vps.payoutaddr.info
+                        echo -e " -> Payout Address $i set to: $PAYOUTADDR" >> $LOGFILE
                         break
                     fi
                 done
                 echo -e -n "${nocolor}"
+
+                # collect Owner Address
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for masternode #$i${nocolor}"
+                    read -p "  --> " OWNERADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${OWNERADDR}${nocolor} "
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        echo -e "$OWNERADDR" >> $INFODIR/vps.owneraddr.info
+                        echo -e " -> Owner Address $i set to: $OWNERADDR" >> $LOGFILE
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+
+                # collect Voting Address
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for masternode #$i${nocolor}"
+                    read -p "  --> " VOTINGADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${VOTINGADDR}${nocolor} "
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        echo -e "$VOTINGADDR" >> $INFODIR/vps.votingaddr.info
+                        echo -e " -> Payout Address $i set to: $VOTINGADDR" >> $LOGFILE
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+            echo -e " User provided Payout, Owner, and Voting addresses for $MNS masternode\n" >> $LOGFILE 2>&1
+
+        else echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
+            echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
+            echo -e " secure, but it's faster if your server does it for you. An example of "
+            echo -e " when you would want to enter them yourself would be if you are trying "
+            echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
+            while :; do
+                echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
+                read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
+                if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
+                then
+                    break
+                fi
             done
-            echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
-        else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
-            echo -e "${nocolor}"
-            echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            echo -e -n "${nocolor}"
+
+            if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
+            then touch $INSTALLDIR/temp/genkeys
+                echo -e " User selected to manually enter genkeys for $MNS masternodes" >> $LOGFILE 2>&1
+                touch $INSTALLDIR/temp/owngenkeys
+                for ((i=1;i<=$MNS;i++));
+                do
+                    echo -e "${cyan}"
+                    while :; do
+                        echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
+                        read -p "  --> " UGENKEY
+                        echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
+                        read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                        if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                        then echo -e -n "${nocolor}"
+                            echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
+                            echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
+                            echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
+                            break
+                        fi
+                    done
+                    echo -e -n "${nocolor}"
+                done
+                echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
+            else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
+                echo -e "${nocolor}"
+                echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            fi
         fi
     fi
-
-    # query to collect TXIDs if not detected
-    #    if [ -e $INFODIR/fullauto.info ]
-    #    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
-    #    else
-    #        # Pull BLOCKEXP from $PROJECT.env
-    #        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-    #        if [ -n "$BLOCKEX" ]
-    #        then :
-    #        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
-    #            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
-    #           echo -e " the masternode address(es) you entered earlier.${nocolor}"
-    #       fi
-    #   fi
 
     # create or assign customssh
     if [ -s $INFODIR/vps.sshport.info ]
@@ -720,6 +760,8 @@ EOT
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 
                 # add something for Dash and Sierra here
+                elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/blsprivkey
 
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
@@ -728,6 +770,7 @@ EOT
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
 
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+                
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
