@@ -219,6 +219,9 @@ function gather_info() {
     elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
         echo -e " Going to install 1 masternode since IPv4 is required" | tee -a "$LOGFILE"
+    elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+    then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
+        echo -e " Going to install 1 masternode since project is $PROJECTt" | tee -a "$LOGFILE"
     else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 440}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n\n${white} This server's memory can safely support $MAXNODES masternodes.${nocolor}\n"
