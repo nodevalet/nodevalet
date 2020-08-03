@@ -372,7 +372,7 @@ function gather_info() {
                 # collect Payout Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for masternode #1${nocolor}"
+                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for $PROJECTt masternode #1${nocolor}"
                     read -p "  --> " PAYOUTADDR
                     echo -e "\n${white} You entered the address: ${yellow}${PAYOUTADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -388,7 +388,7 @@ function gather_info() {
                 # collect Owner Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for masternode #1${nocolor}"
+                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for $PROJECTt masternode #1${nocolor}"
                     read -p "  --> " OWNERADDR
                     echo -e "\n${white} You entered the address: ${yellow}${OWNERADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
@@ -404,7 +404,7 @@ function gather_info() {
                 # collect Voting Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for masternode #1${nocolor}"
+                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for $PROJECTt masternode #1${nocolor}"
                     read -p "  --> " VOTINGADDR
                     echo -e "\n${white} You entered the address: ${yellow}${VOTINGADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
