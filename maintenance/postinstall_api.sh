@@ -10,7 +10,7 @@ fi
 INSTALLDIR='/var/tmp/nodevalet'
 INFODIR='/var/tmp/nvtemp'
 LOGFILE='/var/tmp/nodevalet/logs/silentinstall.log'
-TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
+PROJECT=$(<$INFODIR/vps.coin.info)
 
 function final_message() {
 
@@ -32,7 +32,19 @@ function final_message() {
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
+        # create a script to bump into Sierra mode if detected
+        if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+        then TRANSMITMN=$(cat $INFODIR/register_prepare.return)        
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
+        sleep 5
+        
+        curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Awaiting further instructions ..."}' && echo -e " "
+
+        sleep 60
+        
+        else curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
+
+        fi
 
         # create file to signal cron that reboot has occurred
         touch $INSTALLDIR/temp/installation_complete
