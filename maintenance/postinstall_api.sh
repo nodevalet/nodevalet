@@ -32,17 +32,35 @@ function final_message() {
         echo -e "\033[1;37m $(date +%m.%d.%Y_%H:%M:%S) : Server has rebooted after installation \e[0m" | tee -a /var/tmp/nodevalet/logs/maintenance.log
 
         # transmit masternode.return to mother
+        
         # create a script to bump into Sierra mode if detected
         if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
-        then TRANSMITMN=$(cat $INFODIR/register_prepare.return)        
+        then TRANSMITMN=$(cat $INFODIR/register_prepare.return)
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        sleep 5
+        sleep 10
+
+
+                # CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
+                APIURL="https://api.nodevalet.io/txdata.php?coin="
+                APIKEY=$(cat $INFODIR/vps.api.info)
+                CURLAPI=$(echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI")
+
+#### put what I cut out here:
+
+
+
+
+
+
+
+
         
         # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Awaiting further instructions ..."}' && echo -e " "
 
         sleep 60
 
-        else curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
+        else TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
+        curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
 
         fi
 
