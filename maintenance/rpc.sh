@@ -51,7 +51,7 @@ while :; do
 done
 echo " "
 echo -e "${white} Running command: ${yellow}/usr/local/bin/${MNODE_DAEMON::-1}-cli -conf=/etc/masternodes/${PROJECT}_n${i}.conf $c${nocolor}"
-echo -e "{white} "
+echo -e "${white} "
 /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}_n${i}".conf $c
-echo -e "{nocolor} "
+echo -e "${nocolor} "
 exit
