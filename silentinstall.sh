@@ -1001,8 +1001,6 @@ EOT
         echo "0" > $INSTALLDIR/temp/zero
         echo "sierra" > $INSTALLDIR/temp/sierra
 
-
-|headless||MNhelium-E0B3-065E-CF63-43CD-MN1
         # echo -e "complete" > $INSTALLDIR/temp/complete
         if [ -e $INFODIR/fullauto.info ]
         then echo -e "guidedui||${HNAME}" > $INSTALLDIR/temp/registers
