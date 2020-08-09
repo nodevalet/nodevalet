@@ -37,27 +37,26 @@ function final_message() {
         if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
         then TRANSMITMN=$(cat $INFODIR/register_prepare.return)
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        sleep 10
+        sleep 90
+
+        
+        
+## curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "feedback_check","type": "output"}' ; echo " "
 
 
-                # CURLAPI="https://api.nodevalet.io/txdata.php?coin=audax&address=APKSdh4QyVGGYBLs7wFbo4MjeXwK3GBD1o&key=xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
-                APIURL="https://api.nodevalet.io/txdata.php?coin="
-                APIKEY=$(cat $INFODIR/vps.api.info)
-                CURLAPI=$(echo -e "$BLOCKEXP$MNADDRESS&key=$VPSAPI")
+            # CURLAPI="https://api.nodevalet.io/register.php?coin=sierra&hostname=sierra-xxxx-xxxx-xxxx&type=output"
+            APIURL="https://api.nodevalet.io/register.php?coin="
+            CURLAPI=$(echo -e "$APIURL$PROJECT&hostname=$HNAME&type=output")
+
+            # store NoveValets response in a local file
+            curl -s "$CURLAPI" > $INSTALLDIR/temp/API.registerreply.json
+            
+            # report back
+            curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Storing response from previous query"}' ; echo " "
+            sleep 20
 
 #### put what I cut out here:
 
-
-
-
-
-
-
-
-        
-        # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Awaiting further instructions ..."}' && echo -e " "
-
-        sleep 60
 
         else TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
         curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "

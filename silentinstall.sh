@@ -1012,7 +1012,6 @@ EOT
 
         paste -d '|' $INFODIR/register_prep $INSTALLDIR/temp/registers >> $INFODIR/register_prepare.return
 
-        rm $INSTALLDIR/temp/registers --force
         rm $INSTALLDIR/temp/register --force
         rm $INFODIR/register_prep --force
         rm $INSTALLDIR/temp/sierra --force
