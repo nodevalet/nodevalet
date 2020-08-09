@@ -785,6 +785,7 @@ EOT
                 elif [ "${PROJECT,,}" = "sierra" ] ; then echo "masternodeblsprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 fi
+
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
@@ -999,10 +1000,23 @@ EOT
         echo "protx register_prepare" > $INSTALLDIR/temp/register
         echo "0" > $INSTALLDIR/temp/zero
         echo "sierra" > $INSTALLDIR/temp/sierra
-        paste -d ' ' $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prepare
-        paste -d '*' $INSTALLDIR/temp/sierra $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prepare.return
 
+
+|headless||MNhelium-E0B3-065E-CF63-43CD-MN1
+        # echo -e "complete" > $INSTALLDIR/temp/complete
+        if [ -e $INFODIR/fullauto.info ]
+        then echo -e "guidedui||${HNAME}" > $INSTALLDIR/temp/registers
+        else echo -e "headless||${HNAME}" > $INSTALLDIR/temp/registers
+        fi
+
+        paste -d ' ' $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prepare
+        paste -d '*' $INSTALLDIR/temp/sierra $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prep
+
+        paste -d '|' $INFODIR/register_prep $INSTALLDIR/temp/registers >> $INFODIR/register_prepare.return
+
+        rm $INSTALLDIR/temp/registers --force
         rm $INSTALLDIR/temp/register --force
+        rm $INFODIR/register_prep --force
         rm $INSTALLDIR/temp/sierra --force
         rm $INSTALLDIR/temp/zero --force
         fi
