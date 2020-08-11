@@ -36,26 +36,25 @@ function final_message() {
         # create a script to bump into Sierra mode if detected
         if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
         then TRANSMITMN=$(cat $INFODIR/register_prepare.return)
-        curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
-        sleep 90
+            curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "'"$TRANSMITMN"'"}' ; echo " "
+            sleep 30
 
-        
-        
-## curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "feedback_check","type": "output"}' ; echo " "
-
-
-            # CURLAPI="https://api.nodevalet.io/register.php?coin=sierra&hostname=sierra-xxxx-xxxx-xxxx&type=output"
-            APIURL="https://api.nodevalet.io/register.php?coin="
-            CURLAPI=$(echo -e "$APIURL$PROJECT&hostname=$HNAME&type=output")
+            # https://api.nodevalet.io/dip3register.php?coin=sierra&hostname=SSMN1-707B-2158-155F-4217&topic=register_prepare&type=output
+            APIURL="https://api.nodevalet.io/dip3register.php?coin="
+            CURLAPI=$(echo -e "$APIURL$PROJECT&hostname=$HNAME&topic=register_prepare&type=output")
 
             # store NoveValets response in a local file
             curl -s "$CURLAPI" > $INSTALLDIR/temp/API.registerreply.json
-            
+
+            # read curl API response into variable
+            APIRESPONSE=$(cat $INSTALLDIR/temp/API.registerreply.json | jq '.["result"]')
+
             # report back
-            curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Storing response from previous query"}' ; echo " "
+            # curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Storing response from previous query"}' ; echo " "
             sleep 20
 
 #### put what I cut out here:
+
 
 
         else TRANSMITMN=$(cat $INSTALLDIR/temp/masternode.return)
