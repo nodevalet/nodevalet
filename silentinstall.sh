@@ -757,6 +757,39 @@ EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
+
+            # create file with IP addresses
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vps.ipaddresses.info
+
+            # remove "bind=" from vpsipaddresses.info
+            sed -i "s/bind=//" $INFODIR/vps.ipaddresses.info 2>&1
+
+            # the next line produces the IP addresses for this masternode
+            echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
+            IPADDRESSPORT=$(cat $INSTALLDIR/temp/IPADDR$i)
+
+            PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
+            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
+
+            # if ONLYNET=4 then swap in just the ipv4 addresses where needed
+            if [ "$ONLYNET" = 4 ]
+            then sed -i "s/externalip=.*/externalip=$PUBLICIP/" /etc/masternodes/"${PROJECT}"_n$i.conf >> /etc/masternodes/"${PROJECT}"_n$i.conf 2>&1
+            sed -i "s/masternodeaddr=.*/masternodeaddr=$IPADDRESSPORT/" /etc/masternodes/"${PROJECT}"_n$i.conf >> /etc/masternodes/"${PROJECT}"_n$i.conf 2>&1
+            echo -e " Inserting IPv4 address into /etc/masternodes/"${PROJECT}"_n$i.conf" | tee -a "$LOGFILE"
+            fi
+
+            # if ONLYNET=4 then swap in just the external IP address for line masternodeaddr=
+
+            # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
+            if [ "$PRIVATEIP" != "$PUBLICIP" ]
+            then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
+                echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
+                echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}This masternode appears to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
+                echo -e " IPv4 address with a public one in the masternode.conf file if needed." | tee -a "$LOGFILE"
+                echo -e " You may need to configure your router to forward ports for masternodes to work. ${nocolor}" | tee -a "$LOGFILE"
+            fi
+
             for ((P=1;P<=42;P++));
             do
                 # create masternode genkeys (smart is special "smartnodes")
@@ -858,27 +891,7 @@ EOT
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
             fi
 
-            # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vps.ipaddresses.info
 
-            # remove "bind=" from vpsipaddresses.info
-            sed -i "s/bind=//" $INFODIR/vps.ipaddresses.info 2>&1
-
-            # the next line produces the IP addresses for this masternode
-            echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
-
-            PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
-            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
-
-            # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
-            if [ "$PRIVATEIP" != "$PUBLICIP" ]
-            then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
-                echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
-                echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
-                echo -e " ${lightgreen}This masternode appears to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
-                echo -e " IPv4 address with a public one in the masternode.conf file if needed." | tee -a "$LOGFILE"
-                echo -e " You may need to configure your router to forward ports for masternodes to work. ${nocolor}" | tee -a "$LOGFILE"
-            fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
             if [ -e $INFODIR/vps.mntxdata.info ]
