@@ -288,7 +288,7 @@ function validate_netchoice() {
     if [ "${net}" -eq 4 ]; then
 
         IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
-        NETWORK_BASE_TAG=""
+        # NETWORK_BASE_TAG=""
         # this line sets the IPV4ADDR to the *external* public IP address and is necessary when MN is internet facing
         # IPV4ADDR=`/usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
         # this line sets the IPV4ADDR to the *internal* network IP address and is necessary when MN is on a LAN
