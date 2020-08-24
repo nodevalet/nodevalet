@@ -194,8 +194,8 @@ function check_project() {
         then echo "$BLOCKEX" > $INFODIR/vps.BLOCKEXP.info
             sed -i "s/BLOCKEXP=//" $INFODIR/vps.BLOCKEXP.info
             BLOCKEXP=$(<$INFODIR/vps.BLOCKEXP.info)
-            echo -e " Block Explorer set to :"
-            echo -e " $BLOCKEXP \n"
+            # echo -e " Block Explorer set to :"
+            # echo -e " $BLOCKEXP \n"
         else echo -e "No block explorer was identified in $PROJECT.env \n" | tee -a "$LOGFILE"
         fi
 
@@ -203,6 +203,7 @@ function check_project() {
         remove_cron_function
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
+        reboot
         shutdown -r now "Server is going down for upgrade."
         exit
 
@@ -221,6 +222,7 @@ function check_restore() {
         remove_cron_function
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
+        reboot
         shutdown -r now "Server is going down for upgrade."
         exit
 
@@ -231,6 +233,7 @@ function check_restore() {
         remove_cron_function
         rm -f $INSTALLDIR/temp/updating
         rm -f $INSTALLDIR/temp/shuttingdown
+        reboot
         shutdown -r now "Server is going down for upgrade."
     fi
 }
