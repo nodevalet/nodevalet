@@ -73,10 +73,9 @@ do /bin/date > /var/lib/masternodes/"$PROJECT"${i}/debug.log
 done
 
 echo -e " $(date +%m.%d.%Y_%H:%M:%S) : ${lightcyan}Weekly maintenance underway; running cleardebuglog.sh${nocolor}" | tee -a "$LOGFILE"
-echo -e " --> Old masterndoe debug logs and sync flag data have been purged \n"  | tee -a "$LOGFILE"
+echo -e " --> Old masternode debug logs and sync flag data have been purged \n"  | tee -a "$LOGFILE"
 
 exit
-
 # these are all my sync flags
 # $INSTALLDIR/temp/"${PROJECT}"_n${i}_synced
 # $INSTALLDIR/temp/"${PROJECT}"_n${i}_lastosync
