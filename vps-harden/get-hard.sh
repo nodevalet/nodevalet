@@ -183,6 +183,8 @@ function update_upgrade() {
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${white}"
     # remove grub to prevent interactive user prompt: https://tinyurl.com/y9pu7j5s
+    echo '# export DEBIAN_FRONTEND=noninteractive' | tee -a "$LOGFILE"
+    export DEBIAN_FRONTEND=noninteractive
     echo '# rm /boot/grub/menu.lst     (prevent update issue)' | tee -a "$LOGFILE"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     rm /boot/grub/menu.lst
@@ -213,12 +215,10 @@ function update_upgrade() {
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INITIATING SYSTEM UPGRADE " | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${white}"
-    echo ' # apt-get upgrade -y' | tee -a "$LOGFILE"
-    # the next line seemed to break it so I install without new-pkgs
-    # echo ' # apt-get --with-new-pkgs upgrade -y' | tee -a "$LOGFILE"
+    echo ' # apt-get -o Dpkg::Options::="--force-confold" upgrade -q -y' | tee -a "$LOGFILE"
     echo -e "------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e -n "${nocolor}"
-    apt-get upgrade -y | tee -a "$LOGFILE"
+    apt-get -o Dpkg::Options::="--force-confold" upgrade -q -y | tee -a "$LOGFILE"
     echo -e -n "${lightgreen}"
     echo -e "---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : SYSTEM UPGRADED SUCCESSFULLY " | tee -a "$LOGFILE"
@@ -238,6 +238,7 @@ function favored_packages() {
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : INSTALLING FAVORED PACKAGES " | tee -a "$LOGFILE"
     echo -e "--------------------------------------------------- " | tee -a "$LOGFILE"
+    if [ -e $INFODIR/fullauto.info ] ; then curl -X POST https://www.nodevalet.io/status.php -H 'Content-Type: application/json-rpc' -d '{"hostname":"'"$HNAME"'","message": "Installing Recommended Packages ..."}' && echo -e " " ; fi
     echo -e -n "${white}"
     echo ' # apt-get -qqy -o=Dpkg::Use-Pty=0 -o=Acquire::ForceIPv4=true install ' | tee -a "$LOGFILE"
     echo '   htop nethogs ufw fail2ban wondershaper glances ntp figlet lsb-release ' | tee -a "$LOGFILE"

@@ -218,8 +218,11 @@ function gather_info() {
         # check memory and set max MNS appropriately then prompt user how many they would like to build
     elif [ "$ONLYNET" = 4 ]
     then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
-        echo -e " Since ONLYNET=4, setting number of masternodes to only allow $MNS" | tee -a "$LOGFILE"
-    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 340}')
+        echo -e " Going to install 1 masternode since IPv4 is required" | tee -a "$LOGFILE"
+    elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+    then touch $INFODIR/vps.number.info ; MNS=1 ; echo -e "${MNS}" > $INFODIR/vps.number.info
+        echo -e " Going to install 1 masternode since project is $PROJECTt" | tee -a "$LOGFILE"
+    else NODES=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 440}')
         MAXNODES=$(echo "$NODES" | awk '{print int($1+0.5)}')
         echo -e "\n\n${white} This server's memory can safely support $MAXNODES masternodes.${nocolor}\n"
         echo -e "${cyan} Please enter the number of masternodes to install : ${nocolor}"
@@ -250,7 +253,7 @@ function gather_info() {
 
     # read or collect masternode addresses
     if [ -e $INFODIR/fullauto.info ]
-    then echo -e " \n\nThere is no need to collect addreses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
+    then echo -e " \n\nThere is no need to collect addresses, ${yellow}fullauto.info ${nocolor}exists\n" | tee -a "$LOGFILE"
     else
         # Gather MN addresses
         # Check if blockchain is fully-supported
@@ -360,65 +363,105 @@ function gather_info() {
 
     # query to generate new genkeys or query for user input
     if [ -e $INFODIR/fullauto.info ]
-    then : echo -e "\n Genkeys will be automatically generated for $MNS masternodes.\n" >> $LOGFILE 2>&1
-    else
-        echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
-        echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
-        echo -e " secure, but it's faster if your server does it for you. An example of "
-        echo -e " when you would want to enter them yourself would be if you are trying "
-        echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
-        while :; do
-            echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
-            read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
-            if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
-            then
-                break
-            fi
-        done
-        echo -e -n "${nocolor}"
+    then echo -e "\n Genkeys will be automatically generated for $MNS masternodes if needed.\n" >> $LOGFILE 2>&1
+    else echo -e "\n Checking to see if genkeys are needed\n"
+         # Special Check for Dash or Sierra
+        if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+        then echo -e " $PROJECTt requires additional addresses to configure this masternode."
 
-        if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
-        then touch $INSTALLDIR/temp/genkeys
-            echo -e " User selected to manually enter genkeys for $MNS masternodes" >> $LOGFILE 2>&1
-            touch $INSTALLDIR/temp/owngenkeys
-            for ((i=1;i<=$MNS;i++));
-            do
+                # collect Payout Address
                 echo -e "${cyan}"
                 while :; do
-                    echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
-                    read -p "  --> " UGENKEY
-                    echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
+                    echo -e "\n${cyan} Please enter the ${white}Payout Address${cyan} for $PROJECTt masternode #1${nocolor}"
+                    read -p "  --> " PAYOUTADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${PAYOUTADDR}${nocolor} "
                     read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
                     if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
                     then echo -e -n "${nocolor}"
-                        echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
-                        echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
-                        echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
+                        echo -e "$PAYOUTADDR" >> $INFODIR/vps.payoutaddr.info
+                        echo -e " -> Payout Address $i set to: $PAYOUTADDR" >> $LOGFILE
                         break
                     fi
                 done
                 echo -e -n "${nocolor}"
+
+                # collect Owner Address
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n${cyan} Please enter an ${white}Owner Address${cyan} for $PROJECTt masternode #1${nocolor}"
+                    read -p "  --> " OWNERADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${OWNERADDR}${nocolor} "
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        echo -e "$OWNERADDR" >> $INFODIR/vps.owneraddr.info
+                        echo -e " -> Owner Address $i set to: $OWNERADDR" >> $LOGFILE
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+
+                # collect Voting Address
+                echo -e "${cyan}"
+                while :; do
+                    echo -e "\n${cyan} Please enter the ${white}Voting Address${cyan} for $PROJECTt masternode #1${nocolor}"
+                    read -p "  --> " VOTINGADDR
+                    echo -e "\n${white} You entered the address: ${yellow}${VOTINGADDR}${nocolor} "
+                    read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                    if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                    then echo -e -n "${nocolor}"
+                        echo -e "$VOTINGADDR" >> $INFODIR/vps.votingaddr.info
+                        echo -e " -> Payout Address $i set to: $VOTINGADDR" >> $LOGFILE
+                        break
+                    fi
+                done
+                echo -e -n "${nocolor}"
+            echo -e " User provided Payout, Owner, and Voting addresses for $MNS masternode\n" >> $LOGFILE 2>&1
+
+        else echo -e "${lightcyan}\n\n You can choose to enter your own masternode genkeys or you can let"
+            echo -e " your masternode's ${yellow}${MNODE_DAEMON::-1}-cli ${lightcyan}generate them for you. Both are equally "
+            echo -e " secure, but it's faster if your server does it for you. An example of "
+            echo -e " when you would want to enter them yourself would be if you are trying "
+            echo -e " to transfer existing masternodes to this VPS without interruption.${cyan}"
+            while :; do
+                echo -e "\n Would you like your server to generate genkeys for you? y/n ${white}"
+                read -n 1 -s -r -p " --> Hint: The correct answer here is usually 'yes' " GETGENKEYS
+                if [[ $GETGENKEYS == "y" || $GETGENKEYS == "Y" || $GETGENKEYS == "N" || $GETGENKEYS == "n" ]]
+                then
+                    break
+                fi
             done
-            echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
-        else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
-            echo -e "${nocolor}"
-            echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            echo -e -n "${nocolor}"
+
+            if [ "${GETGENKEYS,,}" = "N" ] || [ "${GETGENKEYS,,}" = "n" ]
+            then touch $INSTALLDIR/temp/genkeys
+                echo -e " User selected to manually enter genkeys for $MNS masternodes" >> $LOGFILE 2>&1
+                touch $INSTALLDIR/temp/owngenkeys
+                for ((i=1;i<=$MNS;i++));
+                do
+                    echo -e "${cyan}"
+                    while :; do
+                        echo -e "\n Please enter the $PROJECTt genkey for masternode #$i"
+                        read -p "  --> " UGENKEY
+                        echo -e "\n${white} You entered the address: ${yellow}${UGENKEY}${nocolor} "
+                        read -n 1 -s -r -p "  --> Is this correct? y/n  " VERIFY
+                        if [[ $VERIFY == "y" || $VERIFY == "Y" ]]
+                        then echo -e -n "${nocolor}"
+                            echo -e "$UGENKEY" >> $INSTALLDIR/temp/genkeys
+                            echo -e " -> Masternode $i genkey is: $UGENKEY" >> $LOGFILE
+                            echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
+                            break
+                        fi
+                    done
+                    echo -e -n "${nocolor}"
+                done
+                echo -e " User manually entered genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
+            else echo -e " User selected to have this VPS create genkeys for $MNS masternodes\n" >> $LOGFILE 2>&1
+                echo -e "${nocolor}"
+                echo -e "\n ${yellow}No problem.  The VPS will generate your masternode genkeys.${nocolor}\n"
+            fi
         fi
     fi
-
-    # query to collect TXIDs if not detected
-    #    if [ -e $INFODIR/fullauto.info ]
-    #    then echo -e "\n Transaction IDs and indices will be retrieved from vps.mntxdata.info.\n" >> $LOGFILE 2>&1
-    #    else
-    #        # Pull BLOCKEXP from $PROJECT.env
-    #        BLOCKEX=$(grep ^BLOCKEXP=unsupported $INSTALLDIR/nodemaster/config/"$PROJECT"/"$PROJECT".env)
-    #        if [ -n "$BLOCKEX" ]
-    #        then :
-    #        else echo -e "\n ${lightcyan}NodeValet found a supported block explorer for $PROJECT.${nocolor}" | tee -a "$LOGFILE"
-    #            echo -e " ${white}NodeValet will lookup your masternode transaction information using "
-    #           echo -e " the masternode address(es) you entered earlier.${nocolor}"
-    #       fi
-    #   fi
 
     # create or assign customssh
     if [ -s $INFODIR/vps.sshport.info ]
@@ -714,11 +757,51 @@ EOT
         echo -e "Creating masternode.conf variables and files for $MNS masternodes" | tee -a "$LOGFILE"
         for ((i=1;i<=$MNS;i++));
         do
+
+            # create file with IP addresses
+            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vps.ipaddresses.info
+
+            # remove "bind=" from vpsipaddresses.info
+            sed -i "s/bind=//" $INFODIR/vps.ipaddresses.info 2>&1
+
+            # the next line produces the IP addresses for this masternode
+            echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
+            IPADDRESSPORT=$(cat $INSTALLDIR/temp/IPADDR$i)
+
+            PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
+            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
+
+            # if ONLYNET=4 then swap in just the ipv4 addresses where needed
+            if [ "$ONLYNET" = 4 ]
+            then sed -i "s/externalip=.*/externalip=$PUBLICIP/" /etc/masternodes/"${PROJECT}"_n$i.conf >> /etc/masternodes/"${PROJECT}"_n$i.conf 2>&1
+            sed -i "s/masternodeaddr=.*/masternodeaddr=$IPADDRESSPORT/" /etc/masternodes/"${PROJECT}"_n$i.conf >> /etc/masternodes/"${PROJECT}"_n$i.conf 2>&1
+            echo -e " Inserting IPv4 address into /etc/masternodes/"${PROJECT}"_n$i.conf" | tee -a "$LOGFILE"
+            fi
+
+            # if ONLYNET=4 then swap in just the external IP address for line masternodeaddr=
+
+            # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
+            if [ "$PRIVATEIP" != "$PUBLICIP" ]
+            then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
+                echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
+                echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
+                echo -e " ${lightgreen}This masternode appears to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
+                echo -e " IPv4 address with a public one in the masternode.conf file if needed." | tee -a "$LOGFILE"
+                echo -e " You may need to configure your router to forward ports for masternodes to work. ${nocolor}" | tee -a "$LOGFILE"
+            fi
+
             for ((P=1;P<=42;P++));
             do
                 # create masternode genkeys (smart is special "smartnodes")
                 if [ -e $INSTALLDIR/temp/owngenkeys ] ; then :
                 
+                # add something for Dash and Sierra here
+                elif [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+                then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf bls generate >> $INSTALLDIR/temp/blsgenkeys
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["secret"]' | tr -d '["]' >> $INSTALLDIR/temp/genkeys
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["secret"]' | tr -d '["]' >> $INFODIR/vps.blssecret.info
+                cat $INSTALLDIR/temp/blsgenkeys | jq '.["public"]' | tr -d '["]' >> $INFODIR/vps.blspublic.info
+
                 elif [ "${PROJECT,,}" = "smart" ]
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf smartnode genkey >> $INSTALLDIR/temp/genkeys
                 
@@ -726,13 +809,16 @@ EOT
                 then /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf createmasternodekey >> $INSTALLDIR/temp/genkeys
 
                 else /usr/local/bin/"${MNODE_DAEMON::-1}"-cli -conf=/etc/masternodes/"${PROJECT}"_n1.conf masternode genkey >> $INSTALLDIR/temp/genkeys ; fi
+
                 echo -e "$(sed -n ${i}p $INSTALLDIR/temp/genkeys)" > $INSTALLDIR/temp/GENKEY$i
 
                 # craft line to be injected into wallet.conf
                 if [ "${PROJECT,,}" = "smart" ] ; then echo "smartnodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 elif [ "${PROJECT,,}" = "zcoin" ] ; then echo "znodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
+                elif [ "${PROJECT,,}" = "sierra" ] ; then echo "masternodeblsprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 else echo "masternodeprivkey=" > $INSTALLDIR/temp/MNPRIV1
                 fi
+
                 KEYXIST=$(<$INSTALLDIR/temp/GENKEY$i)
 
                 # add extra pause for wallets that are slow to start
@@ -768,12 +854,14 @@ EOT
             echo -e "$(sed -n ${i}p $INFODIR/vps.mnaliases.info)" >> $INSTALLDIR/temp/MNALIAS$i
 
             # create masternode address files
-            echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+            if [ -s $INFODIR/vps.mnaddress.info ]
+            then echo -e "$(sed -n ${i}p $INFODIR/vps.mnaddress.info)" > $INSTALLDIR/temp/MNADD$i
+            fi
 
-            # append "masternodeprivkey="
+            # append "masternodeprivkey="         
             paste $INSTALLDIR/temp/MNPRIV1 $INSTALLDIR/temp/GENKEY$i > $INSTALLDIR/temp/GENKEY${i}FIN
             tr -d '[:blank:]' < $INSTALLDIR/temp/GENKEY${i}FIN > $INSTALLDIR/temp/MNPRIVKEY$i
-
+            
             # assign GENKEYVAR to the full line masternodeprivkey=xxxxxxxxxx
             GENKEYVAR=$(cat $INSTALLDIR/temp/MNPRIVKEY$i)
 
@@ -790,7 +878,12 @@ EOT
                 masternodeprivkeyafter=$(grep ^znodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
                 echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
-
+            elif [ "${PROJECT,,}" = "sierra" ]
+            then
+                sed -i "s/^masternodeblsprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
+                masternodeprivkeyafter=$(grep ^masternodeblsprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
+                echo -e " Privkey in /etc/masternodes/${PROJECT}_n$i.conf after sub is : " >> $LOGFILE
+                echo -e " $masternodeprivkeyafter" >> $LOGFILE
             else
                 sed -i "s/^masternodeprivkey=.*/$GENKEYVAR/" /etc/masternodes/"${PROJECT}"_n$i.conf
                 masternodeprivkeyafter=$(grep ^masternodeprivkey /etc/masternodes/"${PROJECT}"_n$i.conf)
@@ -798,27 +891,7 @@ EOT
                 echo -e " $masternodeprivkeyafter" >> $LOGFILE
             fi
 
-            # create file with IP addresses
-            sed -n -e '/^bind/p' /etc/masternodes/"${PROJECT}"_n$i.conf >> $INFODIR/vps.ipaddresses.info
 
-            # remove "bind=" from vpsipaddresses.info
-            sed -i "s/bind=//" $INFODIR/vps.ipaddresses.info 2>&1
-
-            # the next line produces the IP addresses for this masternode
-            echo -e "$(sed -n ${i}p $INFODIR/vps.ipaddresses.info)" > $INSTALLDIR/temp/IPADDR$i
-
-            PUBLICIP=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
-            PRIVATEIP=$(sudo hostname -I | awk '{print $1}')
-
-            # to enable functionality in headless mode for LAN connected VPS, replace private IP with public IP
-            if [ "$PRIVATEIP" != "$PUBLICIP" ]
-            then sed -i "s/$PRIVATEIP/$PUBLICIP/" $INSTALLDIR/temp/IPADDR$i
-                echo -e " Your private IP address is $PRIVATEIP " | tee -a "$LOGFILE"
-                echo -e " Your public IP address is $PUBLICIP " | tee -a "$LOGFILE"
-                echo -e " ${lightgreen}This masternode appears to be on a LAN, so we'll replace its private" | tee -a "$LOGFILE"
-                echo -e " IPv4 address with a public one in the masternode.conf file if needed." | tee -a "$LOGFILE"
-                echo -e " You may need to configure your router to forward ports for masternodes to work. ${nocolor}" | tee -a "$LOGFILE"
-            fi
 
             # Check for presence of txid and, if present, use it for txid/txidx
             if [ -e $INFODIR/vps.mntxdata.info ]
@@ -927,9 +1000,6 @@ EOT
         else echo -e "complete|${VPSAPI}|headless" > $INSTALLDIR/temp/complete
         fi
 
-        # comment out lines that contain no txid or index
-        # sed -i "s/.*collateral_output_txid tx/.*collateral_output_txid tx/" $INSTALLDIR/txid >> $INSTALLDIR/txid 2>&1
-
         # replace necessary spaces with + temporarily
         sed -i 's/ /+/g' $INSTALLDIR/temp/masternode.all
         # merge "complete" line with masternode.all file and remove line breaks (\n)
@@ -937,8 +1007,32 @@ EOT
         tr -d '[:blank:]' < $INSTALLDIR/temp/masternode.1 > $INSTALLDIR/temp/masternode.return
         sed -i 's/+/ /g' $INSTALLDIR/temp/masternode.return
 
-        # append masternode.conf file
-        cat <<EOT >> $INSTALLDIR/masternode.conf
+        # prepare masternode registration transaction for Sierra and Dash       
+        if [ "${PROJECT,,}" = "sierra" ] || [ "${PROJECT,,}" = "dash" ]
+        then echo -e " Preparing $PROJECTt masternode ProRegTx command" | tee -a "$LOGFILE" 
+        echo "protx register_prepare" > $INSTALLDIR/temp/register
+        echo "0" > $INSTALLDIR/temp/zero
+        echo "sierra" > $INSTALLDIR/temp/sierra
+
+        # echo -e "complete" > $INSTALLDIR/temp/complete
+        if [ -e $INFODIR/fullauto.info ]
+        then echo -e "guidedui||${HNAME}" > $INSTALLDIR/temp/registers
+        else echo -e "headless||${HNAME}" > $INSTALLDIR/temp/registers
+        fi
+
+        paste -d ' ' $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prepare
+        paste -d '*' $INSTALLDIR/temp/sierra $INSTALLDIR/temp/register $INFODIR/vps.mntxdata.info $INFODIR/vps.ipaddresses.info  $INFODIR/vps.owneraddr.info $INFODIR/vps.blspublic.info $INFODIR/vps.votingaddr.info $INSTALLDIR/temp/zero $INFODIR/vps.payoutaddr.info >> $INFODIR/register_prep
+
+        paste -d '|' $INFODIR/register_prep $INSTALLDIR/temp/registers >> $INFODIR/register_prepare.return
+
+        rm $INSTALLDIR/temp/register --force
+        rm $INFODIR/register_prep --force
+        rm $INSTALLDIR/temp/sierra --force
+        rm $INSTALLDIR/temp/zero --force
+        fi
+
+# append masternode.conf file
+cat <<EOT >> $INSTALLDIR/masternode.conf
 #######################################################
 # This file was automatically generated by Node Valet #
 #######################################################
@@ -974,8 +1068,10 @@ function restart_server() {
     echo -e " ${yellow}---------------------------------------------------- " | tee -a "$LOGFILE"
     echo -e " $(date +%m.%d.%Y_%H:%M:%S) : Preparing to reboot " | tee -a "$LOGFILE"
     echo -e " ---------------------------------------------------- ${nocolor}\n" | tee -a "$LOGFILE"
-
     clear
+
+## insert If sierra then one thing, else not sierra and present masternode.conf like usual
+
     echo -e "${lightcyan}This is the contents of your file $INSTALLDIR/masternode.conf ${nocolor}\n" | tee -a "$LOGFILE"
     cat $INSTALLDIR/masternode.conf | tee -a "$LOGFILE"
     echo -e "${white} Please follow the steps below to complete your masternode setup: ${nocolor}"

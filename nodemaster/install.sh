@@ -286,13 +286,14 @@ function validate_netchoice() {
     fi
     # generate the required ipv6 config
     if [ "${net}" -eq 4 ]; then
-        IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
 
+        IPV6_INT_BASE="#NEW_IPv4_ADDRESS_FOR_MASTERNODE_NUMBER"
+        # NETWORK_BASE_TAG=""
         # this line sets the IPV4ADDR to the *external* public IP address and is necessary when MN is internet facing
         # IPV4ADDR=`/usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail`
         # this line sets the IPV4ADDR to the *internal* network IP address and is necessary when MN is on a LAN
-        IPV4ADDR=$(ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
-
+        # IPV4ADDR=$(ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
+        IPV4ADDR=$(sudo /usr/bin/wget -q -O - http://ipv4.icanhazip.com/ | /usr/bin/tail)
     fi	# end ifneteq4
 
 }
@@ -700,6 +701,7 @@ function prepare_mn_interfaces() {
         if [ -f /sys/class/net/eth0/operstate ]; then export ETH_INTERFACE="eth0" ; echo -e "Found a match; we are going to use eth0 instead" | tee -a "$LOGFILE" ; fi
         if [ -f /sys/class/net/ens4/operstate ]; then export ETH_INTERFACE="ens4" ; echo -e "Found a match; we are going to use ens4 instead" | tee -a "$LOGFILE" ; fi
         if [ -f /sys/class/net/net0/operstate ]; then export ETH_INTERFACE="net0" ; echo -e "Found a match; we are going to use net0 instead" | tee -a "$LOGFILE" ; fi
+        if [ -f /sys/class/net/ens160/operstate ]; then export ETH_INTERFACE="ens160" ; echo -e "Found a match; we are going to use ens160 instead" ; fi
     fi
 
     # check for the nuse case <3
