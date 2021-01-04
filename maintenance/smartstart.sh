@@ -53,7 +53,13 @@ function shutdown_mns() {
         . /var/tmp/nodevalet/maintenance/mnstop.sh $i &
     done
     echo -e "${white} Sleeping for 4 minutes to give masternodes time to stop...${nocolor}"
-    sleep 240
+    
+    # display countdown timer on screen
+    seconds=240; date1=$((`date +%s` + $seconds));
+    while [ "$date1" -ge `date +%s` ]; do
+        echo -ne "          $(date -u --date @$(($date1 - `date +%s` )) +%H:%M:%S)\r";
+        sleep 0.5
+    done
     echo -e "${lightcyan} --> All masternodes have been stopped and disabled${nocolor}\n"
 }
 
