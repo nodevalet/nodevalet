@@ -42,7 +42,7 @@ else
     rm -f GETINFO2
 
     # check if file exists with name that contains both "audax_n1" and "synced"
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${input}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${input}_" | grep "synced")
     if [[ "${TARGETSYNC}" ]] && [[ "${GETINFO3}" ]]
     then echo -e "${lightgreen}                     Masternode ${PROJECT}_n${input} is synced.${nocolor}\n"
     else echo -e "${lightred}                     Masternode ${PROJECT}_n${input} is not synced.${nocolor}\n"
@@ -64,7 +64,7 @@ do
     cat GETINFO2
 
     # check if file exists with name that contains both "audax_n1" and "synced"
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}_" | grep "synced")
     if [[ "${TARGETSYNC}" ]]
     then echo -e "${lightgreen}                     Masternode ${PROJECT}_n${i} is synced.${nocolor}\n"
     else echo -e "${lightred}                     Masternode ${PROJECT}_n${i} is not synced.${nocolor}\n"

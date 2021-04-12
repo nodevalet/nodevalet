@@ -43,7 +43,7 @@ sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$t" > /dev/null 2>&1
 sleep 1
 
 # check if file exists with name that contains both "audax_n1" and "synced"
-TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
+TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}_" | grep "synced")
 if [[ "${TARGETSYNC}" ]]
 then echo -e "\n${lightgreen}* Masternode ${PROJECT}_n${t} is already synced *${nocolor}\n"
     rm -rf $INSTALLDIR/temp/updating
@@ -60,7 +60,7 @@ do
     sudo bash $INSTALLDIR/maintenance/cronchecksync2.sh "$i" > /dev/null 2>&1
     sleep 1
 
-    SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    SOURCESYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}_" | grep "synced")
     if [[ "${i}" == "${t}" ]]
     then echo -e "${lightred} Masternode ${PROJECT}_n${i} is Target; cannot be Source.${nocolor}\n"
 

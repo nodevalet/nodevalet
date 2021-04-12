@@ -43,7 +43,7 @@ function shutdown_mns() {
     for ((i=2;i<=$MNS;i++));
     do
     # check for and shutdown masternodes which are not currently synced
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}_" | grep "synced")
     touch $INSTALLDIR/temp/smartstart
     if [[ "${TARGETSYNC}" ]]
     then echo -e "${lightgreen} Masternode ${PROJECT}_n${i} is synced.${nocolor}\n"
@@ -115,7 +115,7 @@ function bootstrap() {
     do
         
     # remove blockchain data from masternodes which were not currently synced
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}_" | grep "synced")
     if [[ "${TARGETSYNC}" ]]
     then :
     else echo -e "${lightred}  Clearing blockchain from ${PROJECT}_n$t...${nocolor}"
@@ -139,7 +139,7 @@ function bootstrap() {
     echo -e "${yellow} Clonesync_all will now copy n1's blockchain data to target masternode(s):${nocolor}"
     for ((t=2;t<=$MNS;t++));
     do
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${t}_" | grep "synced")
     if [[ "${TARGETSYNC}" ]]
     then :
     else echo -e "${white}  Copying blockchain data to ${PROJECT}_n$t...${nocolor}"
@@ -174,7 +174,7 @@ function restart_mns() {
     # restart the rest of the unsynced masternodes
     for ((i=2;i<=$MNS;i++));
     do
-    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}" | grep "synced")
+    TARGETSYNC=$(ls /var/tmp/nodevalet/temp | grep "${PROJECT}_n${i}_" | grep "synced")
     if [[ "${TARGETSYNC}" ]]
     then :
     else echo -e -n "${white}  Restarting masternode ${PROJECT}_n${i}...${nocolor}"
